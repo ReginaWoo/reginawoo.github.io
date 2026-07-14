@@ -1,4 +1,5 @@
-<title>OOZE — 液态酸性视觉工作室</title>
+<meta charset="UTF-8">
+<title>OOZE-ReginaWu</title>
 <style>
   @font-face {
     font-family: 'Unbounded';
@@ -328,9 +329,9 @@
     background: var(--hair);
     border: 1px solid var(--hair);
     border-radius: var(--radius);
-    overflow: hidden;
   }
   .material {
+    position: relative;
     background: var(--ink);
     padding: 40px 30px;
   }
@@ -345,6 +346,42 @@
   .material:nth-child(2) .glyph { background: var(--magenta); animation-delay: -2s; }
   .material:nth-child(3) .glyph { background: var(--cyan); animation-delay: -4s; }
   .material:nth-child(4) .glyph { background: var(--violet); animation-delay: -6s; }
+  .material-popup {
+    position: absolute;
+    left: 50px;
+    top: 60px;
+    width: calc(100% - 60px);
+    padding: 14px 16px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    transform-origin: 0 0;
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 9999;
+  }
+  .material-popup h4 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 15px;
+    margin: 0 0 6px;
+    color: inherit;
+  }
+  .material-popup p {
+    margin: 0;
+    font-size: 13px;
+    color: inherit;
+    opacity: 0.85;
+  }
+  .material:nth-child(1) .material-popup { background: var(--lime); color: var(--lime-ink); }
+  .material:nth-child(2) .material-popup { background: var(--magenta); color: var(--ink); }
+  .material:nth-child(3) .material-popup { background: var(--cyan); color: var(--ink); }
+  .material:nth-child(4) .material-popup { background: var(--violet); color: var(--ink); }
+  .material .glyph:hover + .material-popup {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
   @keyframes blobmorph {
     0%, 100% { border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%; }
     33% { border-radius: 63% 37% 41% 59% / 51% 61% 39% 49%; }
@@ -454,8 +491,8 @@
 <header class="nav">
   <div class="nav-mark display">OOZE.</div>
   <ul class="nav-links">
-    <li><a href="#work">作品</a></li>
-    <li><a href="#materials">方法</a></li>
+    <li><a href="#work">作品 PROJECTS</a></li>
+    <li><a href="#materials">技能与优势 SKILLS</a></li>
   </ul>
 </header>
 
@@ -557,29 +594,47 @@
 
 <section id="materials" class="wrap">
   <div class="section-head">
-    <h2>我们工作的材料</h2>
-    <p>不是一套流程，是四种始终同时存在的状态 —— 它们互相渗透，没有先后。</p>
+    <div>
+      <h2>技能与个人优势</h2>
+      <p class="section-subtitle">SKILLS AND PERSONAL ADVANTAGES</p>
+    </div>
   </div>
   <div class="materials">
     <div class="material">
       <div class="glyph"></div>
-      <h3>流动 Flow</h3>
-      <p>没有一条边是直的。每个形状都在通向下一帧要变成的样子。</p>
+      <div class="material-popup">
+        <h4>熟练掌握Figma、Blender、Adobe等生产工具,英语雅思8分可作为工作语言,适应多元角色。</h4>
+        <p style="color: #000;">Proficient in Figma, Blender, Unity and more constructive tools; competent English (IELTS 8) can be used as working language, adaptable across multiple roles</p>
+      </div>
+      <h3>多元技能与适应力</h3>
+      <p style="font-family: 'Unbounded', sans-serif;">Versatile Skills & Adaptability</p>
     </div>
     <div class="material">
       <div class="glyph"></div>
-      <h3>化学 Chemistry</h3>
-      <p>颜色像酸碱反应一样互相腐蚀、渗透、发光，而不是简单地并排放置。</p>
+      <div class="material-popup">
+        <h4>多个小组协作经历，能在工作中对齐产品/研发需求，也能面向客户提供个性化服务,内外沟通兼备</h4>
+        <p style="color: #000;">Experienced in multiple team collaboration projects, able to align with product and R&D requirements at work, while also delivering personalised service to clients, demonstrating strong communication skills both internally and externally</p>
+      </div>
+      <h3>跨团队沟通与协作能力</h3>
+      <p style="font-family: 'Unbounded', sans-serif;">Cross-Team Communication & Collaboration</p>
     </div>
     <div class="material">
       <div class="glyph"></div>
-      <h3>镀层 Chrome</h3>
-      <p>每个表面都该留一层液态金属般的反光，哪怕只是一个按钮。</p>
+      <div class="material-popup">
+        <h4>交互设计与AI工具应用</h4>
+        <p>Interaction Design & AI Generative Tools</p>
+      </div>
+      <h3>交互设计与AI工具应用</h3>
+      <p style="font-family: 'Unbounded', sans-serif;">Interaction Design & AI Generative Tools</p>
     </div>
     <div class="material">
       <div class="glyph"></div>
-      <h3>呼吸 Breathe</h3>
-      <p>静止的画面里也要藏一点心跳般的节奏，慢慢地、几乎难以察觉地动。</p>
+      <div class="material-popup">
+        <h4>基础手绘与图像处理能力</h4>
+        <p>Basic Illustration & Image Editing Skills</p>
+      </div>
+      <h3>基础手绘与图像处理能力</h3>
+      <p style="font-family: 'Unbounded', sans-serif;">Basic Illustration & Image Editing Skills</p>
     </div>
   </div>
 </section>
