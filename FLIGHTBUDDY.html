@@ -386,23 +386,23 @@
   .fix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
 
   /* ---------- final delivery gallery ---------- */
-  .delivery-note { font-size: 14px; color: var(--mute); margin-bottom: 40px; max-width: 62ch; }
+  .delivery-note { font-size: 14px; color: var(--mute); margin-bottom: 40px; max-width: 80ch; }
   .screen-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
     margin-bottom: 60px;
   }
   .screen-card {
     border: 1px solid var(--hair);
     background: var(--ink-2);
     border-radius: 18px;
-    padding: 10px 10px 14px;
+    padding: 6px 6px 6px;
     cursor: zoom-in;
     transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
   }
   .screen-card:hover, .screen-card:focus-within { transform: translateY(-4px); border-color: rgba(0,196,124,0.4); }
-  .screen-card img { width: 100%; aspect-ratio: 3 / 5.3; object-fit: contain; object-position: top center; display: block; border-radius: 10px; background: #fdf3e6; }
+  .screen-card img { width: 100%; aspect-ratio: 402 / 874; object-fit: contain; object-position: top center; display: block; border-radius: 10px; background: #fdf3e6; }
   .screen-card figcaption {
     margin-top: 10px;
     font-size: 11.5px;
@@ -785,7 +785,7 @@
     </div>
   </div>
   <figure class="flow-figure">
-    <img src="assets/flightbuddy/flow-lofi.jpg" alt="Lo-fi wireframe flow: Home, Express Boarding Pass, Viewing Seat Info, Request a Seat Change, confirmation — with numbered annotations and a click-path arrow between each screen.">
+    <img src="assets/flightbuddy/wireflow.svg" alt="Lo-fi wireframe flow: Home, Express Boarding Pass, Viewing Seat Info, Request a Seat Change, confirmation — with numbered annotations and a click-path arrow between each screen.">
   </figure>
   <p class="feedback-quote"><strong>A2 feedback:</strong> the navigation flow wasn't obvious and there was no legend — annotations needed to be better integrated into the wireframes to improve clarity.</p>
 
@@ -816,7 +816,7 @@
       <p class="section-subtitle">Hi‑fi prototype, iteration 3</p>
     </div>
   </div>
-  <p class="delivery-note">From the home screen to a confirmed seat change — six core screens of the mobile app, refined after heuristic evaluation and user feedback.</p>
+  <p class="delivery-note">From the home screen to a confirmed seat change — five core screens of the mobile app, refined after heuristic evaluation and user feedback.</p>
 
   <div class="screen-grid">
     <figure class="screen-card">
@@ -838,10 +838,6 @@
     <figure class="screen-card">
       <img src="assets/flightbuddy/screens/confirmation.png" alt="Confirmation screen reading Your request has been submitted successfully, with illustrated character blobs and a Home button.">
       <figcaption><span class="sc-index">05</span>Confirmation</figcaption>
-    </figure>
-    <figure class="screen-card">
-      <img src="assets/flightbuddy/screens/map-navigation.png" alt="Airport map navigation screen highlighting baggage storage, baby changing room and other parenting facilities.">
-      <figcaption><span class="sc-index">06</span>Map Navigation</figcaption>
     </figure>
   </div>
 
