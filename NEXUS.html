@@ -399,23 +399,18 @@
     background: var(--ink-2);
     border-radius: 20px;
     padding: 26px 24px;
+    overflow: hidden;
   }
-  .persona-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--violet-ink);
-    margin-bottom: 18px;
+  .persona-photo {
+    float: right;
+    width: 168px;
+    height: 168px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid var(--hair);
+    background: #fff;
+    margin: 0 0 14px 14px;
   }
-  .persona-card:nth-child(1) .persona-avatar { background: var(--s1); }
-  .persona-card:nth-child(2) .persona-avatar { background: var(--s2); color: var(--ink); }
-  .persona-card:nth-child(3) .persona-avatar { background: var(--s3); color: var(--ink); }
   .persona-card h3 { font-family: 'Unbounded', sans-serif; font-size: 17px; margin: 0 0 12px; }
   .persona-card dl { margin: 0; }
   .persona-card dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); margin-top: 10px; }
@@ -478,16 +473,20 @@
   /* ---------- final delivery ---------- */
   .delivery-note { font-size: 14px; color: var(--mute); margin-bottom: 40px; max-width: 60ch; }
   .delivery-flow {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
     margin-bottom: 20px;
   }
+  .delivery-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+  .delivery-row + .delivery-row { margin-top: 20px; }
   .frame {
     position: relative;
-    flex: 1 1 220px;
-    max-width: 280px;
+    flex: 0 0 calc((100% - 40px) / 3);
     aspect-ratio: 16 / 9;
     border: 1px solid var(--hair);
     border-radius: 16px;
@@ -546,14 +545,6 @@
     justify-content: center;
     box-shadow: 0 0 0 3px rgba(7,4,13,0.9), 0 0 10px 1px rgba(139,123,255,0.6);
   }
-  .frame-arrow {
-    flex: 0 0 auto;
-    color: var(--mute);
-    width: 28px;
-    height: 16px;
-  }
-  .frame-arrow.back { color: var(--mute); opacity: 0.55; }
-
   .legend-row {
     display: flex;
     gap: 28px;
@@ -593,6 +584,71 @@
     align-items: center;
     justify-content: center;
     margin-top: 1px;
+  }
+
+  /* ---------- lightbox ---------- */
+  .frame, .wireframe-tile { cursor: zoom-in; }
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7,4,13,0.86);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+  .lightbox.is-open { opacity: 1; visibility: visible; }
+  .lightbox-figure {
+    position: relative;
+    width: 60vw;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.96);
+    transition: transform 0.25s ease;
+  }
+  .lightbox.is-open .lightbox-figure { transform: scale(1); }
+  .lightbox-figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+    border: 1px solid var(--hair);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    background: var(--ink-2);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    color: var(--paper);
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .lightbox-close:hover, .lightbox-close:focus-visible { border-color: rgba(243,236,251,0.4); transform: scale(1.06); }
+  .lightbox-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -34px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--mute);
   }
 
   /* ---------- cta / footer ---------- */
@@ -680,9 +736,8 @@
     .feedback-grid { grid-template-columns: 1fr; }
     .wireframe-strip { grid-template-columns: repeat(3, 1fr); }
     .annotations { grid-template-columns: 1fr; }
-    .frame-arrow { transform: rotate(90deg); }
-    .delivery-flow { flex-direction: column; }
-    .frame { width: 100%; max-width: 100%; }
+    .delivery-row { flex-direction: column; width: 100%; max-width: 100%; }
+    .frame { flex: 0 0 auto; width: 100%; max-width: 100%; }
     .cta { padding: 56px 26px; }
   }
 
@@ -698,7 +753,7 @@
 <div class="grain" aria-hidden="true"></div>
 
 <header class="nav">
-  <div class="nav-mark display">NEXUS.</div>
+  <div class="nav-mark display">OOZE.</div>
   <a class="nav-back" href="ooze-liquid-acid.html#work">← Back to Portfolio</a>
 </header>
 
@@ -706,7 +761,7 @@
   <canvas id="galaxy" aria-hidden="true"></canvas>
   <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-inner wrap">
-    <div class="eyebrow">Layer · Tutorial 2 · Group 19</div>
+    <div class="eyebrow">Layer Studio · Tutorial 2 · Group 19</div>
     <h1>NEXUS</h1>
     <p class="hero-tagline-big display">Behind Every AI Answer</p>
     <div class="hero-tagline-row">
@@ -850,7 +905,7 @@
     </figure>
     <figure class="wireframe-tile">
       <img src="assets/nexus/wireframes/wf-05-customize.png" alt="Lo-fi wireframe of the fifth page — customising the source preference mix across official, social media and academic reports.">
-      <figcaption><span class="wf-index">05</span>Customize</figcaption>
+      <figcaption><span class="wf-index">05</span>Customise</figcaption>
     </figure>
     <figure class="wireframe-tile">
       <img src="assets/nexus/wireframes/wf-06-answer.png" alt="Lo-fi wireframe of the sixth page — the final answer with reasoning and rebalanced source percentages.">
@@ -860,7 +915,7 @@
 
   <div class="personas">
     <div class="persona-card">
-      <div class="persona-avatar display">S</div>
+      <img class="persona-photo" src="assets/nexus/memoji/sofia.png" alt="Memoji avatar of Sofia">
       <h3>Sofia</h3>
       <dl>
         <dt>Role</dt><dd>Master's student</dd>
@@ -869,7 +924,7 @@
       </dl>
     </div>
     <div class="persona-card">
-      <div class="persona-avatar display">J</div>
+      <img class="persona-photo" src="assets/nexus/memoji/jackson.png" alt="Memoji avatar of Jackson">
       <h3>Jackson</h3>
       <dl>
         <dt>Role</dt><dd>Master's student</dd>
@@ -878,7 +933,7 @@
       </dl>
     </div>
     <div class="persona-card">
-      <div class="persona-avatar display">S</div>
+      <img class="persona-photo" src="assets/nexus/memoji/sean.png" alt="Memoji avatar of Sean">
       <h3>Sean</h3>
       <dl>
         <dt>Role</dt><dd>Working professional</dd>
@@ -929,68 +984,60 @@
   <p class="delivery-note">From typing a question to seeing exactly where the answer came from — the five hi-fi screens below walk through the full Nexus flow.</p>
 
   <div class="delivery-flow">
-    <div class="frame">
-      <img src="assets/nexus/01-beginning-page.png" alt="Beginning page — a search bar over a starfield asks 'What would you like to understand?'">
-      <div class="frame-scrim"></div>
-      <span class="touchpoint" style="top:10px; left:10px;">1</span>
-      <span class="touchpoint" style="bottom:44px; right:10px;">2</span>
-      <div class="frame-caption">
-        <span class="frame-index">Step 01</span>
-        <span class="frame-label display">Beginning Page</span>
+    <div class="delivery-row">
+      <div class="frame">
+        <img src="assets/nexus/01-beginning-page.png" alt="Beginning page — a search bar over a starfield asks 'What would you like to understand?'">
+        <div class="frame-scrim"></div>
+        <span class="touchpoint" style="top:10px; left:10px;">1</span>
+        <span class="touchpoint" style="bottom:44px; right:10px;">2</span>
+        <div class="frame-caption">
+          <span class="frame-index">Step 01</span>
+          <span class="frame-label display">Beginning Page</span>
+        </div>
+      </div>
+      <div class="frame">
+        <img src="assets/nexus/02-starting-analysis.png" alt="AI understands your question — the question is broken into Intent, Temporal, Context, Focus, Audience, Goal and Implication.">
+        <div class="frame-scrim"></div>
+        <span class="touchpoint" style="top:10px; left:10px;">3</span>
+        <span class="touchpoint" style="bottom:44px; right:10px;">4</span>
+        <div class="frame-caption">
+          <span class="frame-index">Step 02</span>
+          <span class="frame-label display">Starting Analysis</span>
+        </div>
+      </div>
+      <div class="frame">
+        <img src="assets/nexus/03-searching-related.png" alt="Searching across the universe of knowledge — a radial map of live sources being scanned, ranked and pulled together.">
+        <div class="frame-scrim"></div>
+        <span class="touchpoint" style="top:10px; left:10px;">5</span>
+        <div class="frame-caption">
+          <span class="frame-index">Step 03</span>
+          <span class="frame-label display">Searching Related</span>
+        </div>
       </div>
     </div>
-    <svg class="frame-arrow" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M0 8H26M26 8L19 2M26 8L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div class="frame">
-      <img src="assets/nexus/02-starting-analysis.png" alt="AI understands your question — the question is broken into Intent, Temporal, Context, Focus, Audience, Goal and Implication.">
-      <div class="frame-scrim"></div>
-      <span class="touchpoint" style="top:10px; left:10px;">3</span>
-      <span class="touchpoint" style="bottom:44px; right:10px;">4</span>
-      <div class="frame-caption">
-        <span class="frame-index">Step 02</span>
-        <span class="frame-label display">Starting Analysis</span>
+    <div class="delivery-row">
+      <div class="frame">
+        <img src="assets/nexus/04-showing-details.png" alt="Showing details — the generated answer with a 40/30/30 official, social and academic source split, ready to edit.">
+        <div class="frame-scrim"></div>
+        <span class="touchpoint" style="top:10px; left:10px;">6</span>
+        <div class="frame-caption">
+          <span class="frame-index">Step 04</span>
+          <span class="frame-label display">Showing Details</span>
+        </div>
       </div>
-    </div>
-    <svg class="frame-arrow" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M0 8H26M26 8L19 2M26 8L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div class="frame">
-      <img src="assets/nexus/03-searching-related.png" alt="Searching across the universe of knowledge — a radial map of live sources being scanned, ranked and pulled together.">
-      <div class="frame-scrim"></div>
-      <span class="touchpoint" style="top:10px; left:10px;">5</span>
-      <div class="frame-caption">
-        <span class="frame-index">Step 03</span>
-        <span class="frame-label display">Searching Related</span>
-      </div>
-    </div>
-    <svg class="frame-arrow" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M0 8H26M26 8L19 2M26 8L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div class="frame">
-      <img src="assets/nexus/04-showing-details.png" alt="Showing details — the generated answer with a 40/30/30 official, social and academic source split, ready to edit.">
-      <div class="frame-scrim"></div>
-      <span class="touchpoint" style="top:10px; left:10px;">6</span>
-      <div class="frame-caption">
-        <span class="frame-index">Step 04</span>
-        <span class="frame-label display">Showing Details</span>
-      </div>
-    </div>
-    <svg class="frame-arrow" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M0 8H26M26 8L19 2M26 8L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div class="frame">
-      <img src="assets/nexus/05-personalization.png" alt="Personalization — the same answer after the user rebalances sources to 20/30/50 and confirms the new mix.">
-      <div class="frame-scrim"></div>
-      <span class="touchpoint" style="top:10px; left:10px;">7</span>
-      <div class="frame-caption">
-        <span class="frame-index">Step 05</span>
-        <span class="frame-label display">Personalization</span>
+      <div class="frame">
+        <img src="assets/nexus/05-personalization.png" alt="Personalisation — the same answer after the user rebalances sources to 20/30/50 and confirms the new mix.">
+        <div class="frame-scrim"></div>
+        <span class="touchpoint" style="top:10px; left:10px;">7</span>
+        <div class="frame-caption">
+          <span class="frame-index">Step 05</span>
+          <span class="frame-label display">Personalisation</span>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="legend-row">
-    <div>
-      <svg width="22" height="12" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M0 8H26M26 8L19 2M26 8L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Forward navigation
-    </div>
-    <div>
-      <svg width="22" height="12" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M0 8H26M26 8L19 2M26 8L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 3"/></svg>
-      Back navigation
-    </div>
     <div>
       <span class="touchpoint" style="position:static; display:inline-flex;">•</span>
       Touchpoints
@@ -1021,6 +1068,14 @@
     <div>NEXUS — Layer · Group 19</div>
     <div class="fmono">2026</div>
   </footer>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <figure class="lightbox-figure">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close enlarged image">✕</button>
+    <img id="lightboxImg" src="" alt="">
+    <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
+  </figure>
 </div>
 
 <script>
@@ -1080,7 +1135,7 @@
       ctx.fillRect(0, 0, w, h);
 
       var cx = w * 0.5;
-      var coreY = h * 0.88;
+      var coreY = h * 0.85;
 
       // background starfield
       stars.forEach(function (s) {
@@ -1107,7 +1162,7 @@
       ctx.restore();
 
       // core glow
-      var coreR = Math.max(w, h) * 0.17;
+      var coreR = h * 0.125;
       var coreGrad = ctx.createRadialGradient(cx, coreY, 0, cx, coreY, coreR);
       coreGrad.addColorStop(0, 'rgba(255,255,255,0.85)');
       coreGrad.addColorStop(0.25, 'rgba(216,202,255,0.4)');
@@ -1212,5 +1267,42 @@
     label2.textContent = 'top issue';
     donut.appendChild(label2);
   }
+
+  /* ---------- lightbox ---------- */
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+  var lightboxClose = document.getElementById('lightboxClose');
+  var lastFocused = null;
+
+  function openLightbox(img) {
+    lastFocused = document.activeElement;
+    lightboxImg.src = img.currentSrc || img.src;
+    lightboxImg.alt = img.alt || '';
+    lightboxCaption.textContent = img.alt || '';
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightboxClose.focus();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll('.wireframe-tile, .frame').forEach(function (tile) {
+    var img = tile.querySelector('img');
+    if (!img) return;
+    tile.addEventListener('click', function () { openLightbox(img); });
+  });
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+  });
 })();
 </script>
