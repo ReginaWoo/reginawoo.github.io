@@ -1,0 +1,853 @@
+<meta charset="UTF-8">
+<title>乱世巨星 CHAOS STAR — Regina Wu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0612;
+    --ink-2: #150c24;
+    --ink-3: #1d1130;
+    --paper: #f3ecfb;
+    --mute: #9186ac;
+    --hair: rgba(243, 236, 251, 0.12);
+    --amber: #ffb62e;
+    --amber-ink: #2b1600;
+    --flame: #ff5a3c;
+    --magenta: #ff3ec4;
+    --violet: #7b5cff;
+    --radius: 28px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--amber); color: var(--amber-ink); }
+  a { color: inherit; }
+
+  .display { font-family: 'Unbounded', 'Manrope', -apple-system, 'PingFang SC', sans-serif; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- nav ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 32px;
+    background: linear-gradient(to bottom, rgba(10,6,18,0.92), rgba(10,6,18,0.55) 70%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  .nav-mark {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .nav-back {
+    font-size: 14px;
+    color: var(--mute);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nav-back:hover, .nav-back:focus-visible { color: var(--paper); }
+  .nav-back:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 4px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 68% 45%;
+    filter: saturate(1.05) brightness(0.92);
+  }
+  .hero-veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, var(--ink) 0%, rgba(10,6,18,0.8) 22%, rgba(10,6,18,0.34) 46%, rgba(10,6,18,0.06) 64%, rgba(10,6,18,0) 78%),
+      linear-gradient(200deg, rgba(10,6,18,0.55) 0%, rgba(10,6,18,0) 40%);
+  }
+  .hero-blob {
+    position: absolute;
+    border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%;
+    filter: blur(48px);
+    opacity: 0.35;
+    animation: blobmorph 9s ease-in-out infinite;
+    z-index: 1;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-width: 0;
+    padding-top: 40px;
+    padding-bottom: 56px;
+  }
+  .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 28px;
+    max-width: 100%;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 12px 2px var(--amber);
+  }
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: clamp(56px, 11vw, 136px);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    background: linear-gradient(100deg, #ffffff 0%, #ffe9b0 18%, #c97a10 34%, #ffffff 52%, #ffd37a 68%, #ffffff 86%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: chrome-flow 9s linear infinite;
+  }
+  @keyframes chrome-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 260% 50%; }
+  }
+  .hero-tagline-big {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: clamp(20px, 2.6vw, 28px);
+    color: var(--paper);
+    margin: 22px 0 0;
+  }
+  .hero-tagline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 22px;
+  }
+  .hero-tagline {
+    margin-top: 0;
+    flex: 1 1 30ch;
+    max-width: 46ch;
+    font-size: clamp(16px, 2vw, 18px);
+    color: var(--paper);
+    text-wrap: balance;
+  }
+  .hero-tagline strong { color: var(--amber); font-weight: 700; }
+  .hero-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-meta div { font-size: 14px; color: var(--mute); }
+  .hero-meta strong {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    color: var(--paper);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .hero-watch {
+    margin-top: 40px;
+  }
+
+  /* ---------- section shell ---------- */
+  section { position: relative; padding: 110px 0; }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 3.6vw, 42px);
+    margin: 0;
+    text-wrap: balance;
+    color: #ffd98a;
+  }
+  .section-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 10px 0 0;
+    font-weight: 700;
+  }
+  .section-head p {
+    max-width: 46ch;
+    color: var(--mute);
+    margin: 0;
+    font-size: 15px;
+  }
+  .lede {
+    max-width: 76ch;
+    color: var(--paper);
+    font-size: clamp(17px, 1.8vw, 20px);
+    text-wrap: balance;
+  }
+  .lede-en {
+    max-width: 76ch;
+    color: var(--mute);
+    font-size: 14.5px;
+    margin-top: 14px;
+  }
+
+  .specs-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--hair);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius);
+    margin-top: 40px;
+    overflow: hidden;
+  }
+  .specs-row div { background: var(--ink-2); padding: 26px 24px; }
+  .specs-row strong {
+    display: block;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    color: var(--amber);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .specs-row span { color: var(--mute); font-size: 14px; }
+
+  .hmw {
+    margin: 40px 0 0;
+    padding: 36px 40px;
+    border: 1px solid var(--hair);
+    border-top: 4px solid var(--amber);
+    background: var(--ink-2);
+    border-radius: var(--radius);
+    text-align: center;
+  }
+  .hmw p {
+    margin: 0;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: clamp(19px, 2.4vw, 25px);
+    line-height: 1.45;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+  .hmw span { color: var(--amber); }
+  .hmw cite { display: block; margin-top: 14px; font-style: normal; font-size: 13px; color: var(--mute); }
+
+  /* ---------- inspiration ---------- */
+  .inspo-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .inspo-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: var(--radius);
+    padding: 32px 32px 34px;
+    margin-bottom: 24px;
+  }
+  .inspo-card:last-child { margin-bottom: 0; }
+  .inspo-card .tag {
+    display: inline-flex;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber-ink);
+    background: var(--amber);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .inspo-card h3 { font-family: 'Unbounded', sans-serif; font-size: 18px; margin: 0 0 12px; }
+  .inspo-card p { margin: 0; color: var(--mute); font-size: 14.5px; }
+  .inspo-card p + p { margin-top: 10px; }
+
+  .inspo-figs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .inspo-figs figure {
+    margin: 0;
+    border: 1px solid var(--hair);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--ink-2);
+    cursor: zoom-in;
+  }
+  .inspo-figs img { width: 100%; height: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .inspo-figs figure:hover img, .inspo-figs figure:focus-within img { transform: scale(1.05); }
+  .inspo-figs figcaption { padding: 14px 18px 18px; font-size: 12.5px; color: var(--mute); }
+
+  /* ---------- showcase / video ---------- */
+  .video-frame {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--hair);
+    background: #000;
+    margin-bottom: 20px;
+  }
+  .video-frame video { width: 100%; height: auto; display: block; aspect-ratio: 16/9; background: #000; }
+  .video-caption { color: var(--mute); font-size: 13.5px; margin: 0 0 60px; max-width: 80ch; }
+
+  .still-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .still-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 20px;
+    padding: 8px 8px 6px;
+    cursor: zoom-in;
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
+  }
+  .still-card:hover, .still-card:focus-within { transform: translateY(-4px); border-color: rgba(255,182,46,0.4); }
+  .still-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; border-radius: 14px; }
+  .still-card figcaption {
+    margin: 12px 4px 10px;
+    font-size: 12.5px;
+    color: var(--mute);
+  }
+  .still-card .sc-index {
+    display: block;
+    font-family: 'Unbounded', sans-serif;
+    color: var(--amber);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .still-card .sc-scene { display: block; color: var(--paper); font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+
+  /* ---------- persona chips ---------- */
+  .persona-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 28px 0 0;
+  }
+  .persona-chips span {
+    font-size: 12.5px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: rgba(255,182,46,0.1);
+    border: 1px solid rgba(255,182,46,0.3);
+    color: #ffd98a;
+  }
+
+  /* ---------- cta / footer ---------- */
+  .cta {
+    border-radius: 40px;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 60%);
+    border: 1px solid var(--hair);
+    padding: 80px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(50px) saturate(1.5);
+    opacity: 0.9;
+  }
+  .cta-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(155deg, rgba(29,17,48,0.62), rgba(21,12,36,0.5) 60%);
+  }
+  .cta h2, .cta p, .cta .blob-btn { position: relative; z-index: 2; }
+  .cta h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 4.4vw, 48px);
+    margin: 0 0 18px;
+    position: relative;
+    text-wrap: balance;
+    color: #ffd98a;
+  }
+  .cta p {
+    color: var(--mute);
+    max-width: 44ch;
+    margin: 0 auto 36px;
+    position: relative;
+    font-size: 15.5px;
+  }
+  .blob-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--amber);
+    color: var(--amber-ink);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 18px 34px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(255,182,46,0);
+    animation: blobbtn 6s ease-in-out infinite;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .blob-btn:hover, .blob-btn:focus-visible {
+    box-shadow: 0 0 46px 6px rgba(255,182,46,0.45);
+    transform: translateY(-2px);
+  }
+  .blob-btn:focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; }
+  @keyframes blobbtn {
+    0%, 100% { border-radius: 61% 39% 44% 56% / 49% 46% 54% 51%; }
+    50% { border-radius: 42% 58% 61% 39% / 56% 40% 60% 44%; }
+  }
+  @keyframes blobmorph {
+    0%, 100% { border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%; }
+    33% { border-radius: 63% 37% 41% 59% / 51% 61% 39% 49%; }
+    66% { border-radius: 38% 62% 55% 45% / 63% 42% 58% 37%; }
+  }
+
+  footer {
+    padding: 44px 0 60px;
+    border-top: 1px solid var(--hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--mute);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer .fmono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+  /* ---------- lightbox ---------- */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,6,18,0.86);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+  .lightbox.is-open { opacity: 1; visibility: visible; }
+  .lightbox-figure {
+    position: relative;
+    width: 68vw;
+    height: 68vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.96);
+    transition: transform 0.25s ease;
+  }
+  .lightbox.is-open .lightbox-figure { transform: scale(1); }
+  .lightbox-figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+    border: 1px solid var(--hair);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    background: var(--ink-2);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    color: var(--paper);
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .lightbox-close:hover, .lightbox-close:focus-visible { border-color: rgba(255,182,46,0.5); transform: scale(1.06); }
+  .lightbox-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -34px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--mute);
+  }
+
+  @media (max-width: 900px) {
+    .inspo-grid { grid-template-columns: 1fr; }
+    .specs-row { grid-template-columns: repeat(2, 1fr); }
+    .still-grid { grid-template-columns: repeat(2, 1fr); }
+    .cta { padding: 56px 26px; }
+  }
+
+  @media (max-width: 520px) {
+    .still-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: clamp(30px, 10vw, 60px); }
+    .specs-row { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1, .blob-btn, .hero-blob { animation: none !important; }
+  }
+</style>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="nav-mark display">OOZE.</div>
+  <a class="nav-back" href="ooze-liquid-acid.html#work">← Back to Portfolio</a>
+</header>
+
+<section class="hero">
+  <img class="hero-media" src="assets/chaos-star/stills/09-wolf-eye-finale.jpg" alt="Extreme close-up of the hand-drawn corgi's glowing eye against a magenta-to-violet gradient, from the final scene of the Chaos Star music video remake.">
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="hero-blob" aria-hidden="true" style="width:220px; height:220px; top:12%; right:10%; background:var(--flame);"></div>
+  <div class="hero-blob" aria-hidden="true" style="width:140px; height:140px; top:30%; right:24%; background:var(--magenta); animation-delay:-3s;"></div>
+  <div class="hero-inner wrap">
+    <div class="eyebrow">个人作品 Personal Project · Adobe After Effects · 手绘动画 Hand-Drawn Animation</div>
+    <h1>乱世巨星</h1>
+    <p class="hero-tagline-big display">MV Remake — Chaos Star</p>
+    <div class="hero-tagline-row">
+      <p class="hero-tagline">翻拍自粤语经典金曲《乱世巨星》的手绘动画MV。<strong>一只手绘的柯基</strong>在法官、总裁、猛兽、夜行者、巨星五种人设间不断切换，用最直白的画面演绎歌词里"在乱世称王"的姿态。</p>
+      <p class="hero-tagline">A hand-drawn animated remake of the Cantopop classic Chaos Star. <strong>One corgi character</strong>, modelled on my own dog, cycles through five personas — judge, tycoon, wild beast, night-prowler, star — literalising the song's swagger about ruling a chaotic world on your own terms.</p>
+    </div>
+    <div class="hero-meta">
+      <div>
+        <strong>角色 Role</strong>
+        角色设计 · 手绘动画 · AE合成剪辑
+      </div>
+      <div>
+        <strong>时长 Duration</strong>
+        2分22秒 · 1920×1080
+      </div>
+      <div>
+        <strong>工具 Tools</strong>
+        Adobe After Effects · 基础手绘
+      </div>
+    </div>
+    <div class="hero-watch">
+      <a class="blob-btn" href="#showcase">▶ 观看完整作品 Watch the Film</a>
+    </div>
+  </div>
+</section>
+
+<section id="intro" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>简介</h2>
+      <p class="section-subtitle">Intro</p>
+    </div>
+  </div>
+  <p class="lede">《乱世巨星》是一部个人手绘动画MV重制项目，取材于粤语乐坛的经典金曲。全片角色、场景与转场特效均为原创手绘设计，再通过Adobe After Effects完成逐帧动态合成与剪辑，全长2分22秒。主角是一只以我自己养的狗为原型设计的柯基，为了呼应歌词中不断变换的"角色扮演"意象，同一只柯基在片中先后化身法官、总裁、烈焰猛兽、夜色顽童与不朽巨星，并配以手写毛笔字的中文歌词大字报，以及工整排版的英文字幕。</p>
+  <p class="lede-en">Chaos Star is a self-directed, hand-drawn music video remake of a Cantopop classic. Every character, backdrop and transition was hand-illustrated, then animated and composited frame-by-frame in Adobe After Effects across a 2-minute-22-second runtime. The lead character is a corgi modelled on my own dog. To mirror the song's shifting cast of personas, the same corgi is redressed and restaged five times — judge, tycoon, wild beast, night-prowler, eternal star — set against hand-lettered brush-calligraphy lyric cards and clean bilingual subtitles.</p>
+  <div class="specs-row">
+    <div><strong>时长 Duration</strong><span>2:22 · 4270帧 Frames</span></div>
+    <div><strong>分辨率 Resolution</strong><span>1920 × 1080</span></div>
+    <div><strong>制作方式 Process</strong><span>手绘插画 → AE动态合成</span></div>
+    <div><strong>产出内容 Output</strong><span>成品短片 + 分镜静帧</span></div>
+  </div>
+  <div class="persona-chips">
+    <span>⚖️ 法官 The Judge</span>
+    <span>💼 总裁 The Tycoon</span>
+    <span>🔥 猛兽 The Beast</span>
+    <span>🌙 夜行者 The Night-Prowler</span>
+    <span>⭐ 巨星 The Star</span>
+  </div>
+</section>
+
+<section id="inspiration" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>灵感来源</h2>
+      <p class="section-subtitle">Inspiration</p>
+    </div>
+    <p>灵感来自原曲本身的歌词意象，以及一段复古波普风格的视觉语言。</p>
+  </div>
+  <div class="inspo-grid">
+    <div>
+      <div class="inspo-card">
+        <span class="tag">内容 Content</span>
+        <h3 class="display">主角原型：我养的柯基</h3>
+        <p>主角的形象直接以<strong>我自己养的柯基</strong>为原型设计——它日常的神态和体态成了整支MV最初的灵感来源。原曲歌词本身又列举了多个身份意象：审判者、掌权者、野性生物、不灭的星，歌者在乱世中我行我素、随意切换身份。于是决定不再设计多个角色，而是让<strong>这只柯基反复"变装"</strong>，用服装、道具与场景的强烈反差，把抽象的歌词态度直接翻译成可读的画面语言。</p>
+        <p>The lead character is designed directly after <strong>my own pet corgi</strong> — its everyday posture and expressions were the film's original spark. The lyrics themselves then cycle through a cast of personas — judge, ruler, wild creature, undying star — someone doing exactly as they please amid chaos. Rather than designing separate characters, I kept that one corgi and re-costumed it for each verse, so the song's attitude reads instantly through wardrobe and set alone.</p>
+      </div>
+      <div class="inspo-card">
+        <span class="tag">视觉 Visual</span>
+        <h3 class="display">复古波普 × 手写毛笔字</h3>
+        <p>背景大量使用了60年代波普艺术式的<strong>放射线与格纹图案</strong>（sunburst、checkerboard），制造跳脱、略带挑衅的节奏感；歌词大字报则用手写毛笔笔触呈现，与工整排版的英文字幕形成新旧、中西的对比。结尾一幕把角色置入真实街头实拍素材中，用湮没于人群的"路人视角"反衬"巨星"人设的荒诞与真实。</p>
+        <p>Backgrounds lean on 1960s pop-art motifs — radiating sunburst rays and checkerboards — for a jolt of provocative rhythm, while lyric cards use rough brush-lettered Chinese calligraphy against clean English subtitles, playing old against new. One scene composites the character into real street footage, using the anonymity of a crowded corridor to undercut the "superstar" persona.</p>
+      </div>
+    </div>
+    <div class="inspo-figs">
+      <figure>
+        <img src="assets/chaos-star/stills/05-fire-beast-calligraphy.jpg" alt="Hand-drawn dog breathing fire beneath bold brush-calligraphy lyrics reading 'natural instinct, fight with all my might', on a pink and tan flat-colour background.">
+        <figcaption>手写毛笔歌词大字报 · 猛兽场景 — Brush-lettered lyric card over the wild-beast scene</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/chaos-star/stills/07-star-transformation.jpg" alt="The corgi's face transforms into a glowing star shape against orange and cream sunburst rays, with the subtitle 'I can transform into an eternal star'.">
+        <figcaption>复古波普放射线背景 — Pop-art sunburst background, star transformation</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/chaos-star/stills/02-live-action-composite.jpg" alt="The small illustrated corgi character, seen from behind, composited into real documentary footage of commuters walking through a busy underground corridor.">
+        <figcaption>实拍素材合成 — Compositing the corgi into found live-action footage</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="hmw">
+    <p>"Taking the world <span>by storm</span>, I never have to look back."</p>
+    <cite>《乱世巨星》歌词英译 · 贯穿全片的核心态度 — Lyric translation that anchors the film's attitude</cite>
+  </div>
+</section>
+
+<section id="showcase" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>作品展示</h2>
+      <p class="section-subtitle">Showcase</p>
+    </div>
+    <p>完整成品短片，以及五种人设的分镜静帧。</p>
+  </div>
+
+  <div class="video-frame">
+    <video controls playsinline preload="metadata" poster="assets/chaos-star/stills/01-title-card.jpg">
+      <source src="assets/Chaos%20Star/Regina_Wu_COMPOSITED%20VIDEO%20PROJECT.mp4" type="video/mp4">
+      您的浏览器不支持视频播放，请下载后观看。Your browser does not support embedded video.
+    </video>
+  </div>
+  <p class="video-caption">《乱世巨星》完整成片 · 2:22 · 建议开启声音观看，歌词字幕为中英双语。Full film, 2:22 — best viewed with sound; lyric subtitles run bilingually in Chinese and English.</p>
+
+  <div class="still-grid">
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/01-title-card.jpg" alt="Opening title card: the words CHAOS STAR rendered in glossy gold 3D-style lettering on a warm yellow radial-gradient background.">
+      <figcaption><span class="sc-index">00:03</span><span class="sc-scene">片头 Title Card</span>金色立体标题字 — Glossy gold title lettering</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/02-live-action-composite.jpg" alt="The illustrated corgi walking through a real, grainy documentary shot of commuters in a busy underground corridor.">
+      <figcaption><span class="sc-index">00:14</span><span class="sc-scene">开场 · 人海 Crowd</span>手绘柯基合成进实拍街景 — Corgi composited into live-action footage</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/03-judge-scene.jpg" alt="The corgi dressed as a grey-wigged judge behind a wooden bench with a scales-of-justice emblem, holding a gavel, on an orange and yellow checkerboard background.">
+      <figcaption><span class="sc-index">00:29</span><span class="sc-scene">人设一 · 法官 The Judge</span>格纹背景 — Checkerboard pop-art backdrop</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/04-boss-chair.jpg" alt="The corgi in sunglasses and a dark suit, legs crossed, lounging arrogantly in a wooden armchair against a mustard-yellow background.">
+      <figcaption><span class="sc-index">00:50</span><span class="sc-scene">人设二 · 总裁 The Tycoon</span>墨镜西装，架腿而坐 — Sunglasses, suit, arrogant pose</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/05-fire-beast-calligraphy.jpg" alt="A small hand-drawn dog breathing fire, with bold brush-calligraphy Chinese lyrics overlaid above and below it.">
+      <figcaption><span class="sc-index">00:57</span><span class="sc-scene">人设三 · 猛兽 The Beast</span>毛笔字歌词大字报 — Brush-calligraphy lyric card</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/06-money-eyes-kaleidoscope.jpg" alt="A kaleidoscope of the corgi's face repeated eight times around a sunburst pattern, each with dollar-sign eyes or sunglasses.">
+      <figcaption><span class="sc-index">01:40</span><span class="sc-scene">转场 · 万花筒 Kaleidoscope</span>放射状分身特效 — Radial multiplied transition</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/07-star-transformation.jpg" alt="The corgi's sleeping face inside a five-pointed star shape, against orange and cream sunburst rays.">
+      <figcaption><span class="sc-index">01:54</span><span class="sc-scene">人设五 · 巨星 The Star</span>化身不朽之星 — Transforming into an eternal star</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/08-night-rooftop.jpg" alt="The corgi wearing sunglasses, strutting across a night-time city skyline silhouette with a crescent moon and stars.">
+      <figcaption><span class="sc-index">02:08</span><span class="sc-scene">人设四 · 夜行者 The Night-Prowler</span>夜色天际线 — City-skyline silhouette at night</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/chaos-star/stills/09-wolf-eye-finale.jpg" alt="Extreme close-up of the corgi's glowing eye against a magenta-to-violet gradient in the film's final scene.">
+      <figcaption><span class="sc-index">02:20</span><span class="sc-scene">结尾 Finale</span>特写收尾 — Extreme close-up finale</figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="cta">
+    <canvas id="ctaBlobfield" aria-hidden="true"></canvas>
+    <div class="cta-scrim" aria-hidden="true"></div>
+    <h2 class="display">See more style explorations</h2>
+    <p>Chaos Star is one of several directions in my portfolio — from hand-drawn animation to visual and interaction design.</p>
+    <a class="blob-btn" href="ooze-liquid-acid.html#work">View Portfolio →</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <div>乱世巨星 CHAOS STAR — MV Remake, Individual Project</div>
+    <div class="fmono">2026</div>
+  </footer>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <figure class="lightbox-figure">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close enlarged image">✕</button>
+    <img id="lightboxImg" src="" alt="">
+    <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<script>
+(function () {
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function makeBlobField(canvas, colors, opts) {
+    if (!canvas) return;
+    opts = opts || {};
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w, h;
+    var blobs = colors.map(function (c, i) {
+      return {
+        color: c,
+        r: opts.baseR ? opts.baseR() : 220,
+        speed: 0.00025 + i * 0.00008,
+        phase: i * 2.1,
+        ax: 0.28 + i * 0.11,
+        ay: 0.22 + i * 0.09
+      };
+    });
+
+    function resize() {
+      var rect = canvas.getBoundingClientRect();
+      w = Math.max(rect.width, 1);
+      h = Math.max(rect.height, 1);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function draw(t) {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#0a0612';
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighten';
+      blobs.forEach(function (b) {
+        var cx = w / 2 + Math.sin(t * b.speed + b.phase) * w * b.ax;
+        var cy = h / 2 + Math.cos(t * b.speed * 1.3 + b.phase) * h * b.ay;
+        var r = b.r * (opts.scale || 1);
+        var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        g.addColorStop(0, b.color);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    if (reduceMotion) {
+      draw(0);
+      return;
+    }
+    function loop(ts) {
+      draw(ts);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  makeBlobField(document.getElementById('ctaBlobfield'), ['#ffb62e', '#ff5a3c', '#ff3ec4', '#7b5cff'], { baseR: function () { return 220; }, scale: 1 });
+
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+  var lightboxClose = document.getElementById('lightboxClose');
+  var lastFocused = null;
+
+  function openLightbox(img) {
+    lastFocused = document.activeElement;
+    lightboxImg.src = img.currentSrc || img.src;
+    lightboxImg.alt = img.alt || '';
+    lightboxCaption.textContent = img.alt || '';
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightboxClose.focus();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll('.still-card, .inspo-figs figure').forEach(function (tile) {
+    var img = tile.querySelector('img');
+    if (!img) return;
+    tile.addEventListener('click', function () { openLightbox(img); });
+  });
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+  });
+})();
+</script>
