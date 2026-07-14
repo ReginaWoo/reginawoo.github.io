@@ -43,7 +43,7 @@
 
   .display { font-family: 'Unbounded', 'Manrope', -apple-system, 'PingFang SC', sans-serif; }
 
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
 
   .grain {
     position: fixed;
@@ -202,6 +202,7 @@
     font-size: clamp(28px, 3.6vw, 42px);
     margin: 0;
     text-wrap: balance;
+    color: #b7a9f2;
   }
   .section-subtitle {
     font-size: 12px;
@@ -641,6 +642,29 @@
     transition: border-color 0.2s ease, transform 0.2s ease;
   }
   .lightbox-close:hover, .lightbox-close:focus-visible { border-color: rgba(243,236,251,0.4); transform: scale(1.06); }
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    color: var(--paper);
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    z-index: 1;
+  }
+  .lightbox-nav:hover, .lightbox-nav:focus-visible { border-color: rgba(243,236,251,0.4); transform: translateY(-50%) scale(1.08); }
+  .lightbox-prev { left: 24px; }
+  .lightbox-next { right: 24px; }
+  .lightbox-nav[hidden] { display: none; }
   .lightbox-caption {
     position: absolute;
     left: 0;
@@ -679,6 +703,7 @@
     margin: 0 0 18px;
     position: relative;
     text-wrap: balance;
+    color: #b7a9f2;
   }
   .cta p {
     color: var(--mute);
@@ -743,6 +768,9 @@
 
   @media (max-width: 480px) {
     .wireframe-strip { grid-template-columns: repeat(2, 1fr); }
+    .lightbox-nav { width: 34px; height: 34px; font-size: 18px; }
+    .lightbox-prev { left: 10px; }
+    .lightbox-next { right: 10px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1071,11 +1099,13 @@
 </div>
 
 <div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="View previous image">‹</button>
   <figure class="lightbox-figure">
     <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close enlarged image">✕</button>
     <img id="lightboxImg" src="" alt="">
     <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
   </figure>
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="View next image">›</button>
 </div>
 
 <script>
@@ -1273,13 +1303,40 @@
   var lightboxImg = document.getElementById('lightboxImg');
   var lightboxCaption = document.getElementById('lightboxCaption');
   var lightboxClose = document.getElementById('lightboxClose');
+  var lightboxPrev = document.getElementById('lightboxPrev');
+  var lightboxNext = document.getElementById('lightboxNext');
   var lastFocused = null;
+  var wireframeImgs = Array.prototype.slice.call(document.querySelectorAll('.wireframe-tile img'));
+  var frameImgs = Array.prototype.slice.call(document.querySelectorAll('.frame img'));
+  var galleryImgs = null;
+  var galleryIndex = -1;
 
-  function openLightbox(img) {
-    lastFocused = document.activeElement;
+  function showLightboxImage(img) {
     lightboxImg.src = img.currentSrc || img.src;
     lightboxImg.alt = img.alt || '';
     lightboxCaption.textContent = img.alt || '';
+    lightboxPrev.hidden = !galleryImgs || galleryIndex <= 0;
+    lightboxNext.hidden = !galleryImgs || galleryIndex >= galleryImgs.length - 1;
+  }
+  function showGalleryImage(delta) {
+    if (!galleryImgs) return;
+    var next = galleryIndex + delta;
+    if (next < 0 || next >= galleryImgs.length) return;
+    galleryIndex = next;
+    showLightboxImage(galleryImgs[galleryIndex]);
+    if (document.activeElement && document.activeElement.hidden) lightboxClose.focus();
+  }
+  function openLightbox(img) {
+    lastFocused = document.activeElement;
+    var idx = wireframeImgs.indexOf(img);
+    if (idx !== -1) {
+      galleryImgs = wireframeImgs;
+    } else {
+      idx = frameImgs.indexOf(img);
+      galleryImgs = idx !== -1 ? frameImgs : null;
+    }
+    galleryIndex = idx;
+    showLightboxImage(img);
     lightbox.classList.add('is-open');
     lightbox.setAttribute('aria-hidden', 'false');
     lightboxClose.focus();
@@ -1298,11 +1355,16 @@
     tile.addEventListener('click', function () { openLightbox(img); });
   });
   lightboxClose.addEventListener('click', closeLightbox);
+  lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); showGalleryImage(-1); });
+  lightboxNext.addEventListener('click', function (e) { e.stopPropagation(); showGalleryImage(1); });
   lightbox.addEventListener('click', function (e) {
     if (e.target === lightbox) closeLightbox();
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+    if (!lightbox.classList.contains('is-open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowLeft') showGalleryImage(-1);
+    else if (e.key === 'ArrowRight') showGalleryImage(1);
   });
 })();
 </script>

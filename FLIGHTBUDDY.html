@@ -1,0 +1,947 @@
+<meta charset="UTF-8">
+<title>FLIGHTBUDDY — Regina Wu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #07040d;
+    --ink-2: #120e1a;
+    --ink-3: #191527;
+    --paper: #f3ecfb;
+    --mute: #9186ac;
+    --hair: rgba(243, 236, 251, 0.12);
+    --green: #00c47c;
+    --green-deep: #0a8f5c;
+    --green-ink: #06231a;
+    --mint: #b7ecd4;
+    --coral: #ffb69a;
+    --pink: #eaa6b1;
+    --lavender: #c9d0ea;
+    --radius: 28px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--green); color: var(--green-ink); }
+  a { color: inherit; }
+
+  .display { font-family: 'Unbounded', 'Manrope', -apple-system, 'PingFang SC', sans-serif; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- nav ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 32px;
+    background: linear-gradient(to bottom, rgba(7,4,13,0.92), rgba(7,4,13,0.55) 70%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  .nav-mark {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .nav-back {
+    font-size: 14px;
+    color: var(--mute);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nav-back:hover, .nav-back:focus-visible { color: var(--paper); }
+  .nav-back:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 4px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% 30%;
+    filter: saturate(0.95) brightness(0.95);
+  }
+  .hero-veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, var(--ink) 0%, rgba(7,4,13,0.78) 22%, rgba(7,4,13,0.32) 46%, rgba(7,4,13,0.05) 64%, rgba(7,4,13,0) 78%),
+      linear-gradient(200deg, rgba(7,4,13,0.55) 0%, rgba(7,4,13,0) 40%);
+  }
+  .hero-blob {
+    position: absolute;
+    border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%;
+    filter: blur(48px);
+    opacity: 0.35;
+    animation: blobmorph 9s ease-in-out infinite;
+    z-index: 1;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-width: 0;
+    padding-top: 40px;
+    padding-bottom: 56px;
+  }
+  .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 28px;
+    max-width: 100%;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px 2px var(--green);
+  }
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: clamp(56px, 11vw, 148px);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    background: linear-gradient(100deg, #ffffff 0%, #cdf3e2 18%, #1f8f66 34%, #ffffff 52%, #9fe6c4 68%, #ffffff 86%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: chrome-flow 9s linear infinite;
+  }
+  @keyframes chrome-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 260% 50%; }
+  }
+  .hero-tagline-big {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: clamp(20px, 2.6vw, 28px);
+    color: var(--paper);
+    margin: 22px 0 0;
+  }
+  .hero-tagline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 18px;
+  }
+  .hero-tagline {
+    margin-top: 0;
+    flex: 1 1 30ch;
+    max-width: 48ch;
+    font-size: clamp(16px, 2vw, 18px);
+    color: var(--mute);
+    text-wrap: balance;
+  }
+  .hero-tagline strong { color: var(--mint); font-weight: 700; }
+  .hero-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    margin-top: 56px;
+    flex-wrap: wrap;
+  }
+  .hero-meta div { font-size: 14px; color: var(--mute); }
+  .hero-meta strong {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    color: var(--paper);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- section shell ---------- */
+  section { position: relative; padding: 110px 0; }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 3.6vw, 42px);
+    margin: 0;
+    text-wrap: balance;
+    color: #bfe9d4;
+  }
+  .section-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin: 10px 0 0;
+    font-weight: 700;
+  }
+  .section-head p {
+    max-width: 46ch;
+    color: var(--mute);
+    margin: 0;
+    font-size: 15px;
+  }
+  .lede {
+    max-width: 76ch;
+    color: var(--paper);
+    font-size: clamp(17px, 1.8vw, 20px);
+    text-wrap: balance;
+  }
+
+  .hmw {
+    margin: 40px 0 0;
+    padding: 36px 40px;
+    border: 1px solid var(--hair);
+    border-left: 4px solid var(--green);
+    background: var(--ink-2);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .hmw p {
+    margin: 0;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: clamp(19px, 2.4vw, 25px);
+    line-height: 1.45;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+  .hmw span { color: var(--green); }
+
+  /* ---------- three devices / pillars ---------- */
+  .devices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .device-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .device-photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .device-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .device-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: rgba(7,4,13,0.68);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(243,236,251,0.25);
+  }
+  .device-badge.built { color: var(--mint); border-color: rgba(0,196,124,0.5); }
+  .device-badge.concept { color: var(--lavender); }
+  .device-body { padding: 26px 24px 30px; }
+  .device-body h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 17px;
+    margin: 0 0 6px;
+  }
+  .device-stage {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--green);
+    margin: 0 0 12px;
+    font-weight: 700;
+  }
+  .device-body p.desc { margin: 0; color: var(--mute); font-size: 14.5px; }
+
+  /* ---------- heuristic evaluation ---------- */
+  .heuristics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .heuristic-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 20px;
+    padding: 28px 26px;
+  }
+  .heuristic-card .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0,196,124,0.14);
+    border: 1px solid rgba(0,196,124,0.4);
+    color: var(--mint);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .heuristic-card p { margin: 0; color: var(--paper); font-size: 14.5px; }
+  .heuristic-card .cite { display: block; margin-top: 12px; color: var(--mute); font-size: 12.5px; font-style: italic; }
+
+  /* ---------- iteration ---------- */
+  .flow-figure {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 28px;
+    cursor: zoom-in;
+  }
+  .flow-figure img { width: 100%; height: auto; display: block; border-radius: 12px; background: #fff; }
+  .feedback-quote {
+    font-size: 15px;
+    color: var(--mute);
+    max-width: 70ch;
+    margin: 0 0 40px;
+  }
+  .feedback-quote strong { color: var(--paper); }
+
+  .fixlist {
+    border: 1px solid var(--hair);
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 70%);
+    border-radius: 20px;
+    padding: 28px 26px;
+  }
+  .fixlist h4 { font-family: 'Unbounded', sans-serif; font-size: 15px; margin: 0 0 18px; display: flex; align-items: center; gap: 10px; }
+  .fixlist h4::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 10px 1px var(--coral); }
+  .fixlist ul { margin: 0; padding: 0; list-style: none; }
+  .fixlist li { font-size: 14px; color: var(--mute); padding: 10px 0; border-top: 1px solid var(--hair); }
+  .fixlist li:first-child { border-top: none; padding-top: 0; }
+
+  .improved {
+    border: 1px solid var(--hair);
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 70%);
+    border-radius: 20px;
+    padding: 28px 26px;
+  }
+  .improved h4 { font-family: 'Unbounded', sans-serif; font-size: 15px; margin: 0 0 18px; display: flex; align-items: center; gap: 10px; }
+  .improved h4::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px 1px var(--green); }
+  .improved ul { margin: 0; padding: 0; list-style: none; }
+  .improved li { font-size: 14px; color: var(--mute); padding: 10px 0; border-top: 1px solid var(--hair); }
+  .improved li:first-child { border-top: none; padding-top: 0; }
+
+  .fix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+
+  /* ---------- final delivery gallery ---------- */
+  .delivery-note { font-size: 14px; color: var(--mute); margin-bottom: 40px; max-width: 62ch; }
+  .screen-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 60px;
+  }
+  .screen-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 18px;
+    padding: 10px 10px 14px;
+    cursor: zoom-in;
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
+  }
+  .screen-card:hover, .screen-card:focus-within { transform: translateY(-4px); border-color: rgba(0,196,124,0.4); }
+  .screen-card img { width: 100%; aspect-ratio: 3 / 5.3; object-fit: contain; object-position: top center; display: block; border-radius: 10px; background: #fdf3e6; }
+  .screen-card figcaption {
+    margin-top: 10px;
+    font-size: 11.5px;
+    color: var(--mute);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .screen-card .sc-index {
+    font-family: 'Unbounded', sans-serif;
+    color: var(--mint);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+  }
+
+  .signature {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+    gap: 28px;
+    align-items: center;
+    border: 1px solid var(--hair);
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 70%);
+    border-radius: var(--radius);
+    padding: 40px;
+    margin-bottom: 60px;
+  }
+  .signature-copy h3 { font-family: 'Unbounded', sans-serif; font-size: 20px; margin: 0 0 14px; color: #bfe9d4; }
+  .signature-copy p { margin: 0 0 12px; color: var(--mute); font-size: 14.5px; }
+  .signature-copy .scale-key { display: flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 12px; color: var(--mute); }
+  .scale-bar {
+    flex: 1;
+    height: 10px;
+    border-radius: 100px;
+    background: linear-gradient(90deg, #3d6fbf, #6fb8a8, #00c47c, #e8a24a, #e0459f, #c0264f);
+  }
+  .signature-img { cursor: zoom-in; }
+  .signature-img img { width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--hair); display: block; background: #fff; }
+
+  .legend-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 18px 0 36px;
+    border-bottom: 1px solid var(--hair);
+    margin-bottom: 36px;
+    font-size: 13px;
+    color: var(--mute);
+  }
+  .legend-row > div { display: flex; align-items: center; gap: 10px; }
+  .legend-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--green); flex: 0 0 auto; }
+  .legend-pill { width: 26px; height: 14px; border-radius: 100px; border: 1px solid var(--green); flex: 0 0 auto; }
+
+  .annotations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 32px;
+  }
+  .annotations li {
+    display: flex;
+    gap: 14px;
+    list-style: none;
+    font-size: 14px;
+    color: var(--mute);
+  }
+  .annotations .num {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0,196,124,0.16);
+    border: 1px solid rgba(0,196,124,0.4);
+    color: var(--mint);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* ---------- lightbox ---------- */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7,4,13,0.86);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+  .lightbox.is-open { opacity: 1; visibility: visible; }
+  .lightbox-figure {
+    position: relative;
+    width: 60vw;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.96);
+    transition: transform 0.25s ease;
+  }
+  .lightbox.is-open .lightbox-figure { transform: scale(1); }
+  .lightbox-figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+    border: 1px solid var(--hair);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    background: var(--ink-2);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    color: var(--paper);
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .lightbox-close:hover, .lightbox-close:focus-visible { border-color: rgba(0,196,124,0.5); transform: scale(1.06); }
+  .lightbox-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -34px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--mute);
+  }
+
+  /* ---------- cta / footer ---------- */
+  .cta {
+    border-radius: 40px;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 60%);
+    border: 1px solid var(--hair);
+    padding: 80px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: '';
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--green), transparent 70%);
+    top: -220px;
+    right: -160px;
+    opacity: 0.35;
+    filter: blur(10px);
+  }
+  .cta h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 4.4vw, 48px);
+    margin: 0 0 18px;
+    position: relative;
+    text-wrap: balance;
+    color: #bfe9d4;
+  }
+  .cta p {
+    color: var(--mute);
+    max-width: 44ch;
+    margin: 0 auto 36px;
+    position: relative;
+    font-size: 15.5px;
+  }
+  .blob-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--green);
+    color: var(--green-ink);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 18px 34px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(0,196,124,0);
+    animation: blobbtn 6s ease-in-out infinite;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .blob-btn:hover, .blob-btn:focus-visible {
+    box-shadow: 0 0 46px 6px rgba(0,196,124,0.45);
+    transform: translateY(-2px);
+  }
+  .blob-btn:focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; }
+  @keyframes blobbtn {
+    0%, 100% { border-radius: 61% 39% 44% 56% / 49% 46% 54% 51%; }
+    50% { border-radius: 42% 58% 61% 39% / 56% 40% 60% 44%; }
+  }
+  @keyframes blobmorph {
+    0%, 100% { border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%; }
+    33% { border-radius: 63% 37% 41% 59% / 51% 61% 39% 49%; }
+    66% { border-radius: 38% 62% 55% 45% / 63% 42% 58% 37%; }
+  }
+
+  footer {
+    padding: 44px 0 60px;
+    border-top: 1px solid var(--hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--mute);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer .fmono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+  @media (max-width: 900px) {
+    .devices { grid-template-columns: 1fr; }
+    .heuristics { grid-template-columns: 1fr; }
+    .fix-grid { grid-template-columns: 1fr; }
+    .signature { grid-template-columns: 1fr; }
+    .screen-grid { grid-template-columns: repeat(3, 1fr); }
+    .annotations { grid-template-columns: 1fr; }
+    .cta { padding: 56px 26px; }
+  }
+
+  @media (max-width: 520px) {
+    .screen-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: clamp(30px, 10vw, 60px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1, .blob-btn, .hero-blob { animation: none !important; }
+  }
+</style>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="nav-mark display">OOZE.</div>
+  <a class="nav-back" href="ooze-liquid-acid.html#work">← Back to Portfolio</a>
+</header>
+
+<section class="hero">
+  <img class="hero-media" src="assets/flightbuddy/hero-watch-tablet.jpg" alt="A parent checks their Apple Watch while a child wears headphones and plays a game on a tablet during a flight.">
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="hero-blob" aria-hidden="true" style="width:220px; height:220px; top:14%; right:8%; background:var(--green);"></div>
+  <div class="hero-blob" aria-hidden="true" style="width:140px; height:140px; top:32%; right:22%; background:var(--coral); animation-delay:-3s;"></div>
+  <div class="hero-inner wrap">
+    <div class="eyebrow">IDEA9105 · Interface Design, High Fidelity · Individual Project</div>
+    <h1>FlightBuddy</h1>
+    <p class="hero-tagline-big display">Your Personalised Family Travel Keeper</p>
+    <div class="hero-tagline-row">
+      <p class="hero-tagline">A high-fidelity <strong>iOS app</strong> that helps parents manage a toddler's in-flight restlessness — from choosing a quieter seat before the trip, to navigating the airport, to requesting a calmer seat mid-journey.</p>
+    </div>
+    <div class="hero-meta">
+      <div>
+        <strong>Role</strong>
+        Interaction design · Visual design · Heuristic evaluation
+      </div>
+      <div>
+        <strong>Scope</strong>
+        Mobile (iPhone) app — designed end‑to‑end in hi‑fi
+      </div>
+      <div>
+        <strong>Deliverable</strong>
+        Hi‑fi prototype, 3 iterations
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="overview" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Overview</h2>
+      <p class="section-subtitle">What is FlightBuddy</p>
+    </div>
+  </div>
+  <p class="lede">In the initial research, one of the most common problems raised by passengers was disturbance caused by young children on the plane — stressful for parents and disruptive for everyone else nearby. FlightBuddy is my response: an app that gives parents travelling with toddlers personalised support to prepare for, manage, and navigate the flight experience, built around three connected touchpoints across the journey — planning, pre‑boarding, and in‑flight.</p>
+  <div class="hmw">
+    <p>How might we support parents in managing toddlers' in‑flight restlessness and environmental stress, creating a calmer experience for them and minimising physical disruptions for <span>other passengers</span>?</p>
+  </div>
+</section>
+
+<section id="solution" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Design Solution</h2>
+      <p class="section-subtitle">Three devices, one journey</p>
+    </div>
+    <p>Each device is tailored to a different stage of the trip. The mobile app is the deliverable I designed in full hi‑fi; iPad and watch describe the wider concept.</p>
+  </div>
+  <div class="devices">
+    <div class="device-card">
+      <div class="device-photo">
+        <img src="assets/flightbuddy/device-mobile.jpg" alt="A mother looks at the FlightBuddy home screen on her iPhone while her child plays with blocks in the background.">
+        <span class="device-badge built">Designed in hi‑fi</span>
+      </div>
+      <div class="device-body">
+        <p class="device-stage">Planning stage · Mobile</p>
+        <h3 class="display">Seating Management</h3>
+        <p class="desc">Helps parents plan a smoother, more comfortable flight by choosing seats strategically — guided by the seating map and a noise‑level indicator.</p>
+      </div>
+    </div>
+    <div class="device-card">
+      <div class="device-photo">
+        <img src="assets/flightbuddy/device-ipad.jpg" alt="A parent holds an iPad showing an account settings screen while packing a suitcase and a child plays nearby.">
+        <span class="device-badge concept">Concept</span>
+      </div>
+      <div class="device-body">
+        <p class="device-stage">Pre‑boarding · iPad</p>
+        <h3 class="display">Personalised Activities</h3>
+        <p class="desc">Responds to the child's mood, energy levels, and preferences at the airport, recommending activities to keep them engaged before the flight.</p>
+      </div>
+    </div>
+    <div class="device-card">
+      <div class="device-photo">
+        <img src="assets/flightbuddy/device-watch.jpg" alt="Close-up of a smartwatch showing the time and small status icons on a parent's wrist.">
+        <span class="device-badge concept">Concept</span>
+      </div>
+      <div class="device-body">
+        <p class="device-stage">In‑flight · Watch</p>
+        <h3 class="display">Emotional Monitoring</h3>
+        <p class="desc">A real‑time read on the child's emotional state during the flight, so parents can make timely calls about rest, play, or comfort.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="evaluation" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Heuristic Evaluation</h2>
+      <p class="section-subtitle">Testing the mobile app against Nielsen's heuristics</p>
+    </div>
+    <p>A heuristic evaluation of the seating‑management flow was conducted against Nielsen's 10 Usability Heuristics (1994).</p>
+  </div>
+  <div class="heuristics">
+    <div class="heuristic-card">
+      <span class="num display">01</span>
+      <p>Visibility of system status through clear feedback at each interaction step — seat‑selection confirmation, seating‑request submission — aligning with best practices for responsive UI feedback.</p>
+      <span class="cite">Nielsen, 1994</span>
+    </div>
+    <div class="heuristic-card">
+      <span class="num display">02</span>
+      <p>Match with real‑world conventions via intuitive terminology and familiar visualisations, such as the noise‑level funnel diagram, which reduces cognitive load.</p>
+      <span class="cite">Norman, 2013</span>
+    </div>
+    <div class="heuristic-card">
+      <span class="num display">03</span>
+      <p>Consistent UI patterns across screens — modal behaviour, button placement, back navigation — that promote learnability and reduce user error.</p>
+      <span class="cite">Tognazzini, 2014</span>
+    </div>
+    <div class="heuristic-card">
+      <span class="num display">04</span>
+      <p>Error prevention through controlled seat availability and contextual noise‑level previews, empowering informed choices and avoiding undesirable selections.</p>
+      <span class="cite">Nielsen &amp; Molich, 1990</span>
+    </div>
+  </div>
+</section>
+
+<section id="iteration" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Iteration Process</h2>
+      <p class="section-subtitle">From wireframe to hi‑fi, three passes</p>
+    </div>
+  </div>
+  <figure class="flow-figure">
+    <img src="assets/flightbuddy/flow-lofi.jpg" alt="Lo-fi wireframe flow: Home, Express Boarding Pass, Viewing Seat Info, Request a Seat Change, confirmation — with numbered annotations and a click-path arrow between each screen.">
+  </figure>
+  <p class="feedback-quote"><strong>A2 feedback:</strong> the navigation flow wasn't obvious and there was no legend — annotations needed to be better integrated into the wireframes to improve clarity.</p>
+
+  <div class="fix-grid">
+    <div class="fixlist">
+      <h4 class="display">Problems Identified in Iteration 2</h4>
+      <ul>
+        <li>Map Navigation didn't contribute to the core flow, and there weren't enough screens to justify a separate flow for it.</li>
+        <li>The opacity of the geometric background shapes was too high, making the visuals cluttered rather than clear.</li>
+        <li>The noise‑level feature was missing detail and left users confused about what the numbers meant.</li>
+      </ul>
+    </div>
+    <div class="improved">
+      <h4 class="display">What Changed for the Final Pass</h4>
+      <ul>
+        <li>Introduced a colour‑overlay system in the seat‑selection view to visually indicate estimated noise levels.</li>
+        <li>Added a pop‑up explanation screen for what the noise‑level numbers mean, visually inspired by Team Hearzap (2024).</li>
+        <li>Added a legend and fully annotated navigation flow so users — and reviewers — can follow the interaction sequence at a glance.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="delivery" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Final Delivery</h2>
+      <p class="section-subtitle">Hi‑fi prototype, iteration 3</p>
+    </div>
+  </div>
+  <p class="delivery-note">From the home screen to a confirmed seat change — six core screens of the mobile app, refined after heuristic evaluation and user feedback.</p>
+
+  <div class="screen-grid">
+    <figure class="screen-card">
+      <img src="assets/flightbuddy/screens/home.png" alt="Home screen — flight summary card for SYD to MEL, packing list, child mood check-in, and nearby airport facilities.">
+      <figcaption><span class="sc-index">01</span>Home Screen</figcaption>
+    </figure>
+    <figure class="screen-card">
+      <img src="assets/flightbuddy/screens/boarding-pass.png" alt="Express Boarding Pass screen with flight details from SYD to SIN, a QR code, and a Manage My Seat button.">
+      <figcaption><span class="sc-index">02</span>Boarding Pass</figcaption>
+    </figure>
+    <figure class="screen-card">
+      <img src="assets/flightbuddy/screens/seating-overview.png" alt="Seating overview screen showing a full cabin seat map with icons for registered pet, registered kid, accessibility and selected seat.">
+      <figcaption><span class="sc-index">03</span>Seating Overview</figcaption>
+    </figure>
+    <figure class="screen-card">
+      <img src="assets/flightbuddy/screens/seat-change.png" alt="Seat Change Request modal comparing seat 34G to seat 40C, showing a drop in estimated noise level.">
+      <figcaption><span class="sc-index">04</span>Seat Change Request</figcaption>
+    </figure>
+    <figure class="screen-card">
+      <img src="assets/flightbuddy/screens/confirmation.png" alt="Confirmation screen reading Your request has been submitted successfully, with illustrated character blobs and a Home button.">
+      <figcaption><span class="sc-index">05</span>Confirmation</figcaption>
+    </figure>
+    <figure class="screen-card">
+      <img src="assets/flightbuddy/screens/map-navigation.png" alt="Airport map navigation screen highlighting baggage storage, baby changing room and other parenting facilities.">
+      <figcaption><span class="sc-index">06</span>Map Navigation</figcaption>
+    </figure>
+  </div>
+
+  <div class="signature">
+    <div class="signature-copy">
+      <h3>Signature feature: noise as colour</h3>
+      <p>The seat map's biggest usability gap was that "noise level" meant nothing to users on its own. The fix was to translate a dB estimate into a colour gradient laid directly over the seat grid, plus a one‑tap explainer for what the numbers mean.</p>
+      <div class="scale-key">
+        <span>Quiet</span>
+        <span class="scale-bar" aria-hidden="true"></span>
+        <span>Loud</span>
+      </div>
+    </div>
+    <div class="signature-img">
+      <img src="assets/flightbuddy/screens/seating-color-detail.png" alt="Seating overview with the noise-level colour overlay toggled on, seats tinted from blue (quiet) to deep pink (loud).">
+    </div>
+    <div class="signature-img">
+      <img src="assets/flightbuddy/screens/noise-detail.png" alt="Estimated Noise Level explainer screen with a colour-coded scale from 65dB to 105dB and a short explanation of what the numbers mean.">
+    </div>
+  </div>
+
+  <div class="legend-row">
+    <div><span class="legend-dot" aria-hidden="true"></span>Buttons — clickable element</div>
+    <div><span class="legend-pill" aria-hidden="true"></span>Close — go back or close the page</div>
+    <div>Toggle — open/close colour overlay</div>
+    <div>Numbers — click sequence between screens</div>
+  </div>
+
+  <figure class="flow-figure">
+    <img src="assets/flightbuddy/flow-final.jpg" alt="Full annotated navigation flow across ten screens: Home Page, Express Boarding Pass, Seating Overview (toggle off and on), Noise Level Information, Seat Change Request and Confirmation Page, with a legend and five numbered click paths.">
+  </figure>
+
+  <ol class="annotations">
+    <li><span class="num display">1</span>Click to open the express boarding pass.</li>
+    <li><span class="num display">2</span>Click to open the seating management page.</li>
+    <li><span class="num display">3</span>Click to compare seats and confirm the seat‑change request.</li>
+    <li><span class="num display">4</span>Click to submit the seat‑change request.</li>
+    <li><span class="num display">5</span>Click to open the noise‑level information page.</li>
+  </ol>
+</section>
+
+<div class="wrap">
+  <div class="cta">
+    <h2 class="display">See more style explorations</h2>
+    <p>FlightBuddy is one of several directions in my portfolio — from visual and interaction design to AIGC experiments.</p>
+    <a class="blob-btn" href="ooze-liquid-acid.html#work">View Portfolio →</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <div>FLIGHTBUDDY — IDEA9105, Individual Project</div>
+    <div class="fmono">2026</div>
+  </footer>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <figure class="lightbox-figure">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close enlarged image">✕</button>
+    <img id="lightboxImg" src="" alt="">
+    <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<script>
+(function () {
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+  var lightboxClose = document.getElementById('lightboxClose');
+  var lastFocused = null;
+
+  function openLightbox(img) {
+    lastFocused = document.activeElement;
+    lightboxImg.src = img.currentSrc || img.src;
+    lightboxImg.alt = img.alt || '';
+    lightboxCaption.textContent = img.alt || '';
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightboxClose.focus();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll('.screen-card, .flow-figure, .signature-img').forEach(function (tile) {
+    var img = tile.querySelector('img');
+    if (!img) return;
+    tile.addEventListener('click', function () { openLightbox(img); });
+  });
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+  });
+})();
+</script>
