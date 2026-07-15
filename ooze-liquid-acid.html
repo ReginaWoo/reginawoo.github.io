@@ -377,7 +377,8 @@
   .material:nth-child(2) .material-popup { background: var(--magenta); color: var(--ink); }
   .material:nth-child(3) .material-popup { background: var(--cyan); color: var(--ink); }
   .material:nth-child(4) .material-popup { background: var(--violet); color: var(--ink); }
-  .material .glyph:hover + .material-popup {
+  .material .glyph:hover + .material-popup,
+  .material.popup-open .material-popup {
     opacity: 1;
     transform: scale(1);
     pointer-events: auto;
@@ -569,7 +570,7 @@
       </div>
     </a>
 
-    <a class="case" href="#" data-palette="3">
+    <a class="case" href="DANCERS.html" data-palette="3">
       <canvas aria-hidden="true"></canvas>
       <div class="case-scrim"></div>
       <div class="case-body">
@@ -621,8 +622,8 @@
     <div class="material">
       <div class="glyph"></div>
       <div class="material-popup">
-        <h4>交互设计与AI工具应用</h4>
-        <p>Interaction Design & AI Generative Tools</p>
+        <h4 style="color: #000;">熟悉用户体验设计流程与界面设计,擅长运用AI工具辅助设计与内容生产,提升创作效率,将设计思维与AI能力结合,应用于产品原型与视觉内容创作</h4>
+        <p style="color: #000;">Skilled in UX design workflows and interface design, with expertise in leveraging AI tools to enhance design and content production efficiency—combining design thinking with AI capabilities across prototyping and visual content creation.</p>
       </div>
       <h3>交互设计与AI工具应用</h3>
       <p style="font-family: 'Unbounded', sans-serif;">Interaction Design & AI Generative Tools</p>
@@ -630,8 +631,8 @@
     <div class="material">
       <div class="glyph"></div>
       <div class="material-popup">
-        <h4>基础手绘与图像处理能力</h4>
-        <p>Basic Illustration & Image Editing Skills</p>
+        <h4 style="color: #000;">具备基础手绘功底,独立创作插画20+幅并为校报创作过插图；能够使用Adobe等工具进行图片处理与视觉创作。</h4>
+        <p style="color: #000;">Basic hand-drawing skills, having illustrated 20+ pieces individually and worked as a student newspaper illustrator; proficient in Adobe for image editing and visual content creation.</p>
       </div>
       <h3>基础手绘与图像处理能力</h3>
       <p style="font-family: 'Unbounded', sans-serif;">Basic Illustration & Image Editing Skills</p>
@@ -645,6 +646,8 @@
     <div class="fmono">2026·北京</div>
   </footer>
 </div>
+
+<div id="popup-scroll-spacer" style="height: 0px;" aria-hidden="true"></div>
 
 <script>
 (function () {
@@ -722,6 +725,84 @@
     var idx = parseInt(el.getAttribute('data-palette'), 10) || 0;
     var canvas = el.querySelector('canvas');
     makeBlobField(canvas, PALETTES[idx % PALETTES.length], { baseR: function () { return 160; }, scale: 1 });
+  });
+})();
+
+(function () {
+  var SCROLL_MARGIN = 24;
+  var spacer = document.getElementById('popup-scroll-spacer');
+
+  document.querySelectorAll('.material').forEach(function (mat) {
+    var popup = mat.querySelector('.material-popup');
+    if (!popup) return;
+
+    var isHovering = false;
+    var scrollLockUntil = 0;
+    var pendingCloseTimer = null;
+
+    function doClose() {
+      mat.classList.remove('popup-open');
+      if (spacer) spacer.style.height = '0px';
+    }
+
+    function openPopup() {
+      isHovering = true;
+      if (pendingCloseTimer) {
+        clearTimeout(pendingCloseTimer);
+        pendingCloseTimer = null;
+      }
+      mat.classList.add('popup-open');
+      requestAnimationFrame(function () {
+        var rect = popup.getBoundingClientRect();
+        var trueTop = rect.top;
+        var trueBottom = rect.top + popup.offsetHeight;
+        var viewportH = window.innerHeight;
+        var delta = 0;
+        if (trueBottom > viewportH - SCROLL_MARGIN) {
+          delta = trueBottom - (viewportH - SCROLL_MARGIN);
+        } else if (trueTop < SCROLL_MARGIN) {
+          delta = trueTop - SCROLL_MARGIN;
+        }
+        if (delta !== 0) {
+          // The page may not have enough room below to scroll into (e.g. this
+          // is the last section before the footer) — grow a spacer so the
+          // browser has somewhere to scroll to, guaranteeing the popup can
+          // always be fully revealed.
+          if (spacer && delta > 0) {
+            var maxScrollY = document.documentElement.scrollHeight - viewportH;
+            var neededScrollY = window.scrollY + delta;
+            var shortfall = neededScrollY - maxScrollY;
+            if (shortfall > 0) {
+              spacer.style.height = shortfall + 'px';
+            }
+          }
+          scrollLockUntil = Date.now() + 700;
+          window.scrollBy({ top: delta, behavior: 'smooth' });
+        }
+      });
+    }
+
+    function closePopup() {
+      isHovering = false;
+      var remaining = scrollLockUntil - Date.now();
+      if (remaining > 0) {
+        // The cursor left while an auto-scroll from this same card was still
+        // settling — don't drop the close outright, just defer it until the
+        // scroll is done, then close for real if the cursor hasn't come back.
+        if (pendingCloseTimer) clearTimeout(pendingCloseTimer);
+        pendingCloseTimer = setTimeout(function () {
+          pendingCloseTimer = null;
+          if (!isHovering) doClose();
+        }, remaining + 20);
+        return;
+      }
+      doClose();
+    }
+
+    mat.addEventListener('mouseenter', openPopup);
+    mat.addEventListener('mouseleave', closePopup);
+    mat.addEventListener('focusin', openPopup);
+    mat.addEventListener('focusout', closePopup);
   });
 })();
 </script>

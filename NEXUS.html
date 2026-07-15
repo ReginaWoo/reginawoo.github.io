@@ -95,11 +95,23 @@
     inset: 0;
     width: 100%;
     height: 100%;
+    background: #07040d;
+    pointer-events: auto;
   }
+  #galaxy canvas { display: block; width: 100%; height: 100%; }
+  #starfield {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  #starfield canvas { display: block; width: 100%; height: 100%; }
   .hero-veil {
     position: absolute;
     inset: 0;
     background: radial-gradient(ellipse at 50% 100%, rgba(7,4,13,0.1), var(--ink) 82%);
+    pointer-events: none;
   }
   .hero-inner {
     position: relative;
@@ -788,7 +800,8 @@
 </header>
 
 <section class="hero">
-  <canvas id="galaxy" aria-hidden="true"></canvas>
+  <div id="galaxy" aria-hidden="true"></div>
+  <div id="starfield" aria-hidden="true"></div>
   <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-inner wrap">
     <div class="eyebrow">Layer Studio · Tutorial 2 · Group 19</div>
@@ -1178,135 +1191,6 @@
 
   makeBlobField(document.getElementById('ctaBlobfield'), ['#8b7bff', '#c9b6ff', '#e0459f', '#0aa3b8'], { baseR: function () { return 220; }, scale: 1 });
 
-  /* ---------- hero galaxy field ---------- */
-  function makeGalaxy(canvas) {
-    var ctx = canvas.getContext('2d');
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var w, h;
-
-    var ARMS = 3;
-    var particles = [];
-    var N = 260;
-    for (var i = 0; i < N; i++) {
-      var arm = i % ARMS;
-      var t = Math.pow(Math.random(), 0.65);
-      particles.push({
-        arm: arm,
-        t: t,
-        angle0: arm * (Math.PI * 2 / ARMS) + t * 3.4 + (Math.random() - 0.5) * 0.5,
-        rot: (0.00006 + (1 - t) * 0.00014),
-        size: 0.6 + Math.random() * 1.8,
-        phase: Math.random() * Math.PI * 2,
-        twinkle: 0.6 + Math.random() * 1.4
-      });
-    }
-
-    var stars = [];
-    var S = 160;
-    for (var j = 0; j < S; j++) {
-      stars.push({
-        x: Math.random(),
-        y: Math.random(),
-        r: 0.3 + Math.random() * 1.1,
-        a: 0.15 + Math.random() * 0.6,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.4 + Math.random() * 1.2
-      });
-    }
-
-    function resize() {
-      var rect = canvas.getBoundingClientRect();
-      w = Math.max(rect.width, 1);
-      h = Math.max(rect.height, 1);
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    function draw(t) {
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#07040d';
-      ctx.fillRect(0, 0, w, h);
-
-      var cx = w * 0.5;
-      var coreY = h * 0.85;
-
-      // background starfield
-      stars.forEach(function (s) {
-        var a = s.a * (0.6 + 0.4 * Math.sin(t * 0.0012 * s.speed + s.phase));
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(243,236,251,' + a.toFixed(3) + ')';
-        ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // light beam descending into the core
-      var beamW = Math.max(w * 0.006, 2);
-      var beamPulse = 0.75 + 0.25 * Math.sin(t * 0.0016);
-      var beamGrad = ctx.createLinearGradient(0, 0, 0, coreY);
-      beamGrad.addColorStop(0, 'rgba(255,255,255,0)');
-      beamGrad.addColorStop(0.6, 'rgba(216,202,255,' + (0.5 * beamPulse).toFixed(3) + ')');
-      beamGrad.addColorStop(1, 'rgba(255,255,255,' + (0.9 * beamPulse).toFixed(3) + ')');
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighten';
-      ctx.filter = 'blur(6px)';
-      ctx.fillStyle = beamGrad;
-      ctx.fillRect(cx - beamW / 2, 0, beamW, coreY);
-      ctx.filter = 'none';
-      ctx.restore();
-
-      // core glow
-      var coreR = h * 0.125;
-      var coreGrad = ctx.createRadialGradient(cx, coreY, 0, cx, coreY, coreR);
-      coreGrad.addColorStop(0, 'rgba(255,255,255,0.85)');
-      coreGrad.addColorStop(0.25, 'rgba(216,202,255,0.4)');
-      coreGrad.addColorStop(1, 'rgba(139,123,255,0)');
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighten';
-      ctx.fillStyle = coreGrad;
-      ctx.beginPath();
-      ctx.arc(cx, coreY, coreR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      // spiral particle field
-      var maxR = Math.max(w, h) * 0.62;
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighten';
-      particles.forEach(function (p) {
-        var ang = p.angle0 + t * p.rot;
-        var r = p.t * maxR;
-        var x = cx + Math.cos(ang) * r;
-        var y = coreY + Math.sin(ang) * r * 0.34;
-        var alpha = (0.25 + 0.55 * (1 - p.t)) * (0.6 + 0.4 * Math.sin(t * 0.002 * p.twinkle + p.phase));
-        var mix = p.t; // 0 near core (white) -> 1 outer (violet)
-        var rr = Math.round(255 - mix * (255 - 139));
-        var gg = Math.round(255 - mix * (255 - 123));
-        var bb = Math.round(255 - mix * (255 - 255));
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(' + rr + ',' + gg + ',' + bb + ',' + Math.max(alpha, 0).toFixed(3) + ')';
-        ctx.arc(x, y, p.size * (dpr > 1 ? 1.1 : 1), 0, Math.PI * 2);
-        ctx.fill();
-      });
-      ctx.restore();
-    }
-
-    if (reduceMotion) {
-      draw(0);
-      return;
-    }
-    function loop(ts) {
-      draw(ts);
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-  }
-
-  var galaxyCanvas = document.getElementById('galaxy');
-  if (galaxyCanvas) makeGalaxy(galaxyCanvas);
-
   /* ---------- donut chart ---------- */
   var donut = document.getElementById('donut');
   if (donut) {
@@ -1433,4 +1317,790 @@
     else if (e.key === 'ArrowRight') showGalleryImage(1);
   });
 })();
+</script>
+
+<script type="module">
+/* ---------- hero laser-flow field (React Bits "LaserFlow", adapted to vanilla JS) ---------- */
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+var LASER_VERT = `
+precision highp float;
+attribute vec3 position;
+void main(){
+  gl_Position = vec4(position, 1.0);
+}
+`;
+
+var LASER_FRAG = `
+#ifdef GL_ES
+#extension GL_OES_standard_derivatives : enable
+#endif
+precision highp float;
+precision mediump int;
+
+uniform float iTime;
+uniform vec3 iResolution;
+uniform vec4 iMouse;
+uniform float uWispDensity;
+uniform float uTiltScale;
+uniform float uFlowTime;
+uniform float uFogTime;
+uniform float uBeamXFrac;
+uniform float uBeamYFrac;
+uniform float uFlowSpeed;
+uniform float uVLenFactor;
+uniform float uHLenFactor;
+uniform float uFogIntensity;
+uniform float uFogScale;
+uniform float uWSpeed;
+uniform float uWIntensity;
+uniform float uFlowStrength;
+uniform float uDecay;
+uniform float uFalloffStart;
+uniform float uFogFallSpeed;
+uniform vec3 uColor;
+uniform float uFade;
+
+#define PI 3.14159265359
+#define TWO_PI 6.28318530718
+#define EPS 1e-6
+#define EDGE_SOFT (DT_LOCAL*4.0)
+#define DT_LOCAL 0.0038
+#define TAP_RADIUS 6
+#define R_H 150.0
+#define R_V 150.0
+#define FLARE_HEIGHT 16.0
+#define FLARE_AMOUNT 8.0
+#define FLARE_EXP 2.0
+#define TOP_FADE_START 0.1
+#define TOP_FADE_EXP 1.0
+#define FLOW_PERIOD 0.5
+#define FLOW_SHARPNESS 1.5
+
+#define W_BASE_X 1.5
+#define W_LAYER_GAP 0.25
+#define W_LANES 10
+#define W_SIDE_DECAY 0.5
+#define W_HALF 0.01
+#define W_AA 0.15
+#define W_CELL 20.0
+#define W_SEG_MIN 0.01
+#define W_SEG_MAX 0.55
+#define W_CURVE_AMOUNT 15.0
+#define W_CURVE_RANGE (FLARE_HEIGHT - 3.0)
+#define W_BOTTOM_EXP 10.0
+
+#define FOG_ON 1
+#define FOG_CONTRAST 1.2
+#define FOG_SPEED_U 0.1
+#define FOG_SPEED_V -0.1
+#define FOG_OCTAVES 5
+#define FOG_BOTTOM_BIAS 0.8
+#define FOG_TILT_TO_MOUSE 0.05
+#define FOG_TILT_DEADZONE 0.01
+#define FOG_TILT_MAX_X 0.35
+#define FOG_TILT_SHAPE 1.5
+#define FOG_BEAM_MIN 0.0
+#define FOG_BEAM_MAX 0.75
+#define FOG_MASK_GAMMA 0.5
+#define FOG_EXPAND_SHAPE 12.2
+#define FOG_EDGE_MIX 0.5
+
+#define HFOG_EDGE_START 0.20
+#define HFOG_EDGE_END 0.98
+#define HFOG_EDGE_GAMMA 1.4
+#define HFOG_Y_RADIUS 25.0
+#define HFOG_Y_SOFT 60.0
+
+#define EDGE_X0 0.22
+#define EDGE_X1 0.995
+#define EDGE_X_GAMMA 1.25
+#define EDGE_LUMA_T0 0.0
+#define EDGE_LUMA_T1 2.0
+#define DITHER_STRENGTH 1.0
+
+    float g(float x){return x<=0.00031308?12.92*x:1.055*pow(x,1.0/2.4)-0.055;}
+    float bs(vec2 p,vec2 q,float powr){
+        float d=distance(p,q),f=powr*uFalloffStart,r=(f*f)/(d*d+EPS);
+        return powr*min(1.0,r);
+    }
+    float bsa(vec2 p,vec2 q,float powr,vec2 s){
+        vec2 d=p-q; float dd=(d.x*d.x)/(s.x*s.x)+(d.y*d.y)/(s.y*s.y),f=powr*uFalloffStart,r=(f*f)/(dd+EPS);
+        return powr*min(1.0,r);
+    }
+    float tri01(float x){float f=fract(x);return 1.0-abs(f*2.0-1.0);}
+    float tauWf(float t,float tmin,float tmax){float a=smoothstep(tmin,tmin+EDGE_SOFT,t),b=1.0-smoothstep(tmax-EDGE_SOFT,tmax,t);return max(0.0,a*b);}
+    float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+34.123);return fract(p.x*p.y);}
+    float vnoise(vec2 p){
+        vec2 i=floor(p),f=fract(p);
+        float a=h21(i),b=h21(i+vec2(1,0)),c=h21(i+vec2(0,1)),d=h21(i+vec2(1,1));
+        vec2 u=f*f*(3.0-2.0*f);
+        return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
+    }
+    float fbm2(vec2 p){
+        float v=0.0,amp=0.6; mat2 m=mat2(0.86,0.5,-0.5,0.86);
+        for(int i=0;i<FOG_OCTAVES;++i){v+=amp*vnoise(p); p=m*p*2.03+17.1; amp*=0.52;}
+        return v;
+    }
+    float rGate(float x,float l){float a=smoothstep(0.0,W_AA,x),b=1.0-smoothstep(l,l+W_AA,x);return max(0.0,a*b);}
+    float flareY(float y){float t=clamp(1.0-(clamp(y,0.0,FLARE_HEIGHT)/max(FLARE_HEIGHT,EPS)),0.0,1.0);return pow(t,FLARE_EXP);}
+
+    float vWisps(vec2 uv,float topF){
+    float y=uv.y,yf=(y+uFlowTime*uWSpeed)/W_CELL;
+    float dRaw=clamp(uWispDensity,0.0,2.0),d=dRaw<=0.0?1.0:dRaw;
+    float lanesF=floor(float(W_LANES)*min(d,1.0)+0.5);
+    int lanes=int(max(1.0,lanesF));
+    float sp=min(d,1.0),ep=max(d-1.0,0.0);
+    float fm=flareY(max(y,0.0)),rm=clamp(1.0-(y/max(W_CURVE_RANGE,EPS)),0.0,1.0),cm=fm*rm;
+    const float G=0.05; float xS=1.0+(FLARE_AMOUNT*W_CURVE_AMOUNT*G)*cm;
+    float sPix=clamp(y/R_V,0.0,1.0),bGain=pow(1.0-sPix,W_BOTTOM_EXP),sum=0.0;
+    for(int s=0;s<2;++s){
+        float sgn=s==0?-1.0:1.0;
+        for(int i=0;i<W_LANES;++i){
+            if(i>=lanes) break;
+            float off=W_BASE_X+float(i)*W_LAYER_GAP,xc=sgn*(off*xS);
+            float dx=abs(uv.x-xc),lat=1.0-smoothstep(W_HALF,W_HALF+W_AA,dx),amp=exp(-off*W_SIDE_DECAY);
+            float seed=h21(vec2(off,sgn*17.0)),yf2=yf+seed*7.0,ci=floor(yf2),fy=fract(yf2);
+            float seg=mix(W_SEG_MIN,W_SEG_MAX,h21(vec2(ci,off*2.3)));
+            float spR=h21(vec2(ci,off+sgn*31.0)),seg1=rGate(fy,seg)*step(spR,sp);
+            if(ep>0.0){float spR2=h21(vec2(ci*3.1+7.0,off*5.3+sgn*13.0)); float f2=fract(fy+0.5); seg1+=rGate(f2,seg*0.9)*step(spR2,ep);}
+            sum+=amp*lat*seg1;
+        }
+    }
+    float span=smoothstep(-3.0,0.0,y)*(1.0-smoothstep(R_V-6.0,R_V,y));
+    return uWIntensity*sum*topF*bGain*span;
+}
+
+void mainImage(out vec4 fc,in vec2 frag){
+    vec2 C=iResolution.xy*.5; float invW=1.0/max(C.x,1.0);
+    vec2 sc=(512.0/iResolution.xy)*.4;
+    vec2 uv=(frag-C)*sc,off=vec2(uBeamXFrac*iResolution.x*sc.x,uBeamYFrac*iResolution.y*sc.y);
+    vec2 uvc = uv - off;
+    float a=0.0,b=0.0;
+    float basePhase=1.5*PI+uDecay*.5; float tauMin=basePhase-uDecay; float tauMax=basePhase;
+    float cx=clamp(uvc.x/(R_H*uHLenFactor),-1.0,1.0),tH=clamp(TWO_PI-acos(cx),tauMin,tauMax);
+    for(int k=-TAP_RADIUS;k<=TAP_RADIUS;++k){
+        float tu=tH+float(k)*DT_LOCAL,wt=tauWf(tu,tauMin,tauMax); if(wt<=0.0) continue;
+        float spd=max(abs(sin(tu)),0.02),u=clamp((basePhase-tu)/max(uDecay,EPS),0.0,1.0),env=pow(1.0-abs(u*2.0-1.0),0.8);
+        vec2 p=vec2((R_H*uHLenFactor)*cos(tu),0.0);
+        a+=wt*bs(uvc,p,env*spd);
+    }
+    float yPix=uvc.y,cy=clamp(-yPix/(R_V*uVLenFactor),-1.0,1.0),tV=clamp(TWO_PI-acos(cy),tauMin,tauMax);
+    for(int k=-TAP_RADIUS;k<=TAP_RADIUS;++k){
+        float tu=tV+float(k)*DT_LOCAL,wt=tauWf(tu,tauMin,tauMax); if(wt<=0.0) continue;
+        float yb=(-R_V)*cos(tu),s=clamp(yb/R_V,0.0,1.0),spd=max(abs(sin(tu)),0.02);
+        float env=pow(1.0-s,0.6)*spd;
+        float cap=1.0-smoothstep(TOP_FADE_START,1.0,s); cap=pow(cap,TOP_FADE_EXP); env*=cap;
+        float ph=s/max(FLOW_PERIOD,EPS)+uFlowTime*uFlowSpeed;
+        float fl=pow(tri01(ph),FLOW_SHARPNESS);
+        env*=mix(1.0-uFlowStrength,1.0,fl);
+        float yp=(-R_V*uVLenFactor)*cos(tu),m=pow(smoothstep(FLARE_HEIGHT,0.0,yp),FLARE_EXP),wx=1.0+FLARE_AMOUNT*m;
+        vec2 sig=vec2(wx,1.0),p=vec2(0.0,yp);
+        float mask=step(0.0,yp);
+        b+=wt*bsa(uvc,p,mask*env,sig);
+    }
+    float sPix=clamp(yPix/R_V,0.0,1.0),topA=pow(1.0-smoothstep(TOP_FADE_START,1.0,sPix),TOP_FADE_EXP);
+    float L=a+b*topA;
+    float w=vWisps(vec2(uvc.x,yPix),topA);
+    float fog=0.0;
+#if FOG_ON
+    vec2 fuv=uvc*uFogScale;
+    float mAct=step(1.0,length(iMouse.xy)),nx=((iMouse.x-C.x)*invW)*mAct;
+    float ax = abs(nx);
+    float stMag = mix(ax, pow(ax, FOG_TILT_SHAPE), 0.35);
+    float st = sign(nx) * stMag * uTiltScale;
+    st = clamp(st, -FOG_TILT_MAX_X, FOG_TILT_MAX_X);
+    vec2 dir=normalize(vec2(st,1.0));
+    fuv+=uFogTime*uFogFallSpeed*dir;
+    vec2 prp=vec2(-dir.y,dir.x);
+    fuv+=prp*(0.08*sin(dot(uvc,prp)*0.08+uFogTime*0.9));
+    float n=fbm2(fuv+vec2(fbm2(fuv+vec2(7.3,2.1)),fbm2(fuv+vec2(-3.7,5.9)))*0.6);
+    n=pow(clamp(n,0.0,1.0),FOG_CONTRAST);
+    float pixW = 1.0 / max(iResolution.y, 1.0);
+#ifdef GL_OES_standard_derivatives
+    float wL = max(fwidth(L), pixW);
+#else
+    float wL = pixW;
+#endif
+    float m0=pow(smoothstep(FOG_BEAM_MIN - wL, FOG_BEAM_MAX + wL, L),FOG_MASK_GAMMA);
+    float bm=1.0-pow(1.0-m0,FOG_EXPAND_SHAPE); bm=mix(bm*m0,bm,FOG_EDGE_MIX);
+    float yP=1.0-smoothstep(HFOG_Y_RADIUS,HFOG_Y_RADIUS+HFOG_Y_SOFT,abs(yPix));
+    float nxF=abs((frag.x-C.x)*invW),hE=1.0-smoothstep(HFOG_EDGE_START,HFOG_EDGE_END,nxF); hE=pow(clamp(hE,0.0,1.0),HFOG_EDGE_GAMMA);
+    float hW=mix(1.0,hE,clamp(yP,0.0,1.0));
+    float bBias=mix(1.0,1.0-sPix,FOG_BOTTOM_BIAS);
+    float browserFogIntensity = uFogIntensity;
+    browserFogIntensity *= 1.8;
+    float radialFade = 1.0 - smoothstep(0.0, 0.7, length(uvc) / 120.0);
+    float safariFog = n * browserFogIntensity * bBias * bm * hW * radialFade;
+    fog = safariFog;
+#endif
+    float LF=L+fog;
+    float dith=(h21(frag)-0.5)*(DITHER_STRENGTH/255.0);
+    float tone=g(LF+w);
+    vec3 col=tone*uColor+dith;
+    float alpha=clamp(g(L+w*0.6)+dith*0.6,0.0,1.0);
+    float nxE=abs((frag.x-C.x)*invW),xF=pow(clamp(1.0-smoothstep(EDGE_X0,EDGE_X1,nxE),0.0,1.0),EDGE_X_GAMMA);
+    float scene=LF+max(0.0,w)*0.5,hi=smoothstep(EDGE_LUMA_T0,EDGE_LUMA_T1,scene);
+    float eM=mix(xF,1.0,hi);
+    col*=eM; alpha*=eM;
+    col*=uFade; alpha*=uFade;
+    fc=vec4(col,alpha);
+}
+
+void main(){
+  vec4 fc;
+  mainImage(fc, gl_FragCoord.xy);
+  gl_FragColor = fc;
+}
+`;
+
+function hexToRGB(hex) {
+  var c = (hex || '#ffffff').trim();
+  if (c[0] === '#') c = c.slice(1);
+  if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+  var n = parseInt(c, 16) || 0xffffff;
+  return { r: ((n >> 16) & 255) / 255, g: ((n >> 8) & 255) / 255, b: (n & 255) / 255 };
+}
+
+function createLaserFlow(mount, opts) {
+  opts = opts || {};
+  var wispDensity = opts.wispDensity != null ? opts.wispDensity : 1;
+  var mouseSmoothTime = opts.mouseSmoothTime != null ? opts.mouseSmoothTime : 0.0;
+  var mouseTiltStrength = opts.mouseTiltStrength != null ? opts.mouseTiltStrength : 0.01;
+  var horizontalBeamOffset = opts.horizontalBeamOffset != null ? opts.horizontalBeamOffset : 0.1;
+  var verticalBeamOffset = opts.verticalBeamOffset != null ? opts.verticalBeamOffset : 0.0;
+  var flowSpeed = opts.flowSpeed != null ? opts.flowSpeed : 0.35;
+  var verticalSizing = opts.verticalSizing != null ? opts.verticalSizing : 2.0;
+  var horizontalSizing = opts.horizontalSizing != null ? opts.horizontalSizing : 0.5;
+  var fogIntensity = opts.fogIntensity != null ? opts.fogIntensity : 0.45;
+  var fogScale = opts.fogScale != null ? opts.fogScale : 0.3;
+  var wispSpeed = opts.wispSpeed != null ? opts.wispSpeed : 15.0;
+  var wispIntensity = opts.wispIntensity != null ? opts.wispIntensity : 5.0;
+  var flowStrength = opts.flowStrength != null ? opts.flowStrength : 0.25;
+  var decay = opts.decay != null ? opts.decay : 1.1;
+  var falloffStart = opts.falloffStart != null ? opts.falloffStart : 1.2;
+  var fogFallSpeed = opts.fogFallSpeed != null ? opts.fogFallSpeed : 0.6;
+  var color = opts.color || '#FF79C6';
+  var reduceMotion = !!opts.reduceMotion;
+  var baseDpr = Math.min(opts.dpr || (window.devicePixelRatio || 1), 2);
+
+  var renderer = new THREE.WebGLRenderer({
+    antialias: false,
+    alpha: false,
+    depth: false,
+    stencil: false,
+    powerPreference: 'high-performance',
+    premultipliedAlpha: false,
+    preserveDrawingBuffer: false,
+    failIfMajorPerformanceCaveat: false,
+    logarithmicDepthBuffer: false
+  });
+  var currentDpr = baseDpr;
+  renderer.setPixelRatio(currentDpr);
+  renderer.shadowMap.enabled = false;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(0x000000, 1);
+
+  var canvas = renderer.domElement;
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.display = 'block';
+  mount.appendChild(canvas);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  var geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
+
+  var rgb = hexToRGB(color);
+  var uniforms = {
+    iTime: { value: 0 },
+    iResolution: { value: new THREE.Vector3(1, 1, 1) },
+    iMouse: { value: new THREE.Vector4(0, 0, 0, 0) },
+    uWispDensity: { value: wispDensity },
+    uTiltScale: { value: mouseTiltStrength },
+    uFlowTime: { value: 0 },
+    uFogTime: { value: 0 },
+    uBeamXFrac: { value: horizontalBeamOffset },
+    uBeamYFrac: { value: verticalBeamOffset },
+    uFlowSpeed: { value: flowSpeed },
+    uVLenFactor: { value: verticalSizing },
+    uHLenFactor: { value: horizontalSizing },
+    uFogIntensity: { value: fogIntensity },
+    uFogScale: { value: fogScale },
+    uWSpeed: { value: wispSpeed },
+    uWIntensity: { value: wispIntensity },
+    uFlowStrength: { value: flowStrength },
+    uDecay: { value: decay },
+    uFalloffStart: { value: falloffStart },
+    uFogFallSpeed: { value: fogFallSpeed },
+    uColor: { value: new THREE.Vector3(rgb.r, rgb.g, rgb.b) },
+    uFade: { value: reduceMotion ? 1 : 0 }
+  };
+
+  var material = new THREE.RawShaderMaterial({
+    vertexShader: LASER_VERT,
+    fragmentShader: LASER_FRAG,
+    uniforms: uniforms,
+    transparent: false,
+    depthTest: false,
+    depthWrite: false,
+    blending: THREE.NormalBlending
+  });
+  var mesh = new THREE.Mesh(geometry, material);
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+
+  function sizeNow() {
+    var w = mount.clientWidth || 1;
+    var h = mount.clientHeight || 1;
+    renderer.setPixelRatio(currentDpr);
+    renderer.setSize(w, h, false);
+    uniforms.iResolution.value.set(w * currentDpr, h * currentDpr, currentDpr);
+  }
+
+  if (reduceMotion) {
+    sizeNow();
+    renderer.render(scene, camera);
+    window.addEventListener('resize', function () { sizeNow(); renderer.render(scene, camera); });
+    return;
+  }
+
+  var rect = null;
+  var paused = false;
+  var inView = true;
+  var resizeRaf = 0;
+
+  function setSizeNow() {
+    sizeNow();
+    rect = canvas.getBoundingClientRect();
+    if (!paused) renderer.render(scene, camera);
+  }
+  function scheduleResize() {
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(setSizeNow);
+  }
+  setSizeNow();
+
+  var ro = new ResizeObserver(scheduleResize);
+  ro.observe(mount);
+  var io = new IntersectionObserver(function (entries) {
+    inView = entries[0] ? entries[0].isIntersecting : true;
+  }, { root: null, threshold: 0 });
+  io.observe(mount);
+  document.addEventListener('visibilitychange', function () { paused = document.hidden; }, { passive: true });
+
+  var mouseTarget = new THREE.Vector2(0, 0);
+  var mouseSmooth = new THREE.Vector2(0, 0);
+  function updateMouse(clientX, clientY) {
+    if (!rect) return;
+    var x = clientX - rect.left, y = clientY - rect.top, ratio = currentDpr;
+    mouseTarget.set(x * ratio, rect.height * ratio - y * ratio);
+  }
+  canvas.addEventListener('pointermove', function (e) { updateMouse(e.clientX, e.clientY); }, { passive: true });
+  canvas.addEventListener('pointerdown', function (e) { updateMouse(e.clientX, e.clientY); }, { passive: true });
+  canvas.addEventListener('pointerenter', function (e) { updateMouse(e.clientX, e.clientY); }, { passive: true });
+  canvas.addEventListener('pointerleave', function () { mouseTarget.set(0, 0); }, { passive: true });
+  canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); paused = true; }, false);
+  canvas.addEventListener('webglcontextrestored', function () { paused = false; scheduleResize(); }, false);
+
+  var clock = new THREE.Clock();
+  var prevTime = 0, fade = 0, hasFaded = false;
+  var fpsSamples = [], lastFpsCheck = performance.now(), emaDt = 16.7, lastDprChange = 0;
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  function adjustDprIfNeeded(now) {
+    if (now - lastFpsCheck < 750) return;
+    if (fpsSamples.length === 0) { lastFpsCheck = now; return; }
+    var avgFps = fpsSamples.reduce(function (a, b) { return a + b; }, 0) / fpsSamples.length;
+    var next = currentDpr;
+    if (avgFps < 50) next = clamp(currentDpr * 0.85, 0.6, baseDpr);
+    else if (avgFps > 58 && currentDpr < baseDpr) next = clamp(currentDpr * 1.1, 0.6, baseDpr);
+    if (Math.abs(next - currentDpr) > 0.01 && now - lastDprChange > 2000) {
+      currentDpr = next;
+      lastDprChange = now;
+      setSizeNow();
+    }
+    fpsSamples = [];
+    lastFpsCheck = now;
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (paused || !inView) return;
+    var t = clock.getElapsedTime();
+    var dt = Math.max(0, t - prevTime);
+    prevTime = t;
+    emaDt = emaDt * 0.9 + (dt * 1000) * 0.1;
+    fpsSamples.push(1000 / Math.max(1, emaDt));
+    uniforms.iTime.value = t;
+    var cdt = Math.min(0.033, Math.max(0.001, dt));
+    uniforms.uFlowTime.value += cdt;
+    uniforms.uFogTime.value += cdt;
+    if (!hasFaded) {
+      fade = Math.min(1, fade + cdt / 1.0);
+      uniforms.uFade.value = fade;
+      if (fade >= 1) hasFaded = true;
+    }
+    var tau = Math.max(1e-3, mouseSmoothTime);
+    mouseSmooth.lerp(mouseTarget, 1 - Math.exp(-cdt / tau));
+    uniforms.iMouse.value.set(mouseSmooth.x, mouseSmooth.y, 0, 0);
+    renderer.render(scene, camera);
+    adjustDprIfNeeded(performance.now());
+  }
+  animate();
+}
+
+var galaxyMount = document.getElementById('galaxy');
+if (galaxyMount) {
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  createLaserFlow(galaxyMount, {
+    color: '#8b7bff',
+    horizontalBeamOffset: 0.26,
+    verticalBeamOffset: -0.05,
+    horizontalSizing: 1.0,
+    verticalSizing: 2.1,
+    wispDensity: 1.4,
+    wispSpeed: 10,
+    wispIntensity: 3.6,
+    flowSpeed: 0.3,
+    flowStrength: 0.25,
+    fogIntensity: 0.32,
+    fogScale: 0.32,
+    fogFallSpeed: 0.5,
+    decay: 1.15,
+    falloffStart: 1.2,
+    mouseTiltStrength: 0.012,
+    mouseSmoothTime: 0.15,
+    reduceMotion: prefersReducedMotion
+  });
+}
+</script>
+
+<script type="module">
+/* ---------- hero starfield (React Bits "Galaxy", adapted to vanilla JS, layered above LaserFlow) ---------- */
+import { Renderer, Program, Mesh, Color, Triangle } from 'https://cdn.jsdelivr.net/npm/ogl@1.0.11/src/index.js';
+
+var GALAXY_VERT = `
+attribute vec2 uv;
+attribute vec2 position;
+
+varying vec2 vUv;
+
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 0, 1);
+}
+`;
+
+var GALAXY_FRAG = `
+precision highp float;
+
+uniform float uTime;
+uniform vec3 uResolution;
+uniform vec2 uFocal;
+uniform vec2 uRotation;
+uniform float uStarSpeed;
+uniform float uDensity;
+uniform float uHueShift;
+uniform float uSpeed;
+uniform vec2 uMouse;
+uniform float uGlowIntensity;
+uniform float uSaturation;
+uniform bool uMouseRepulsion;
+uniform float uTwinkleIntensity;
+uniform float uRotationSpeed;
+uniform float uRepulsionStrength;
+uniform float uMouseActiveFactor;
+uniform float uAutoCenterRepulsion;
+uniform bool uTransparent;
+
+varying vec2 vUv;
+
+#define NUM_LAYER 4.0
+#define STAR_COLOR_CUTOFF 0.2
+#define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
+#define PERIOD 3.0
+
+float Hash21(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+float tri(float x) {
+  return abs(fract(x) * 2.0 - 1.0);
+}
+
+float tris(float x) {
+  float t = fract(x);
+  return 1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0));
+}
+
+float trisn(float x) {
+  float t = fract(x);
+  return 2.0 * (1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0))) - 1.0;
+}
+
+vec3 hsv2rgb(vec3 c) {
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+float Star(vec2 uv, float flare) {
+  float d = length(uv);
+  float m = (0.05 * uGlowIntensity) / d;
+  float rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+  m += rays * flare * uGlowIntensity;
+  uv *= MAT45;
+  rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+  m += rays * 0.3 * flare * uGlowIntensity;
+  m *= smoothstep(1.0, 0.2, d);
+  return m;
+}
+
+vec3 StarLayer(vec2 uv) {
+  vec3 col = vec3(0.0);
+
+  vec2 gv = fract(uv) - 0.5;
+  vec2 id = floor(uv);
+
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 offset = vec2(float(x), float(y));
+      vec2 si = id + vec2(float(x), float(y));
+      float seed = Hash21(si);
+      float size = fract(seed * 345.32);
+      float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));
+      float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
+
+      float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;
+      float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;
+      float grn = min(red, blu) * seed;
+      vec3 base = vec3(red, grn, blu);
+
+      float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
+      hue = fract(hue + uHueShift / 360.0);
+      float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
+      float val = max(max(base.r, base.g), base.b);
+      base = hsv2rgb(vec3(hue, sat, val));
+
+      vec2 pad = vec2(tris(seed * 34.0 + uTime * uSpeed / 10.0), tris(seed * 38.0 + uTime * uSpeed / 30.0)) - 0.5;
+
+      float star = Star(gv - offset - pad, flareSize);
+      vec3 color = base;
+
+      float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;
+      twinkle = mix(1.0, twinkle, uTwinkleIntensity);
+      star *= twinkle;
+
+      col += star * size * color;
+    }
+  }
+
+  return col;
+}
+
+void main() {
+  vec2 focalPx = uFocal * uResolution.xy;
+  vec2 uv = (vUv * uResolution.xy - focalPx) / uResolution.y;
+
+  vec2 mouseNorm = uMouse - vec2(0.5);
+
+  if (uAutoCenterRepulsion > 0.0) {
+    vec2 centerUV = vec2(0.0, 0.0);
+    float centerDist = length(uv - centerUV);
+    vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));
+    uv += repulsion * 0.05;
+  } else if (uMouseRepulsion) {
+    vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
+    float mouseDist = length(uv - mousePosUV);
+    vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
+    uv += repulsion * 0.05 * uMouseActiveFactor;
+  } else {
+    vec2 mouseOffset = mouseNorm * 0.1 * uMouseActiveFactor;
+    uv += mouseOffset;
+  }
+
+  float autoRotAngle = uTime * uRotationSpeed;
+  mat2 autoRot = mat2(cos(autoRotAngle), -sin(autoRotAngle), sin(autoRotAngle), cos(autoRotAngle));
+  uv = autoRot * uv;
+
+  uv = mat2(uRotation.x, -uRotation.y, uRotation.y, uRotation.x) * uv;
+
+  vec3 col = vec3(0.0);
+
+  for (float i = 0.0; i < 1.0; i += 1.0 / NUM_LAYER) {
+    float depth = fract(i + uStarSpeed * uSpeed);
+    float scale = mix(20.0 * uDensity, 0.5 * uDensity, depth);
+    float fade = depth * smoothstep(1.0, 0.9, depth);
+    col += StarLayer(uv * scale + i * 453.32) * fade;
+  }
+
+  if (uTransparent) {
+    float alpha = length(col);
+    alpha = smoothstep(0.0, 0.3, alpha);
+    alpha = min(alpha, 1.0);
+    gl_FragColor = vec4(col, alpha);
+  } else {
+    gl_FragColor = vec4(col, 1.0);
+  }
+}
+`;
+
+function createGalaxy(mount, opts) {
+  opts = opts || {};
+  var focal = opts.focal || [0.5, 0.5];
+  var rotation = opts.rotation || [1.0, 0.0];
+  var starSpeed = opts.starSpeed != null ? opts.starSpeed : 0.5;
+  var density = opts.density != null ? opts.density : 1;
+  var hueShift = opts.hueShift != null ? opts.hueShift : 140;
+  var disableAnimation = !!opts.disableAnimation;
+  var speed = opts.speed != null ? opts.speed : 1.0;
+  var mouseInteraction = opts.mouseInteraction !== false;
+  var glowIntensity = opts.glowIntensity != null ? opts.glowIntensity : 0.3;
+  var saturation = opts.saturation != null ? opts.saturation : 0.0;
+  var mouseRepulsion = opts.mouseRepulsion !== false;
+  var repulsionStrength = opts.repulsionStrength != null ? opts.repulsionStrength : 2;
+  var twinkleIntensity = opts.twinkleIntensity != null ? opts.twinkleIntensity : 0.3;
+  var rotationSpeed = opts.rotationSpeed != null ? opts.rotationSpeed : 0.1;
+  var autoCenterRepulsion = opts.autoCenterRepulsion != null ? opts.autoCenterRepulsion : 0;
+  var transparent = opts.transparent !== false;
+  var reduceMotion = !!opts.reduceMotion;
+
+  var renderer = new Renderer({
+    alpha: transparent,
+    premultipliedAlpha: false,
+    dpr: Math.min(window.devicePixelRatio || 1, 2)
+  });
+  var gl = renderer.gl;
+
+  if (transparent) {
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(0, 0, 0, 0);
+  } else {
+    gl.clearColor(0, 0, 0, 1);
+  }
+
+  var program;
+
+  function resize() {
+    renderer.setSize(mount.offsetWidth, mount.offsetHeight);
+    if (program) {
+      program.uniforms.uResolution.value = new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+    }
+  }
+
+  var geometry = new Triangle(gl);
+  var smoothMousePos = { x: 0.5, y: 0.5 };
+  var targetMousePos = { x: 0.5, y: 0.5 };
+  var smoothMouseActive = 0.0;
+  var targetMouseActive = 0.0;
+
+  program = new Program(gl, {
+    vertex: GALAXY_VERT,
+    fragment: GALAXY_FRAG,
+    uniforms: {
+      uTime: { value: 0 },
+      uResolution: { value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
+      uFocal: { value: new Float32Array(focal) },
+      uRotation: { value: new Float32Array(rotation) },
+      uStarSpeed: { value: starSpeed },
+      uDensity: { value: density },
+      uHueShift: { value: hueShift },
+      uSpeed: { value: speed },
+      uMouse: { value: new Float32Array([smoothMousePos.x, smoothMousePos.y]) },
+      uGlowIntensity: { value: glowIntensity },
+      uSaturation: { value: saturation },
+      uMouseRepulsion: { value: mouseRepulsion },
+      uTwinkleIntensity: { value: twinkleIntensity },
+      uRotationSpeed: { value: rotationSpeed },
+      uRepulsionStrength: { value: repulsionStrength },
+      uMouseActiveFactor: { value: 0.0 },
+      uAutoCenterRepulsion: { value: autoCenterRepulsion },
+      uTransparent: { value: transparent }
+    }
+  });
+
+  var mesh = new Mesh(gl, { geometry: geometry, program: program });
+
+  mount.appendChild(gl.canvas);
+  resize();
+
+  if (reduceMotion) {
+    renderer.render({ scene: mesh });
+    window.addEventListener('resize', function () { resize(); renderer.render({ scene: mesh }); });
+    return;
+  }
+
+  window.addEventListener('resize', resize, false);
+  var ro = new ResizeObserver(resize);
+  ro.observe(mount);
+
+  var inView = true;
+  var io = new IntersectionObserver(function (entries) {
+    inView = entries[0] ? entries[0].isIntersecting : true;
+  }, { root: null, threshold: 0 });
+  io.observe(mount);
+
+  var paused = false;
+  document.addEventListener('visibilitychange', function () { paused = document.hidden; }, { passive: true });
+
+  function handleMouseMove(e) {
+    var rect = mount.getBoundingClientRect();
+    targetMousePos.x = (e.clientX - rect.left) / rect.width;
+    targetMousePos.y = 1.0 - (e.clientY - rect.top) / rect.height;
+    targetMouseActive = 1.0;
+  }
+  function handleMouseLeave() { targetMouseActive = 0.0; }
+  if (mouseInteraction) {
+    mount.addEventListener('mousemove', handleMouseMove);
+    mount.addEventListener('mouseleave', handleMouseLeave);
+  }
+
+  var animateId;
+  function update(t) {
+    animateId = requestAnimationFrame(update);
+    if (paused || !inView) return;
+    if (!disableAnimation) {
+      program.uniforms.uTime.value = t * 0.001;
+      program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
+    }
+
+    var lerpFactor = 0.05;
+    smoothMousePos.x += (targetMousePos.x - smoothMousePos.x) * lerpFactor;
+    smoothMousePos.y += (targetMousePos.y - smoothMousePos.y) * lerpFactor;
+    smoothMouseActive += (targetMouseActive - smoothMouseActive) * lerpFactor;
+
+    program.uniforms.uMouse.value[0] = smoothMousePos.x;
+    program.uniforms.uMouse.value[1] = smoothMousePos.y;
+    program.uniforms.uMouseActiveFactor.value = smoothMouseActive;
+
+    renderer.render({ scene: mesh });
+  }
+  animateId = requestAnimationFrame(update);
+}
+
+var starfieldMount = document.getElementById('starfield');
+if (starfieldMount) {
+  var prefersReducedMotionStars = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  createGalaxy(starfieldMount, {
+    focal: [0.5, 0.42],
+    rotation: [1.0, 0.0],
+    starSpeed: 0.35,
+    density: 0.7,
+    hueShift: 260,
+    speed: 0.5,
+    mouseInteraction: false,
+    mouseRepulsion: false,
+    glowIntensity: 0.28,
+    saturation: 0.55,
+    twinkleIntensity: 0.4,
+    rotationSpeed: 0.045,
+    transparent: true,
+    reduceMotion: prefersReducedMotionStars
+  });
+}
 </script>

@@ -1,0 +1,1514 @@
+<meta charset="UTF-8">
+<title>DANCERS' ALLEY — Regina Wu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0512;
+    --ink-2: #170a1c;
+    --ink-3: #20102a;
+    --paper: #f3ecfb;
+    --mute: #9186ac;
+    --hair: rgba(243, 236, 251, 0.12);
+    --pink: #ff2fb0;
+    --pink-deep: #c21789;
+    --pink-ink: #2b0a1e;
+    --lilac: #e6b8ff;
+    --violet: #7b5cff;
+    --cyan: #48d9d0;
+    --radius: 28px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--pink); color: var(--pink-ink); }
+  a { color: inherit; }
+
+  .display { font-family: 'Unbounded', 'Manrope', -apple-system, 'PingFang SC', sans-serif; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- nav ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 32px;
+    background: linear-gradient(to bottom, rgba(10,5,18,0.92), rgba(10,5,18,0.55) 70%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  .nav-mark {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .nav-back {
+    font-size: 14px;
+    color: var(--mute);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nav-back:hover, .nav-back:focus-visible { color: var(--paper); }
+  .nav-back:focus-visible { outline: 2px solid var(--pink); outline-offset: 4px; border-radius: 4px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 40%;
+    filter: saturate(1.05) brightness(0.85);
+  }
+  .hero-veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, var(--ink) 0%, rgba(10,5,18,0.82) 22%, rgba(10,5,18,0.36) 46%, rgba(10,5,18,0.08) 64%, rgba(10,5,18,0) 78%),
+      linear-gradient(200deg, rgba(10,5,18,0.6) 0%, rgba(10,5,18,0) 40%);
+  }
+  .hero-blob {
+    position: absolute;
+    border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%;
+    filter: blur(48px);
+    opacity: 0.32;
+    animation: blobmorph 9s ease-in-out infinite;
+    z-index: 1;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-width: 0;
+    padding-top: 40px;
+    padding-bottom: 56px;
+  }
+  .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 28px;
+    max-width: 100%;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pink);
+    box-shadow: 0 0 12px 2px var(--pink);
+  }
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: clamp(52px, 10vw, 124px);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    background: linear-gradient(100deg, #ffffff 0%, #ffd6f2 18%, #b8168a 34%, #ffffff 52%, #f7a8de 68%, #ffffff 86%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: chrome-flow 9s linear infinite;
+  }
+  @keyframes chrome-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 260% 50%; }
+  }
+  .hero-tagline-big {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: clamp(19px, 2.4vw, 26px);
+    color: var(--paper);
+    margin: 22px 0 0;
+  }
+  .hero-tagline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 18px;
+  }
+  .hero-tagline {
+    margin-top: 0;
+    flex: 1 1 30ch;
+    max-width: 62ch;
+    font-size: clamp(16px, 2vw, 18px);
+    color: var(--paper);
+    text-wrap: balance;
+  }
+  .hero-tagline strong { color: var(--lilac); font-weight: 700; }
+  .hero-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-meta div { font-size: 14px; color: var(--mute); }
+  .hero-meta strong {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    color: var(--paper);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- section shell ---------- */
+  section { position: relative; padding: 108px 0; }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 3.6vw, 42px);
+    margin: 0;
+    text-wrap: balance;
+    color: #ffc7ec;
+  }
+  .section-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin: 10px 0 0;
+    font-weight: 700;
+  }
+  .section-head p {
+    max-width: 46ch;
+    color: var(--mute);
+    margin: 0;
+    font-size: 15px;
+  }
+  .lede {
+    max-width: 80ch;
+    color: var(--paper);
+    font-size: clamp(17px, 1.8vw, 20px);
+    text-wrap: balance;
+  }
+
+  .overview-row {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .overview-row .lede { max-width: none; }
+  .overview-image-card img {
+    width: 100%;
+    display: block;
+    filter: drop-shadow(0 18px 40px rgba(0,0,0,0.45));
+  }
+
+  .overview-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: stretch;
+    margin-top: 40px;
+  }
+  .overview-map-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .overview-map-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 40px rgba(0,0,0,0.45));
+    display: block;
+  }
+
+  .specs-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--hair);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .specs-row div { background: var(--ink-2); padding: 26px 24px; flex: 1; }
+  .specs-row strong {
+    display: block;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    color: var(--pink);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .specs-row span { color: var(--mute); font-size: 14px; }
+
+  .hmw {
+    margin: 40px 0 0;
+    padding: 36px 40px;
+    border: 1px solid var(--hair);
+    border-top: 4px solid var(--pink);
+    background: var(--ink-2);
+    border-radius: var(--radius);
+    text-align: center;
+  }
+  .hmw p {
+    margin: 0;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: clamp(19px, 2.4vw, 25px);
+    line-height: 1.45;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+  .hmw span { color: var(--pink); }
+  .hmw cite { display: block; margin-top: 14px; font-style: normal; font-size: 13px; color: var(--mute); }
+
+  /* ---------- persona ---------- */
+  .persona {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 32px;
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: var(--radius);
+    padding: 36px;
+    align-items: stretch;
+  }
+  .persona-id {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .persona-photo {
+    width: 100%;
+    max-width: 220px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: 50% 22%;
+    border-radius: 18px;
+    border: 1px solid var(--hair);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    margin-bottom: 18px;
+    display: block;
+  }
+  .persona-id h3 { font-family: 'Unbounded', sans-serif; font-size: 20px; margin: 0 0 4px; color: #ffc7ec; }
+  .persona-id p { margin: 0; color: var(--mute); font-size: 13.5px; }
+  .persona-quote {
+    margin: 16px 0 0 0;
+    margin-top: auto;
+    padding: 14px 16px;
+    border-left: 3px solid var(--pink);
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--paper);
+  }
+  .persona-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 28px;
+  }
+  .persona-cols h4 { font-family: 'Unbounded', sans-serif; font-size: 13px; color: var(--pink); margin: 0 0 10px; letter-spacing: 0.03em; }
+  .persona-cols ul { margin: 0; padding: 0 0 0 16px; color: var(--mute); font-size: 14px; }
+  .persona-cols li { margin-bottom: 6px; }
+
+  /* ---------- ethics ---------- */
+  .ethics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .ethics-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 20px;
+    padding: 28px 26px;
+  }
+  .ethics-card h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 15px;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper);
+  }
+  .ethics-card h3::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 10px 1px var(--pink); flex: 0 0 auto; }
+  .ethics-card p { margin: 0; color: var(--mute); font-size: 14px; }
+
+  /* ---------- concept sections ---------- */
+  .concept-statement {
+    border: 1px solid var(--hair);
+    border-left: 4px solid var(--pink);
+    background: var(--ink-2);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 32px 36px;
+    margin-bottom: 48px;
+  }
+  .concept-statement p { margin: 0; color: var(--paper); font-size: 15.5px; max-width: 80ch; }
+  .concept-statement strong { color: #ffc7ec; }
+
+  .process-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .process-step {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 20px;
+    padding: 24px 22px;
+  }
+  .process-step .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,47,176,0.14);
+    border: 1px solid rgba(255,47,176,0.4);
+    color: #ffc7ec;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .process-step h4 { font-family: 'Unbounded', sans-serif; font-size: 14.5px; margin: 0 0 8px; color: var(--paper); }
+  .process-step p { margin: 0; color: var(--mute); font-size: 13.5px; }
+
+  .insight-callout {
+    margin: 12px 0 44px;
+    padding: 24px 28px;
+    border-radius: 18px;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 70%);
+    border: 1px solid var(--hair);
+    font-size: 15px;
+    color: var(--paper);
+    max-width: 82ch;
+  }
+  .insight-callout strong { color: var(--pink); }
+
+  .still-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 44px;
+  }
+  .still-card {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 20px;
+    padding: 8px 8px 6px;
+    cursor: zoom-in;
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
+  }
+  .still-card:hover, .still-card:focus-within { transform: translateY(-4px); border-color: rgba(255,47,176,0.4); }
+  .still-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; border-radius: 14px; background: #000; }
+  .still-card.tall img { aspect-ratio: 9/16; object-fit: cover; }
+  .still-card figcaption { margin: 12px 4px 10px; font-size: 12.5px; color: var(--mute); }
+  .still-card .sc-scene { display: block; color: var(--paper); font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 12px 0 48px;
+  }
+  .stat-tile {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 20px;
+    padding: 26px 22px;
+    text-align: center;
+  }
+  .stat-tile .num {
+    display: block;
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 3.4vw, 38px);
+    color: var(--pink);
+    margin-bottom: 8px;
+  }
+  .stat-tile .label { font-size: 13px; color: var(--mute); }
+
+  .mode-callout {
+    margin: 0;
+    padding: 22px 26px;
+    border: 1px dashed rgba(255,47,176,0.55);
+    border-radius: 18px;
+    background: rgba(255,47,176,0.06);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #ffb3e0;
+  }
+  .mode-callout strong { color: var(--pink); font-weight: 700; }
+
+  /* ---------- storyboard + user journey (mirrors Figma layout) ---------- */
+  .block-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: #ffc7ec;
+    margin: 0 0 18px;
+  }
+
+  .journey-table {
+    border: 1px solid var(--hair);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .journey-row {
+    display: grid;
+    grid-template-columns: 168px 1fr 1fr 1fr;
+    border-top: 1px solid var(--hair);
+  }
+  .journey-row:first-child { border-top: none; }
+  .journey-row.is-head {
+    background: linear-gradient(100deg, var(--pink-deep), var(--pink));
+  }
+  .journey-row.is-head div {
+    color: #fff;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 20px;
+  }
+  .journey-row div {
+    padding: 18px 20px;
+    background: var(--ink-2);
+    color: var(--mute);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .journey-row .stage {
+    background: var(--ink);
+    color: var(--pink);
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .journey-row .emotion { color: var(--lilac); font-style: italic; }
+
+  .storyboard-track { display: flex; flex-direction: column; gap: 22px; }
+  .storyboard-row { display: flex; align-items: stretch; gap: 18px; }
+  .storyboard-row.has-callout { align-items: center; }
+  .storyboard-row.has-callout .storyboard-steps { flex: 0 0 200px; }
+  .storyboard-row.has-callout .mode-callout { flex: 1; min-width: 0; }
+  .storyboard-rail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 30px;
+  }
+  .storyboard-rail .bar {
+    width: 4px;
+    align-self: stretch;
+    border-radius: 100px;
+    background: rgba(255,47,176,0.2);
+  }
+  .storyboard-rail .rail-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    color: var(--pink);
+    white-space: nowrap;
+  }
+  .storyboard-steps {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(160px, 1fr);
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .storyboard-steps.standalone { grid-auto-columns: minmax(150px, 1fr); }
+  .storyboard-step {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .storyboard-step .tag {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 11px;
+    border: 1px dashed rgba(255,47,176,0.5);
+    border-radius: 100px;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--pink);
+    white-space: nowrap;
+  }
+  .storyboard-step p { margin: 0; font-size: 11.8px; line-height: 1.55; color: var(--mute); }
+  .storyboard-step img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    background: #000;
+    cursor: zoom-in;
+  }
+
+  .solution-board {
+    margin: 48px 0 0;
+    border: 1px solid var(--hair);
+    border-radius: 30px;
+    padding: 28px;
+    background:
+      radial-gradient(circle at top right, rgba(255,47,176,0.18), transparent 34%),
+      linear-gradient(140deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .solution-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .solution-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(24px, 3vw, 32px);
+    margin: 4px 0 0;
+    color: #ffc7ec;
+  }
+  .solution-caption {
+    margin: 0;
+    color: var(--pink);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .solution-grid {
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .solution-panel {
+    border: 1px solid var(--hair);
+    border-radius: 22px;
+    padding: 24px;
+    background: var(--ink-2);
+  }
+  .solution-panel h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    margin: 0 0 12px;
+    color: #ffc7ec;
+  }
+  .solution-quote {
+    margin: 0 0 16px;
+    color: var(--paper);
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  .solution-quote strong { color: var(--pink); }
+  .solution-interface-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .interface-card {
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 70%);
+    display: flex;
+    flex-direction: column;
+  }
+  .interface-card img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+    background: #000;
+  }
+  .interface-copy {
+    padding: 18px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .interface-copy h4 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    margin: 0;
+    color: #ffc7ec;
+  }
+  .interface-copy p {
+    margin: 0;
+    color: var(--paper);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .interface-copy ul {
+    margin: 0;
+    padding-left: 16px;
+    color: var(--mute);
+    font-size: 12.6px;
+    line-height: 1.6;
+  }
+  .interface-copy li { margin-bottom: 6px; }
+
+  /* ---------- team ---------- */
+  .team-table {
+    border: 1px solid var(--hair);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .team-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-top: 1px solid var(--hair);
+  }
+  .team-row:first-child { border-top: none; }
+  .team-row.is-me { background: rgba(255,47,176,0.07); }
+  .team-name {
+    padding: 22px 24px;
+    background: var(--ink-2);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .team-name .tag {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pink-ink);
+    background: var(--pink);
+    padding: 3px 8px;
+    border-radius: 100px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+  }
+  .team-desc { padding: 22px 24px; color: var(--mute); font-size: 14px; background: var(--ink); }
+  .team-row.is-me .team-desc { color: var(--paper); }
+
+  /* ---------- cta / footer ---------- */
+  .cta {
+    border-radius: 40px;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink-2) 60%);
+    border: 1px solid var(--hair);
+    padding: 80px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: '';
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--violet), transparent 70%);
+    top: -220px;
+    right: -160px;
+    opacity: 0.35;
+    filter: blur(10px);
+  }
+  .cta h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 4.4vw, 48px);
+    margin: 0 0 18px;
+    position: relative;
+    text-wrap: balance;
+    color: #ffc7ec;
+  }
+  .cta p {
+    color: var(--mute);
+    max-width: 44ch;
+    margin: 0 auto 36px;
+    position: relative;
+    font-size: 15.5px;
+  }
+  .blob-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--pink);
+    color: var(--pink-ink);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 18px 34px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(255,47,176,0);
+    animation: blobbtn 6s ease-in-out infinite;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .blob-btn:hover, .blob-btn:focus-visible {
+    box-shadow: 0 0 46px 6px rgba(255,47,176,0.45);
+    transform: translateY(-2px);
+  }
+  .blob-btn:focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; }
+  @keyframes blobbtn {
+    0%, 100% { border-radius: 61% 39% 44% 56% / 49% 46% 54% 51%; }
+    50% { border-radius: 42% 58% 61% 39% / 56% 40% 60% 44%; }
+  }
+  @keyframes blobmorph {
+    0%, 100% { border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%; }
+    33% { border-radius: 63% 37% 41% 59% / 51% 61% 39% 49%; }
+    66% { border-radius: 38% 62% 55% 45% / 63% 42% 58% 37%; }
+  }
+
+  footer {
+    padding: 44px 0 60px;
+    border-top: 1px solid var(--hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--mute);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer .fmono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+  /* ---------- lightbox ---------- */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,5,18,0.86);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+  .lightbox.is-open { opacity: 1; visibility: visible; }
+  .lightbox-figure {
+    position: relative;
+    width: 68vw;
+    height: 68vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.96);
+    transition: transform 0.25s ease;
+  }
+  .lightbox.is-open .lightbox-figure { transform: scale(1); }
+  .lightbox-figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+    border: 1px solid var(--hair);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    background: var(--ink-2);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    color: var(--paper);
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .lightbox-close:hover, .lightbox-close:focus-visible { border-color: rgba(255,47,176,0.5); transform: scale(1.06); }
+  .lightbox-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -34px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--mute);
+  }
+
+  @media (max-width: 900px) {
+    .overview-row { grid-template-columns: 1fr; }
+    .overview-bottom { grid-template-columns: 1fr; }
+    .persona { grid-template-columns: 1fr; }
+    .persona-cols { grid-template-columns: 1fr; }
+    .ethics-grid { grid-template-columns: 1fr; }
+    .process-strip { grid-template-columns: repeat(2, 1fr); }
+    .still-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+    .team-row { grid-template-columns: 1fr; }
+    .cta { padding: 56px 26px; }
+    .journey-row { grid-template-columns: 1fr; }
+    .journey-row.is-head { display: none; }
+    .journey-row > div:not(.stage)::before {
+      display: block;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: 4px;
+    }
+    .journey-row > div:nth-child(2)::before { content: "User Action"; }
+    .journey-row > div:nth-child(3)::before { content: "Environment Response"; }
+    .journey-row > div:nth-child(4)::before { content: "User Emotion"; }
+  }
+
+  @media (max-width: 520px) {
+    .still-grid { grid-template-columns: 1fr; }
+    .process-strip { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: clamp(30px, 10vw, 60px); }
+    .storyboard-row { flex-direction: column; }
+    .storyboard-rail { flex-direction: row; flex: 0 0 auto; }
+    .storyboard-rail .rail-label { writing-mode: horizontal-tb; transform: none; }
+    .storyboard-rail .bar { width: auto; height: 3px; flex: 1; align-self: center; }
+    .storyboard-row.has-callout .storyboard-steps { flex: 1 1 auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1, .blob-btn, .hero-blob { animation: none !important; }
+  }
+</style>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="nav-mark display">OOZE.</div>
+  <a class="nav-back" href="ooze-liquid-acid.html#work">← Back to Portfolio</a>
+</header>
+
+<section class="hero">
+  <img class="hero-media" src="assets/dancers/hero-dancers-alley-facade.jpg" alt="The illuminated Dancers' Alley canopy at ICC Sydney, Darling Harbour at dusk, its huge LED screen displaying pink and orange dancer illustrations and the words DANCERS ALLEY.">
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="hero-blob" aria-hidden="true" style="width:220px; height:220px; top:12%; right:10%; background:var(--violet);"></div>
+  <div class="hero-blob" aria-hidden="true" style="width:140px; height:140px; top:30%; right:24%; background:var(--cyan); animation-delay:-3s;"></div>
+  <div class="hero-inner wrap">
+    <div class="eyebrow">IDEA9202 · Interaction Design, Tutorial 3 · Group Project</div>
+    <h1>Dancers' Alley</h1>
+    <p class="hero-tagline-big display">What Lies Across &amp; Sydney Cypher Map</p>
+    <div class="hero-tagline-row">
+      <p class="hero-tagline">Two connected interactive installations for Sydney's <strong>Dancers' Alley</strong> — one indoor, one outdoor — that turn a commuter shortcut into a space where street dancers and university students can be seen, feel safe, and belong.</p>
+    </div>
+    <div class="hero-meta">
+      <div>
+        <strong>My Role</strong>
+        Ideation · Storyboard illustration (both concepts) · User-testing data logging &amp; analysis · Ethics documentation
+      </div>
+      <div>
+        <strong>Team</strong>
+        4 designers — IDEA9202 Tutorial 3, Group 1
+      </div>
+      <div>
+        <strong>Deliverable</strong>
+        2 hi-fi interactive prototypes · 2 rounds of user testing · 14 participants
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="overview" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Overview</h2>
+      <p class="section-subtitle">Why Dancers' Alley</p>
+    </div>
+  </div>
+  <div class="overview-row">
+    <p class="lede">Dancers' Alley, beneath the ICC Sydney bridge in Darling Harbour, is already an informal rehearsal ground for the city's street dance community and a daily shortcut for university students from nearby campuses — two groups research shows are disproportionately at risk of anxiety, body-image pressure and social isolation. Rather than design one generic wellbeing app, we split the response across the site's two natural zones: an enclosed bridge underpass and an open plaza. <strong>What Lies Across</strong> uses the underpass for a private, mirror-based moment of self-expression; <strong>Sydney Cypher Map</strong> uses the plaza to turn a solo freestyle into a public, celebrated mark on a shared digital map of the city.</p>
+    <div class="overview-image-card">
+      <img src="assets/dancers/overview-image69.png" alt="Infographic titled 'Target audience and common struggles': overlapping circles for University Students and Pre-professional Dancers, sharing perfectionism, body image and stigma, with 30–40% of 16–24 year olds experiencing a mental disorder and 70–84% of pre-professional dancers showing signs of eating disorders or body dysmorphia.">
+    </div>
+  </div>
+  <div class="hmw">
+    <p>How might we support emerging street dancers to strengthen their <span>self-image</span> and sense of <span>belonging</span> in shared urban spaces?</p>
+  </div>
+  <div class="overview-bottom">
+    <div class="overview-map-side">
+      <img src="assets/dancers/overview-map.png" alt="Illustrated circular map of the Dancers' Alley site at Darling Harbour, showing the ICC Sydney bridge and Theatre, Darling Quarter Shopping Mall, the Exhibition Centre light rail station, and the main road, with an orange arrow marking the bridge underpass.">
+    </div>
+    <div class="specs-row">
+      <div><strong>Site</strong><span>Dancers' Alley, Darling Harbour</span></div>
+      <div><strong>Participants</strong><span>14, across 2 testing rounds</span></div>
+      <div><strong>Methods</strong><span>Wizard of Oz · Think Aloud · Observation</span></div>
+      <div><strong>Build</strong><span>p5.js · JavaScript · physical + digital mirrors</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="research" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Research &amp; Persona</h2>
+      <p class="section-subtitle">From a broad mental-health brief to a specific one</p>
+    </div>
+    <p>A CRAAP test and MoSCoW matrix on candidate suburbs, then a proto-persona that proved too broad, led us to narrow the brief to street dancers specifically.</p>
+  </div>
+  <div class="persona">
+    <div class="persona-id">
+      <img class="persona-photo" src="assets/dancers/persona-angela.jpg" alt="Portrait of Angela Huang, the persona representing an emerging street dancer and UTS student.">
+      <h3 class="display">Angela Huang, 24</h3>
+      <p>UTS student · Second-generation East Asian · Pre-professional street dancer</p>
+      <p class="persona-quote">"I'm learning to be seen without feeling like I have to be perfect. I want to find my people and feel safe enough to be myself while I get better."</p>
+    </div>
+    <div class="persona-cols">
+      <div>
+        <h4>Goals</h4>
+        <ul>
+          <li>Build belonging and an authentic identity as a street dancer — "not just a studio kid"</li>
+          <li>Grow self-esteem through small public wins</li>
+          <li>Practise safely in public without unwanted filming</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Pain Points</h4>
+        <ul>
+          <li>Compares herself to advanced dancers; hesitates to join group performance</li>
+          <li>Wants to be seen but dreads unsolicited filming or comments</li>
+          <li>Family favours academic success over dance as identity</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Motivations</h4>
+        <ul>
+          <li>A crew-like circle that values growth over perfection</li>
+          <li>Uses dance as a mental reset, not a performance to be judged</li>
+          <li>Contribute gently — playlist curation, small jams — without needing the spotlight</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Opportunities</h4>
+        <ul>
+          <li>Softer lighting zones, groove-first prompts, "first-timer friendly" corners</li>
+          <li>Playful "ask before you film" signage and an audience code of respect</li>
+          <li>Community activities that encourage cyphers, freestyle, battles</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ethics" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Ethical Considerations</h2>
+      <p class="section-subtitle">Rhetorical design for indoor and outdoor</p>
+    </div>
+  </div>
+  <div class="ethics-grid">
+    <div class="ethics-card">
+      <h3 class="display">Ethos</h3>
+      <p>Continuous power use and hardware waste from screens and sensors; privacy risk if user images are stored or broadcast without consent; installing on the bridge can disrupt its normal pedestrian use. We reframed street dance as a community art form worth that trade-off, not urban disturbance.</p>
+    </div>
+    <div class="ethics-card">
+      <h3 class="display">Pathos</h3>
+      <p>Public performance can heighten social pressure and imposter syndrome if the prompts feel judgmental, and repeated digital validation risks turning growth into gamification. Done well, it strengthens peer bonds and builds empathy between diverse, previously separate user groups.</p>
+    </div>
+    <div class="ethics-card">
+      <h3 class="display">Logos</h3>
+      <p>Technical breakdowns and unclear framing of "daily challenges" can confuse or frustrate users; residents, authorities and dancers of different skill levels have competing claims on the same public space. The response needed clear, logical design for safe, inclusive interaction.</p>
+    </div>
+  </div>
+</section>
+
+<section id="wla" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>What Lies Across</h2>
+      <p class="section-subtitle">Indoor · Reflection through movement</p>
+    </div>
+    <p>A closed, mirror-lined stretch of the underpass, reframed as a place to feel first and articulate meaning only if you choose to.</p>
+  </div>
+
+  <div class="concept-statement">
+    <p>The concept <strong>reframes reflection from self-conscious judgment to embodied presence.</strong> Instead of asking dancers to analyse themselves, the space lets them first feel, and only later choose whether to articulate meaning. By combining real mirrors with a digital counterpart, the installation acknowledges both the technical discipline of the dancer and the emotional, imaginative self that exists beneath form. "What Lies Across" is not a question to be answered intellectually, but through movement.</p>
+  </div>
+
+  <div class="process-strip">
+    <div class="process-step">
+      <span class="num display">01</span>
+      <h4>Low-fi prototype</h4>
+      <p>Cardboard and A4 paper, titled "Who Am I?", tested to probe the overall concept and provoke self-reflection.</p>
+    </div>
+    <div class="process-step">
+      <span class="num display">02</span>
+      <h4>Tutor feedback</h4>
+      <p>Too vague, lacked playfulness; the persona was too broad and needed sharper research.</p>
+    </div>
+    <div class="process-step">
+      <span class="num display">03</span>
+      <h4>Hi-fi v1 · 14 participants</h4>
+      <p>Physical + digital mirrors built in p5.js, post-it prompts and pencils, tested in a closed "dance corridor" room.</p>
+    </div>
+    <div class="process-step">
+      <span class="num display">04</span>
+      <h4>Refinement</h4>
+      <p>Real-time (not delayed) motion tracking, personal music choice, and a QR-code note wall to protect privacy.</p>
+    </div>
+  </div>
+
+  <div class="insight-callout">
+    <strong>Key insight:</strong> despite enjoying the testing phase, dancers don't seek reflection — they dance to forget. The act of dancing is itself their form of reflection. So the refined installation stopped prompting analytical self-reflection, and instead let <strong>reflection be felt through movement</strong>.
+  </div>
+
+  <h3 class="block-title display">User journey</h3>
+  <div class="journey-table">
+    <div class="journey-row is-head">
+      <div>Stage</div>
+      <div>User Action</div>
+      <div>Environment Response</div>
+      <div>User Emotion</div>
+    </div>
+    <div class="journey-row">
+      <div class="stage">Passive Observation</div>
+      <div>Users walk under the bridge and see messages projected beneath it.</div>
+      <div>Dynamic phrases from past participants appear in motion.</div>
+      <div class="emotion">Curiosity, inspiration, anticipation.</div>
+    </div>
+    <div class="journey-row">
+      <div class="stage">Discovery</div>
+      <div>Users approach the bridge and notice the setup with mirrors and signage.</div>
+      <div>Space invites exploration and movement.</div>
+      <div class="emotion">Interest, openness, readiness to engage.</div>
+    </div>
+    <div class="journey-row">
+      <div class="stage">Selection</div>
+      <div>User interacts with the iPad to choose duration, participants and music.</div>
+      <div>UI confirms selection and prepares the projection.</div>
+      <div class="emotion">Excitement, control, motivation.</div>
+    </div>
+    <div class="journey-row">
+      <div class="stage">Interaction</div>
+      <div>Individual or group dances in front of the digital mirror.</div>
+      <div>Real-time visuals respond to their movement.</div>
+      <div class="emotion">Joy, expression, connection.</div>
+    </div>
+    <div class="journey-row">
+      <div class="stage">Reflection</div>
+      <div>After dancing, the user scans a QR code to complete "Dancing made me feel…"</div>
+      <div>Their message joins others under the bridge.</div>
+      <div class="emotion">Fulfilment, belonging, contribution.</div>
+    </div>
+  </div>
+
+  <h3 class="block-title display">Storyboard</h3>
+  <div class="storyboard-steps standalone" style="margin-bottom: 48px;">
+    <div class="storyboard-step">
+      <img src="assets/dancers/wla-story-1.jpg" alt="Storyboard sketch: palm trees frame a bridge wall reading 'What does dancing make you feel?' with 0,098,174 responses received and sample answers listed beneath.">
+      <span class="tag">Passive</span>
+      <p>Visitors view messages appearing beneath the bridge, displaying reflections from previous participants.</p>
+    </div>
+    <div class="storyboard-step">
+      <img src="assets/dancers/wla-story-2.jpg" alt="Storyboard sketch of a 'Level 2' signage kiosk in the bridge corridor, branded 'What Lies Across' with 'Select Your Dance Style' and 'Leave a Message' options.">
+      <span class="tag">Passive</span>
+      <p>As users walk up to the bridge, they see the setup: a 7 × 20 m space featuring digital and physical mirrors for dancing.</p>
+    </div>
+    <div class="storyboard-step">
+      <img src="assets/dancers/wla-story-3.jpg" alt="Storyboard sketch of a person approaching a kiosk screen displaying the 'What Lies Across' title in the corridor.">
+      <span class="tag">Individual</span>
+      <p>Users approach the iPad to select their preferred duration, number of participants, and music.</p>
+    </div>
+    <div class="storyboard-step">
+      <img src="assets/dancers/wla-story-4.jpg" alt="Storyboard sketch of two people dancing in front of a large purple digital mirror screen that renders their movement as glowing red and teal skeletal figures.">
+      <span class="tag">Individual or Group</span>
+      <p>Participants stand before the digital mirror and dance, using the space to freely express themselves through movement.</p>
+    </div>
+    <div class="storyboard-step">
+      <img src="assets/dancers/wla-story-5.jpg" alt="Storyboard sketch of a closing screen reading 'Thanks for participating! Now, let your soul speak!' with a QR code inviting users to share how dancing made them feel.">
+      <span class="tag">Individual or Group</span>
+      <p>After dancing, users scan a QR code to complete the phrase "Dancing made me feel...", adding their message beneath the bridge.</p>
+    </div>
+  </div>
+
+  <div class="still-grid">
+    <figure class="still-card">
+      <img src="assets/dancers/wla-lofi-cardboard.jpg" alt="Low-fidelity cardboard prototype of What Lies Across: a small figurine stands before a fold of holographic mirror card, with iridescent paper footprints leading toward it.">
+      <figcaption><span class="sc-scene">Low-fi Prototype</span>Cardboard, holographic mirror card and paper footprints</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/dancers/wla-hifi-booth.jpg" alt="A participant, seen in silhouette, writes a note inside a dark hi-fi prototype booth lit in magenta, beneath text reading 'What is something about you that you wish others could see'.">
+      <figcaption><span class="sc-scene">Hi-fi Booth</span>Digital note wall inside the closed dance corridor</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/dancers/wla-mirror-detail.jpg" alt="Close-up of a large LED dot-matrix screen showing a distorted silhouette in red and blue light against a grid of glowing dots.">
+      <figcaption><span class="sc-scene">Digital Mirror Detail</span>Distorting LED wall responding to real-time motion</figcaption>
+    </figure>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-tile"><span class="num display">89%</span><span class="label">of dancers found it fun, expressive and engaging</span></div>
+    <div class="stat-tile"><span class="num display">86%</span><span class="label">overall showed visible enjoyment and playful behaviour</span></div>
+    <div class="stat-tile"><span class="num display">57%</span><span class="label">felt "very free" to move emotionally in the space</span></div>
+    <div class="stat-tile"><span class="num display">0%</span><span class="label">of participants reported not feeling free to move</span></div>
+  </div>
+</section>
+
+<section id="scm" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Sydney Cypher Map</h2>
+      <p class="section-subtitle">Outdoor · Belonging through collective presence</p>
+    </div>
+    <p>An open plaza installation that turns a one-minute freestyle into a permanent, glowing mark on a live map of the community.</p>
+  </div>
+
+  <div class="concept-statement">
+    <p>The Sydney Cypher Map <strong>transforms individual performances into a shared digital artwork,</strong> turning individual expression into visible community presence. By inviting people to move, play, and learn about street dance culture, it makes the space more inclusive and alive — easing imposter syndrome, social stigma, and fear of judgement by showing that every contribution matters.</p>
+  </div>
+
+  <div class="process-strip">
+    <div class="process-step">
+      <span class="num display">01</span>
+      <h4>Hi-fi v1</h4>
+      <p>Five connected elements: QR poster ("Yo! Dancer"), motion-tracked screen, evolving live map, mobile registration, and a marked ground zone.</p>
+    </div>
+    <div class="process-step">
+      <span class="num display">02</span>
+      <h4>Round 1 · 7 participants</h4>
+      <p>Non-dancers didn't identify with "dancer" on the QR poster; "cypher" read as unfamiliar jargon to newcomers.</p>
+    </div>
+    <div class="process-step">
+      <span class="num display">03</span>
+      <h4>Iteration to v2</h4>
+      <p>Reworded to the inclusive "Let's dance!", aligned the map visual to the screen, added a circular boundary and a 30-second timer.</p>
+    </div>
+    <div class="process-step">
+      <span class="num display">04</span>
+      <h4>Round 2 · 3 participants</h4>
+      <p>Cohesive visual identity landed well; users wanted adjustable timing and music that matched their own style.</p>
+    </div>
+  </div>
+
+  <div class="still-grid">
+    <figure class="still-card">
+      <img src="assets/dancers/scm-testing-qr-scan.jpg" alt="A participant kneels to scan a 'Yo! Dancer' QR code poster on the floor, in front of a large screen displaying the glowing pink Sydney Cypher Map artwork.">
+      <figcaption><span class="sc-scene">Round 1 Testing</span>Scanning the QR poster to join the Cypher Map</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/dancers/scm-testing-dance-tracking.jpg" alt="A participant dances inside a taped-off zone on the studio floor, facing a large screen where her motion is rendered as a colourful abstract particle figure.">
+      <figcaption><span class="sc-scene">Round 2 Testing</span>Motion-tracked freestyle inside the marked zone</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/dancers/scm-testing-kaleidoscope.jpg" alt="A participant seen from behind, dancing in front of a large screen showing a bright, glowing abstract figure built from scattered geometric shapes and particles.">
+      <figcaption><span class="sc-scene">Interactive Digital Art</span>Movement rendered as abstract, glowing shapes</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/dancers/scm-storyboard-solo.jpg" alt="Concept render of a dancer freestyling inside a circular floor marking in a plaza, with her motion projected as a glowing skeletal figure on a huge digital screen above.">
+      <figcaption><span class="sc-scene">Individual Mode</span>Concept render of the final outdoor installation</figcaption>
+    </figure>
+    <figure class="still-card">
+      <img src="assets/dancers/scm-storyboard-duo.jpg" alt="Concept render of two dancers facing off inside the circular zone, each rendered as a differently coloured glowing skeletal figure on the screen above, forming a shared cypher.">
+      <figcaption><span class="sc-scene">Multiple Mode</span>Two dancers assigned distinct colours in a shared cypher</figcaption>
+    </figure>
+    <figure class="still-card tall">
+      <img src="assets/dancers/scm-ui-home.jpg" alt="Mobile UI: the Sydney Cypher Map sign-up screen, 'Let's dance!' with a live join counter, an About the Activity panel, and optional postcode and email fields.">
+      <figcaption><span class="sc-scene">Mobile Sign-up</span>Duration, style and music selection before dancing</figcaption>
+    </figure>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-tile"><span class="num display">+1.5</span><span class="label">point increase in sense of belonging, pre- to post-test</span></div>
+    <div class="stat-tile"><span class="num display">100%</span><span class="label">of participants rated the cypher challenge 3+ on encouraging practice</span></div>
+    <div class="stat-tile"><span class="num display">4.3/5</span><span class="label">average engagement score across round 2 testing</span></div>
+    <div class="stat-tile"><span class="num display">3</span><span class="label">interaction modes — passive, individual, multiple</span></div>
+  </div>
+
+  <h3 class="block-title display">Storyboard</h3>
+  <div class="storyboard-track">
+    <div class="storyboard-row has-callout">
+      <div class="storyboard-rail"><span class="bar" aria-hidden="true"></span><span class="rail-label display">Passive</span><span class="bar" aria-hidden="true"></span></div>
+      <div class="storyboard-steps">
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-passive.jpg" alt="Storyboard sketch of a glowing pink cypher-map artwork floating above the alley's shopfronts, with a QR-code poster mounted on the wall below.">
+          <span class="tag">Passive</span>
+          <p>When no one is dancing, City Cypher Map rests in passive mode — displaying a live map, pulsating visuals that hint at the hidden rhythms of the street dance community, together with QR-code posters inviting passers-by to step forward and awaken it.</p>
+        </div>
+      </div>
+      <div class="mode-callout">
+        The Sydney Cypher Map operates in <strong>three modes</strong> to suit different scenarios: a <strong>passive mode</strong> displaying ambient visuals when no one is dancing, an <strong>individual mode</strong> that responds to an individual's movement with light and sound feedback, and a <strong>multiple participant mode</strong> that amplifies group energy and interaction.
+      </div>
+    </div>
+    <div class="storyboard-row">
+      <div class="storyboard-rail"><span class="bar" aria-hidden="true"></span><span class="rail-label display">Individual</span><span class="bar" aria-hidden="true"></span></div>
+      <div class="storyboard-steps">
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-individual-1.jpg" alt="Storyboard sketch of a person crouching to scan a purple QR-code floor decal in the plaza.">
+          <span class="tag">Step 1</span>
+          <p>When a dancer steps into Dancers' Alley, they begin by scanning a QR code placed along the path and on the wall beneath the digital screen.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-individual-2.jpg" alt="Storyboard sketch of a phone screen titled '1. Scan QR Code', showing the Sydney Cypher Map sign-up page with an About the Activity panel and a Record Video button.">
+          <span class="tag">Step 2</span>
+          <p>The link opens a simple website that explains the challenge and guides them through a few quick steps to personalise their session.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-individual-3.jpg" alt="Storyboard sketch of a dancer standing inside a glowing pink circular floor zone as a large screen above counts down 'Starting In 5'.">
+          <span class="tag">Step 3</span>
+          <p>Once ready, the dancer steps into the marked circle, inspired by the open cypher tradition where the community forms a ring of support.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-individual-4.jpg" alt="Storyboard sketch of a dancer freestyling inside the glowing pink circle while the screen above renders her motion as a bright magenta figure.">
+          <span class="tag">Step 4</span>
+          <p>As they move, the system tracks their motion and transforms it into a digital echo of their energy projected live on the screen. On their phone, they can see the timer and opt out at any time.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-individual-5.jpg" alt="Storyboard sketch of the dancer standing in the circle as the glowing cypher-map artwork, now with a new star mark added, reappears on the screen above.">
+          <span class="tag">Step 5</span>
+          <p>When the dance ends, the Sydney Cypher Map reappears, highlighting the participant's location and adding a new glowing mark.</p>
+        </div>
+      </div>
+    </div>
+    <div class="storyboard-row">
+      <div class="storyboard-rail"><span class="bar" aria-hidden="true"></span><span class="rail-label display">Multiple</span><span class="bar" aria-hidden="true"></span></div>
+      <div class="storyboard-steps">
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-multiple-1.jpg" alt="Storyboard sketch of two people crouching together to scan the same purple QR-code floor decal in the plaza.">
+          <span class="tag">Step 1</span>
+          <p>When multiple people participate, one participant scans and registers on behalf of the group.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-multiple-2.jpg" alt="Storyboard sketch of a hand holding a phone showing 'Choice of Song', 'Choice of Style' and 'Your time is XX min' options, with a glowing pink map on the screen behind.">
+          <span class="tag">Step 2</span>
+          <p>One participant customises the session with their chosen music, style and duration.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-multiple-3.jpg" alt="Storyboard sketch of two dancers facing each other in the glowing pink circle, each rendered above in a different scribble colour — cyan and violet.">
+          <span class="tag">Step 3</span>
+          <p>As the cypher begins, the system recognises each dancer's motion and assigns them a unique colour. The visuals intertwine and pulse together, forming a living artwork of connection.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-multiple-4.jpg" alt="Close-up storyboard sketch of the glowing pink cypher-map artwork with two new star marks added, one for each participant.">
+          <span class="tag">Step 4</span>
+          <p>Similar to individual mode, when the dance ends, the Sydney Cypher Map reappears, highlighting all participants' locations by adding new glowing marks.</p>
+        </div>
+        <div class="storyboard-step">
+          <img src="assets/dancers/scm-story-multiple-5.jpg" alt="Storyboard sketch of a hand holding up a phone with a blank screen, mocking up where a shareable recording of the performance would appear.">
+          <span class="tag">Step 5</span>
+          <p>Same as individual mode, if participants choose to opt in their email, they will receive a recording of their performance to keep or share later.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="solution" class="wrap">
+  <div class="solution-board">
+    <div class="solution-head">
+      <div>
+        <p class="section-subtitle">Final design board</p>
+        <h2 class="solution-title display">Design solution</h2>
+      </div>
+      <p class="solution-caption">Sydney Cypher Map · Outdoor · Final design</p>
+    </div>
+
+    <div class="solution-panel">
+      <h3 class="display">Interface moments</h3>
+      <p class="solution-quote">The experience is carried through a small set of interface moments. Each screen is paired with a short set of footnotes so the visuals and the narrative stay connected.</p>
+      <div class="solution-interface-grid">
+        <article class="interface-card">
+          <img src="assets/dancers/scm-ui-home.jpg" alt="Mobile signup interface for the Sydney Cypher Map experience.">
+          <div class="interface-copy">
+            <h4 class="display">Onboarding screen</h4>
+            <p>An inclusive entry point that explains the activity and invites first-time participants in.</p>
+            <ul>
+              <li>“Let’s dance!” keeps the tone playful and low-pressure.</li>
+              <li>Optional postcode and email fields make privacy and consent visible.</li>
+              <li>Simple steps reduce hesitation and support confident participation.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="interface-card">
+          <img src="assets/dancers/wla-ui-get-ready.jpg" alt="Get-ready interface for the indoor movement experience.">
+          <div class="interface-copy">
+            <h4 class="display">Ready state</h4>
+            <p>A calm transition screen that prepares the participant before the experience begins.</p>
+            <ul>
+              <li>Countdown and visible timer create a sense of readiness and control.</li>
+              <li>Music, duration and style choices allow personalisation without pressure.</li>
+              <li>The interface keeps the focus on movement rather than performance.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="interface-card">
+          <img src="assets/dancers/wla-app-title.jpg" alt="App title screen for the movement experience.">
+          <div class="interface-copy">
+            <h4 class="display">Affirmation state</h4>
+            <p>The experience finishes by turning the session into a visible, shared moment of belonging.</p>
+            <ul>
+              <li>Participant count reinforces community impact and collective presence.</li>
+              <li>Visual affirmation helps users feel seen without needing to perform perfectly.</li>
+              <li>Feedback and share options make the experience feel reflective rather than purely transactional.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="team" class="wrap">
+  <div class="section-head">
+    <div>
+      <h2>Team &amp; Contribution</h2>
+      <p class="section-subtitle">IDEA9202 Tutorial 3, Group 1</p>
+    </div>
+    <p>Developed collaboratively — responsibilities were distributed, but the final concept and report were shaped together.</p>
+  </div>
+  <div class="team-table">
+    <div class="team-row is-me">
+      <div class="team-name">Regina Wu <span class="tag">Me</span></div>
+      <div class="team-desc">Collaborated on ideation for the outdoor concept; illustrated all storyboards for both indoor and outdoor concepts; organised and logged all user-testing feedback questionnaires; conducted data analysis and visualisation for testing results; led ethics consideration for both concepts; collaborated on the final report.</div>
+    </div>
+    <div class="team-row">
+      <div class="team-name">Giselle Tuetuekin</div>
+      <div class="team-desc">Developed the indoor concept from low- to high-fidelity prototype; coded interactions in p5.js; recorded and edited video (DJI Pocket 3, Premiere Pro, After Effects visual effects); co-designed the presentation deck in Figma; supported interviews and user testing.</div>
+    </div>
+    <div class="team-row">
+      <div class="team-name">Guanghan Li</div>
+      <div class="team-desc">Built both the outdoor and indoor prototypes; documented and synthesised the full user-testing process; designed the UI and web interfaces; supported filming of the final demo video; edited video and structured the final report.</div>
+    </div>
+    <div class="team-row">
+      <div class="team-name">Yin Ye</div>
+      <div class="team-desc">Refined the user persona and problem space; collaborated on outdoor concept ideation; built the low-fidelity cardboard prototype and a high-fidelity JavaScript prototype; recorded footage on iPhone 15 Pro; designed report slides; facilitated and took notes during testing.</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="cta">
+    <h2 class="display">See more style explorations</h2>
+    <p>Dancers' Alley is one of several directions in my portfolio — from interaction and visual design to AIGC experiments.</p>
+    <a class="blob-btn" href="ooze-liquid-acid.html#work">View Portfolio →</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <div>DANCERS' ALLEY — IDEA9202, Group Project</div>
+    <div class="fmono">2026</div>
+  </footer>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <figure class="lightbox-figure">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close enlarged image">✕</button>
+    <img id="lightboxImg" src="" alt="">
+    <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<script>
+(function () {
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+  var lightboxClose = document.getElementById('lightboxClose');
+  var lastFocused = null;
+
+  function openLightbox(img) {
+    lastFocused = document.activeElement;
+    lightboxImg.src = img.currentSrc || img.src;
+    lightboxImg.alt = img.alt || '';
+    lightboxCaption.textContent = img.alt || '';
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightboxClose.focus();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll('.still-card, .storyboard-step').forEach(function (tile) {
+    var img = tile.querySelector('img');
+    if (!img) return;
+    tile.addEventListener('click', function () { openLightbox(img); });
+  });
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+  });
+})();
+</script>
