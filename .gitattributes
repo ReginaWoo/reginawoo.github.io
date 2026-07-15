@@ -1,3 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+assets/Chaos[[:space:]]Star/Regina_Wu_COMPOSITED[[:space:]]VIDEO[[:space:]]PROJECT.mp4 filter=lfs diff=lfs merge=lfs -text
