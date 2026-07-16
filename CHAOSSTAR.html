@@ -344,6 +344,8 @@
     margin-bottom: 20px;
   }
   .video-frame video { width: 100%; height: auto; display: block; aspect-ratio: 16/9; background: #000; }
+  .video-frame .video-embed { position: relative; width: 100%; padding-top: 56.25%; }
+  .video-frame .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
   .video-caption { color: var(--mute); font-size: 13.5px; margin: 0 0 60px; max-width: 80ch; }
 
   .still-grid {
@@ -677,10 +679,9 @@
   </div>
 
   <div class="video-frame">
-    <video controls playsinline preload="metadata" poster="assets/chaos-star/stills/01-title-card.jpg">
-      <source src="assets/Chaos%20Star/Regina_Wu_COMPOSITED%20VIDEO%20PROJECT.mp4" type="video/mp4">
-      您的浏览器不支持视频播放，请下载后观看。Your browser does not support embedded video.
-    </video>
+    <div class="video-embed">
+      <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116927397631572&bvid=BV1daK36rEST&cid=39994592041&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+    </div>
   </div>
   <p class="video-caption">《乱世巨星》完整成片 · 2:22 · 建议开启声音观看，歌词字幕为中英双语。Full film, 2:22 — best viewed with sound; lyric subtitles run bilingually in Chinese and English.</p>
 
