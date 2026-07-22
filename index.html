@@ -211,6 +211,11 @@
     width: 39px;
     height: 39px;
     color: var(--paper);
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
     transition: color 0.2s ease;
   }
   .hero-meta-icon:hover,
@@ -485,6 +490,81 @@
   @media (prefers-reduced-motion: reduce) {
     .hero h1, .material .glyph, .blob-btn { animation: none !important; }
   }
+
+  /* ---------- resume modal ---------- */
+  .resume-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,6,18,0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .resume-modal-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .resume-modal {
+    background: var(--ink-2);
+    border: 1px solid rgba(243,236,251,0.14);
+    border-radius: 20px;
+    padding: 36px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.25s ease;
+  }
+  .resume-modal-overlay.is-open .resume-modal {
+    transform: translateY(0) scale(1);
+  }
+  .resume-modal h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    color: var(--paper);
+    margin-bottom: 12px;
+  }
+  .resume-modal p {
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(243,236,251,0.75);
+    margin-bottom: 28px;
+  }
+  .resume-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .resume-modal-btn {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 12px 26px;
+    border-radius: 100px;
+    border: 1px solid rgba(243,236,251,0.3);
+    background: transparent;
+    color: var(--paper);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .resume-modal-btn:hover, .resume-modal-btn:focus-visible {
+    border-color: var(--paper);
+  }
+  .resume-modal-btn.primary {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--lime-ink);
+  }
+  .resume-modal-btn.primary:hover, .resume-modal-btn.primary:focus-visible {
+    box-shadow: 0 0 24px 2px rgba(212,255,61,0.4);
+  }
 </style>
 
 <div class="grain" aria-hidden="true"></div>
@@ -511,6 +591,13 @@
       <div><strong>北京 / 远程</strong>工作地点</div>
       <div><strong>接受</strong>2027届秋季校园招聘</div>
       <div class="hero-meta-icons">
+        <button type="button" class="hero-meta-icon" id="resumeIconBtn" aria-label="下载简历" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+            <path d="M14 3v6h6"/>
+            <path d="M8 13h8M8 17h8M8 9h2"/>
+          </svg>
+        </button>
         <a class="hero-meta-icon" href="mailto:reginaw020109@gmail.com" aria-label="Email">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="5" width="18" height="14" rx="2"/>
@@ -648,6 +735,17 @@
 </div>
 
 <div id="popup-scroll-spacer" style="height: 0px;" aria-hidden="true"></div>
+
+<div class="resume-modal-overlay" id="resumeModalOverlay" role="dialog" aria-modal="true" aria-labelledby="resumeModalTitle">
+  <div class="resume-modal">
+    <h3 id="resumeModalTitle">下载简历</h3>
+    <p>是否要下载"吴思燃的简历"？</p>
+    <div class="resume-modal-actions">
+      <button type="button" class="resume-modal-btn" id="resumeModalCancel">取消</button>
+      <a class="resume-modal-btn primary" id="resumeModalDownload" href="assets/resume/吴思燃Regina.pdf" download="吴思燃Regina.pdf">下载</a>
+    </div>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -803,6 +901,42 @@
     mat.addEventListener('mouseleave', closePopup);
     mat.addEventListener('focusin', openPopup);
     mat.addEventListener('focusout', closePopup);
+  });
+})();
+
+(function () {
+  var iconBtn = document.getElementById('resumeIconBtn');
+  var overlay = document.getElementById('resumeModalOverlay');
+  var cancelBtn = document.getElementById('resumeModalCancel');
+  var downloadLink = document.getElementById('resumeModalDownload');
+  if (!iconBtn || !overlay) return;
+
+  var lastFocused = null;
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    overlay.classList.add('is-open');
+    cancelBtn.focus();
+    document.addEventListener('keydown', onKeydown);
+  }
+
+  function closeModal() {
+    overlay.classList.remove('is-open');
+    document.removeEventListener('keydown', onKeydown);
+    if (lastFocused) lastFocused.focus();
+  }
+
+  function onKeydown(e) {
+    if (e.key === 'Escape') closeModal();
+  }
+
+  iconBtn.addEventListener('click', openModal);
+  cancelBtn.addEventListener('click', closeModal);
+  downloadLink.addEventListener('click', function () {
+    closeModal();
+  });
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeModal();
   });
 })();
 </script>

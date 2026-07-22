@@ -95,6 +95,7 @@
     object-fit: cover;
     object-position: 62% 30%;
     filter: saturate(0.95) brightness(0.95);
+    opacity: 0.75;
   }
   .hero-veil {
     position: absolute;
@@ -177,7 +178,7 @@
     flex: 1 1 30ch;
     max-width: 48ch;
     font-size: clamp(16px, 2vw, 18px);
-    color: var(--mute);
+    color: var(--paper);
     text-wrap: balance;
   }
   .hero-tagline strong { color: var(--mint); font-weight: 700; }
@@ -278,6 +279,11 @@
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+  .device-card:first-of-type .device-photo img {
+    transform: translateY(-5%) scale(1.1);
+    transform-origin: top center;
+    object-position: top center;
   }
   .device-badge {
     position: absolute;
@@ -420,11 +426,81 @@
 
   /* ---------- design system ---------- */
   .ds-grid {
-    columns: 3 300px;
-    column-gap: 16px;
     margin-bottom: 32px;
   }
-  .ds-grid .flow-figure { break-inside: avoid; margin-bottom: 16px; }
+  .ds-items {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  .ds-item {
+    border: 1px solid var(--hair);
+    background: var(--ink-2);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .ds-item:hover, .ds-item:focus { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+  .ds-item svg { width: 64px; height: 64px; display:block; }
+  .ds-item .ds-label { font-weight:700; color: var(--paper); font-size: 15px; }
+  @media (max-width: 900px) { .ds-items { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .ds-items { grid-template-columns: 1fr; } }
+
+  /* design-system modal */
+  .ds-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(7,4,13,0.72);
+    opacity:0; visibility:hidden; transition:opacity .2s ease, visibility .2s;
+  }
+  .ds-modal.is-open { opacity:1; visibility:visible; }
+  .ds-modal-box {
+    position: relative;
+    background: var(--ink-2);
+    border:1px solid var(--hair);
+    border-radius: 18px;
+    width: min(900px, 96%);
+    padding: 32px;
+    text-align:center;
+    color: var(--paper);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    max-height: calc(86vh - 32px);
+    overflow-y: auto;
+  }
+  .ds-modal h3 { margin:0 0 16px; font-family:'Unbounded', sans-serif; font-size:24px; }
+  .ds-modal p { margin:0 0 18px; color:var(--mute); }
+  .ds-modal .close { position:absolute; top:18px; right:18px; background:transparent; border:1px solid var(--hair); color:var(--paper); width:36px;height:36px;border-radius:50%; cursor:pointer; }
+  .ds-modal-body {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .ds-modal-body p {
+    margin: 0;
+    color: var(--mute);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+  .ds-modal-body img,
+  .ds-modal-body iframe {
+    width: 100%;
+    max-height: 72vh;
+    object-fit: contain;
+    display: block;
+    margin-top: 0;
+    border-radius: 18px;
+    border: 1px solid var(--hair);
+  }
 
   .signature {
     display: grid;
@@ -671,7 +747,7 @@
 </header>
 
 <section class="hero">
-  <img class="hero-media" src="assets/flightbuddy/hero-watch-tablet.jpg" alt="A parent checks their Apple Watch while a child wears headphones and plays a game on a tablet during a flight.">
+  <img class="hero-media" src="assets/flightbuddy/hero-watch-tablet.png" alt="A parent checks their Apple Watch while a child wears headphones and plays a game on a tablet during a flight.">
   <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-blob" aria-hidden="true" style="width:220px; height:220px; top:14%; right:8%; background:var(--green);"></div>
   <div class="hero-blob" aria-hidden="true" style="width:140px; height:140px; top:32%; right:22%; background:var(--coral); animation-delay:-3s;"></div>
@@ -766,27 +842,37 @@
     <p>Colours, type, icons and components kept consistent across every screen, so the final delivery holds together as one product rather than several one‑off mockups.</p>
   </div>
   <div class="ds-grid">
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/colors.png" alt="Design system colours: foundation palette with primary Lime, secondary Tangerine, Lavender and Berry, function colours, plus greyscale and text colour tokens for light and dark mode.">
-    </figure>
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/type-system.png" alt="Type system: SF Pro Rounded font family with the full heading and body copy scale, from Heading 2xl 54px down to Caption and Label.">
-    </figure>
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/buttons.png" alt="Button system: primary, secondary, tertiary and watch action buttons across light and dark mode, three heights, and normal, pressed and disabled states.">
-    </figure>
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/atoms-components.png" alt="Atoms and molecules: status bars, bottom tab bar and navigation bar, toggle switches, and list item components in light and dark mode.">
-    </figure>
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/avatar-illustrations.png" alt="Avatar and illustration library: character avatars, mood faces, hair and accessory variants, and decorative illustrations.">
-    </figure>
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/layout.png" alt="Layout grids for iPhone, iPad and Apple Watch screen sizes.">
-    </figure>
-    <figure class="flow-figure">
-      <img src="assets/flightbuddy/design-system/iconography.png" alt="Iconography sourced from SF Icons.">
-    </figure>
+    <div class="ds-items" role="list">
+      <button class="ds-item" data-key="colours" aria-haspopup="dialog" role="listitem">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#00c47c"/><circle cx="30" cy="70" r="12" fill="#ffb69a"/><circle cx="70" cy="30" r="10" fill="#c9d0ea"/></svg>
+        <div class="ds-label">Colours</div>
+      </button>
+
+      <button class="ds-item" data-key="type" aria-haspopup="dialog" role="listitem">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="18" width="76" height="12" fill="#bfe9d4"/><rect x="12" y="42" width="60" height="10" fill="#eaa6b1"/><rect x="12" y="64" width="40" height="8" fill="#ffb69a"/></svg>
+        <div class="ds-label">Type System</div>
+      </button>
+
+      <button class="ds-item" data-key="atoms" aria-haspopup="dialog" role="listitem">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><g fill="#cdf3e2"><circle cx="30" cy="35" r="12"/><circle cx="70" cy="35" r="12"/><circle cx="50" cy="65" r="14"/></g></svg>
+        <div class="ds-label">Atom Components</div>
+      </button>
+
+      <button class="ds-item" data-key="avatars" aria-haspopup="dialog" role="listitem">
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="36" r="16" fill="#f3ecfb"/><rect x="18" y="58" width="64" height="20" rx="8" fill="#eaa6b1"/></svg>
+        <div class="ds-label">Avatar &amp; Illustrations</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="ds-modal" id="dsModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="ds-modal-box" role="document">
+      <button class="close" id="dsModalClose" aria-label="Close">✕</button>
+      <h3 id="dsModalTitle">Design System Preview</h3>
+      <div id="dsModalBody" class="ds-modal-body">
+        <p>Tap a card to preview the selected design system section for FlightBuddy.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1054,7 +1140,78 @@
     if (e.target === lightbox) closeLightbox();
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+    if (e.key === 'Escape') {
+      if (document.getElementById('dsModal') && document.getElementById('dsModal').classList.contains('is-open')) {
+        closeDsModal();
+        return;
+      }
+      if (lightbox.classList.contains('is-open')) closeLightbox();
+    }
   });
+
+  // -- Design System modal handlers --
+  var dsModal = document.getElementById('dsModal');
+  var dsModalTitle = document.getElementById('dsModalTitle');
+  var dsModalBody = document.getElementById('dsModalBody');
+  var dsModalClose = document.getElementById('dsModalClose');
+  var dsLastFocused = null;
+
+  function openDsModal(key, label) {
+    dsLastFocused = document.activeElement;
+    if (!dsModal) return;
+    dsModalTitle.textContent = label;
+
+    var contentMap = {
+      colours: {
+        body: '<p>FlightBuddy’s colour system balances calm, approachable tones with clear functional contrast. A deep ink base supports strong hierarchy, while mint, lavender, coral and soft green accents create a friendly travel atmosphere across interactive states, overlays and indicators.</p>' +
+              '<iframe style="border: 1px solid rgba(0,0,0,0.1);" width="100%" height="64vh" src="https://embed.figma.com/design/oFCcpLF8n126HlVarMVKZd/IDEA9105---Interface-Design-High-Fidelity-Design--Copy-?node-id=43-2&embed-host=share" allowfullscreen></iframe>'
+      },
+      type: {
+        body: '<p>The type system is designed for readability on compact mobile screens and supporting documentation. Bold display headings anchor content, while clean body text and supporting labels keep interactions simple and easy to scan.</p>' +
+              '<img src="assets/flightbuddy/design-system/type-system.png" alt="FlightBuddy type system showing font hierarchy and text styles.">'
+      },
+      atoms: {
+        body: '<p>Core atom components demonstrate consistent spacing, shape and interaction affordance. The system includes buttons, cards, fields and icon placements that carry the brand’s light, approachable personality through small UI elements.</p>' +
+              '<img src="assets/flightbuddy/design-system/atoms-components.png" alt="FlightBuddy atom components including buttons and cards.">'
+      },
+      avatars: {
+        body: '<p>Avatars and illustrations add warmth and narrative context to the product. These visuals use soft forms and gentle colour accents to support a family-friendly travel experience without overwhelming the interface.</p>' +
+              '<img src="assets/flightbuddy/design-system/avatar-illustrations.png" alt="FlightBuddy avatar and illustration system examples.">'
+      }
+    };
+
+    var content = contentMap[key] || {
+      body: '<p>Placeholder content for ' + label + '. Content to be added later.</p>'
+    };
+
+    dsModalBody.innerHTML = content.body;
+    dsModal.classList.add('is-open');
+    dsModal.setAttribute('aria-hidden', 'false');
+    if (dsModalClose) dsModalClose.focus();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDsModal() {
+    if (!dsModal) return;
+    dsModal.classList.remove('is-open');
+    dsModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (dsLastFocused) dsLastFocused.focus();
+  }
+
+  document.querySelectorAll('.ds-item').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.getAttribute('data-key');
+      var label = (btn.querySelector('.ds-label') && btn.querySelector('.ds-label').textContent) || key;
+      openDsModal(key,label);
+    });
+  });
+
+  if (dsModalClose) dsModalClose.addEventListener('click', closeDsModal);
+  if (dsModal) {
+    dsModal.addEventListener('click', function(e){
+      if (e.target === dsModal) closeDsModal();
+    });
+  }
+
 })();
 </script>
