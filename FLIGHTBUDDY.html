@@ -570,20 +570,17 @@
 
   .type-doc { display: flex; flex-direction: column; gap: 20px; }
   .type-family-card {
-    background: var(--ink-3);
-    border: 1px solid var(--hair);
     border-radius: 20px;
     padding: 32px 28px;
   }
   .type-family-label {
-    display: block;
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px;
+    margin: 0 0 18px;
+    font-family: 'Unbounded', sans-serif;
     font-weight: 700;
+    font-size: 13px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--mute);
-    margin-bottom: 18px;
+    color: var(--mint);
   }
   .type-family-name {
     margin: 0 0 28px;
@@ -1378,7 +1375,7 @@
       type: {
         body: '<p>The type system is designed for readability on compact mobile screens and supporting documentation. Bold display headings anchor content, while clean body text and supporting labels keep interactions simple and easy to scan.</p>' +
               '<div class="type-doc"><div class="type-family-card">' +
-              '<span class="type-family-label">Font Family</span>' +
+              '<h4 class="type-family-label">Font Family</h4>' +
               '<h5 class="type-family-name">SF Pro Rounded</h5>' +
               '<div class="type-glyphs">' +
               '<p class="type-glyph-row">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</p>' +
