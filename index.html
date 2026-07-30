@@ -549,6 +549,39 @@
     color: var(--paper);
     margin: 8px 0 0;
   }
+  .resume-modal p.modal-message-top {
+    font-size: 13px;
+    color: rgba(243,236,251,0.55);
+    margin: 0 0 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .modal-ig-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin: 20px auto 0;
+    border-radius: 50%;
+    border: 1px solid rgba(243,236,251,0.3);
+    color: var(--paper);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .modal-ig-link svg { width: 26px; height: 26px; }
+  .modal-ig-link:hover, .modal-ig-link:focus-visible {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--lime-ink);
+    transform: scale(1.06);
+  }
+  .resume-modal p.modal-ig-hint {
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(243,236,251,0.6);
+    margin: 14px 0 0;
+  }
   .resume-modal-overlay.is-open .resume-modal {
     transform: translateY(0) scale(1);
   }
@@ -782,8 +815,16 @@
         <path d="M6 6l12 12M18 6L6 18"/>
       </svg>
     </button>
+    <p class="modal-message modal-message-top">还在监修中，敬请期待</p>
     <h3 id="comingSoonModalTitle">其他作品 OTHER WORKS</h3>
-    <p class="modal-message">还在监修中，敬请期待</p>
+    <a class="modal-ig-link" href="https://www.instagram.com/regi.nawoo?igsh=MW4wZ296bHFjczM3dQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="前往Instagram主页预览作品">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <path d="M16 11.37a4 4 0 1 1-7.914 1.174A4 4 0 0 1 16 11.37z"/>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+      </svg>
+    </a>
+    <p class="modal-ig-hint">可以点击进入IG主页进行部分作品预览</p>
   </div>
 </div>
 
