@@ -1,0 +1,881 @@
+<meta charset="UTF-8">
+<title>OW2 — Regina Wu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0612;
+    --ink-2: #150c24;
+    --ink-3: #1d1130;
+    --paper: #f3ecfb;
+    --paper-ink: #1d1130;
+    --mute: #9186ac;
+    --mute-on-paper: #6a5f88;
+    --hair: rgba(243, 236, 251, 0.12);
+    --lime: #d4ff3d;
+    --lime-ink: #17210a;
+    --magenta: #ff3ec4;
+    --magenta-ink: #2b0a1e;
+    --cyan: #48f0e0;
+    --cyan-ink: #06231f;
+    --violet: #7b5cff;
+    --violet-ink: #f3ecfb;
+    --radius: 28px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--lime); color: var(--lime-ink); }
+  a, button { color: inherit; }
+
+  .display { font-family: 'Unbounded', 'Manrope', -apple-system, 'PingFang SC', sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  .en { display: block; font-size: 0.62em; color: var(--mute); font-weight: 400; margin-top: 2px; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 80;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- top bar (About / Title / Share) ---------- */
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    padding: 22px 32px;
+    background: linear-gradient(to bottom, rgba(10,6,18,0.85), transparent);
+  }
+  .top-bar > * { flex: 1; font-size: 14px; }
+  .nav-back { text-align: left; color: var(--mute); text-decoration: none; transition: color 0.2s ease; }
+  .nav-back:hover, .nav-back:focus-visible { color: var(--paper); }
+  .nav-title { text-align: center; font-weight: 800; letter-spacing: 0.02em; }
+  .nav-share {
+    text-align: right;
+    background: none; border: none; cursor: pointer;
+    font-family: 'Manrope', sans-serif; font-size: 14px;
+    color: var(--mute); transition: color 0.2s ease;
+    display: block; margin-left: auto;
+  }
+  .nav-share:hover, .nav-share:focus-visible { color: var(--paper); }
+  .nav-back:focus-visible, .nav-share:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; border-radius: 4px; }
+
+  /* ---------- deck view ---------- */
+  .deck-view {
+    position: relative;
+    min-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 0 60px;
+    overflow: visible;
+  }
+  #deckView.is-expanded {
+    justify-content: flex-start;
+    padding-top: 130px;
+  }
+  .deck-blob {
+    position: fixed;
+    z-index: 0;
+    border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%;
+    filter: blur(90px) saturate(1.4);
+    opacity: 0.55;
+    background: var(--accent, var(--violet));
+    transition: background 0.6s ease;
+    animation: blobmorph 18s ease-in-out infinite;
+  }
+  .deck-blob.b1 { width: 60vw; height: 55vw; max-width: 640px; max-height: 600px; top: -18%; left: -14%; }
+  .deck-blob.b2 { width: 50vw; height: 46vw; max-width: 560px; max-height: 520px; bottom: -20%; right: -12%; animation-delay: -6s; }
+  @keyframes blobmorph {
+    0%, 100% { border-radius: 46% 54% 61% 39% / 45% 39% 61% 55%; transform: translate(0,0) scale(1); }
+    50% { border-radius: 61% 39% 44% 56% / 56% 49% 51% 44%; transform: translate(2%, -3%) scale(1.05); }
+  }
+  .deck-veil {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(ellipse at 50% 50%, rgba(10,6,18,0.05), var(--ink) 82%);
+  }
+
+  .deck-heading {
+    position: relative;
+    z-index: 2;
+    display: none;
+    text-align: center;
+    max-width: 1180px;
+    margin: 0 auto 36px;
+    padding: 0 32px;
+  }
+  #deckView.is-expanded .deck-heading { display: block; }
+  .deck-heading h2 { font-size: clamp(26px, 3.6vw, 38px); margin: 0; }
+  .deck-heading p { font-size: 13px; color: var(--mute); margin: 8px 0 0; }
+
+  .deck-row {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(20px, 5vw, 64px);
+    width: min(1080px, 94vw);
+    margin: 0 auto;
+  }
+  #deckView.is-expanded .deck-row { align-items: flex-start; }
+  #deckView.is-expanded .deck-link { display: none; }
+
+  .deck-cards {
+    position: relative;
+    flex-shrink: 0;
+    width: min(420px, 60vw);
+    height: 420px;
+    perspective: 1600px;
+  }
+  #deckView.is-expanded .deck-cards {
+    position: static;
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    perspective: none;
+    padding-bottom: 40px;
+  }
+  .deck-card {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: var(--paper);
+    color: var(--paper-ink);
+    border: none;
+    text-align: left;
+    cursor: default;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.55s ease;
+  }
+  .deck-card.role-current { transform: rotate(-1.5deg); opacity: 1; z-index: 3; }
+  .deck-card.role-next { transform: rotate(6deg) translateY(10px) scale(0.96); opacity: 0.9; z-index: 2; }
+  .deck-card.role-hidden {
+    transform: rotate(6deg) translateY(10px) scale(0.9);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .deck-card.leaving { transform: rotate(-18deg) translate(-60px, 40px) scale(0.9) !important; opacity: 0 !important; z-index: 4; }
+  .deck-card.no-anim { transition: none !important; }
+  #deckView.is-expanded .deck-card {
+    position: static;
+    inset: auto;
+    transform: none;
+    opacity: 1;
+    z-index: auto;
+    pointer-events: auto;
+    cursor: pointer;
+    min-height: 300px;
+  }
+  #deckView.is-expanded .deck-card:hover,
+  #deckView.is-expanded .deck-card:focus-visible { transform: translateY(-6px); box-shadow: 0 28px 52px rgba(0,0,0,0.38); }
+  #deckView.is-expanded .deck-card:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  #deckView.is-expanded .deck-card .deck-illustration { height: 120px; }
+  #deckView.is-expanded .deck-card .deck-title { font-size: clamp(19px, 2vw, 22px); }
+
+  .deck-tag {
+    display: inline-flex;
+    align-self: flex-start;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 7px 14px;
+    border-radius: 100px;
+    background: var(--accent, var(--violet));
+    color: var(--accent-ink, var(--paper));
+    margin-bottom: 20px;
+  }
+  .deck-title {
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.16;
+    font-weight: 700;
+    margin: 0 0 20px;
+  }
+  .deck-title .en {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.5em;
+    color: var(--mute-on-paper);
+    margin-top: 8px;
+  }
+  .deck-illustration {
+    position: relative;
+    margin-top: auto;
+    height: 150px;
+    border-radius: 16px;
+    background: rgba(29,17,48,0.06);
+    border: 1px solid rgba(29,17,48,0.08);
+    overflow: hidden;
+  }
+  .deck-illustration::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 12px;
+    width: 34px; height: 10px;
+    border-radius: 6px;
+    background: repeating-linear-gradient(to right, rgba(29,17,48,0.25) 0 6px, transparent 6px 12px);
+  }
+  .deck-illustration .shape {
+    position: absolute;
+    opacity: 0.9;
+  }
+  .deck-illustration .shape.circle { width: 56px; height: 56px; border-radius: 50%; background: var(--accent, var(--violet)); top: 30px; left: 26px; }
+  .deck-illustration .shape.triangle {
+    width: 0; height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 52px solid var(--accent, var(--violet));
+    opacity: 0.55;
+    top: 50px; right: 34px;
+  }
+  .deck-illustration .shape.blob {
+    width: 70px; height: 60px;
+    border-radius: 42% 58% 61% 39% / 49% 46% 54% 51%;
+    background: var(--accent, var(--violet));
+    opacity: 0.35;
+    bottom: -18px; left: 40%;
+  }
+
+  .deck-link {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    background: none; border: none; cursor: pointer;
+    font-family: 'Unbounded', 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: clamp(19px, 2.6vw, 26px);
+    line-height: 1.2;
+    color: var(--mute);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--mute);
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.25s ease;
+  }
+  .deck-link-prev { align-items: flex-start; text-align: left; }
+  .deck-link-next { align-items: center; text-align: center; }
+  .deck-link:hover, .deck-link:focus-visible { color: var(--paper); border-color: var(--lime); transform: translateY(-2px); }
+  .deck-link:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+  .deck-link .en { font-size: 0.5em; font-weight: 600; opacity: 0.6; margin-top: 4px; }
+
+  /* ---------- bottom bar ---------- */
+  .bottom-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    padding: 22px 32px;
+    background: linear-gradient(to top, rgba(10,6,18,0.85), transparent);
+  }
+  .bottom-bar > * { flex: 1; font-size: 13px; color: var(--mute); }
+  .bottom-mark { text-align: left; font-family: 'Unbounded', sans-serif; font-weight: 800; }
+  .bottom-note { text-align: right; }
+
+  .grid-toggle {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #000;
+    border: none;
+    border-radius: 100px;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 2;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .grid-toggle:hover { transform: translate(-50%, -50%) translateY(-1px); }
+  .grid-toggle:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  .grid-toggle[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--lime); }
+  .grid-toggle-current {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .grid-toggle-current::before {
+    content: '';
+    width: 12px; height: 12px;
+    border-radius: 4px;
+    background: #000;
+  }
+  .grid-toggle-dots {
+    display: grid;
+    grid-template-columns: repeat(2, 6px);
+    grid-template-rows: repeat(2, 6px);
+    gap: 5px;
+    padding-right: 10px;
+  }
+  .grid-toggle-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--paper); }
+
+  /* ---------- grid open ripple burst ---------- */
+  .grid-ripple {
+    position: fixed;
+    left: 50%;
+    bottom: 42px;
+    width: 0; height: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .ripple-ring {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 10vmax; height: 10vmax;
+    margin-left: -5vmax; margin-top: -5vmax;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+  }
+  .grid-ripple.is-animating .ripple-ring { animation: rippleExpand 0.85s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .ripple-ring.r1 { background: var(--lime); animation-delay: 0s; }
+  .ripple-ring.r2 { background: var(--violet); animation-delay: 0.05s; }
+  .ripple-ring.r3 { background: var(--magenta); animation-delay: 0.1s; }
+  .ripple-ring.r4 { background: var(--cyan); animation-delay: 0.15s; }
+  @keyframes rippleExpand {
+    0% { opacity: 0.95; transform: scale(0); }
+    65% { opacity: 0.7; }
+    100% { opacity: 0; transform: scale(24); }
+  }
+
+  @media (max-width: 900px) {
+    #deckView.is-expanded .deck-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    #deckView.is-expanded .deck-cards { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- detail view ---------- */
+  .detail-view {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .detail-view.is-open { pointer-events: auto; opacity: 1; }
+  .detail-hero {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 42vh;
+    background: var(--accent, var(--violet));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 90px 32px 0;
+    transition: background 0.5s ease;
+  }
+  .detail-tag {
+    display: inline-flex;
+    align-self: flex-start;
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent-ink, var(--paper));
+  }
+  .detail-tag span {
+    background: rgba(255,255,255,0.28);
+    padding: 7px 14px;
+    border-radius: 100px;
+  }
+  .detail-title {
+    max-width: 1180px;
+    margin: 18px auto 0;
+    width: 100%;
+    font-size: clamp(30px, 5vw, 52px);
+    color: var(--accent-ink, var(--paper));
+    line-height: 1.08;
+  }
+  .detail-close {
+    position: absolute;
+    top: 24px; right: 32px;
+    z-index: 3;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(10,6,18,0.35);
+    border: none;
+    color: var(--paper);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .detail-close:hover, .detail-close:focus-visible { background: rgba(10,6,18,0.6); transform: scale(1.08); }
+  .detail-close:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+
+  .detail-sheet {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    top: 26vh;
+    background: var(--ink-2);
+    border-radius: 32px 32px 0 0;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .detail-view.is-open .detail-sheet { transform: translateY(0); }
+  .detail-sheet-inner { padding: 56px 32px 100px; }
+  .detail-section { max-width: 640px; margin: 0 0 64px; }
+  .detail-eyebrow {
+    display: inline-block;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mute);
+    background: rgba(243,236,251,0.08);
+    padding: 6px 12px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .detail-section h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(21px, 2.6vw, 28px);
+    margin: 0 0 14px;
+  }
+  .detail-section p { margin: 0; color: rgba(243,236,251,0.8); font-size: 15px; }
+  .detail-image {
+    max-width: 640px;
+    height: 220px;
+    border-radius: 18px;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink) 70%);
+    border: 1px solid var(--hair);
+    margin: 0 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mute);
+    font-size: 13px;
+  }
+  .detail-cta {
+    display: inline-block;
+    margin-top: 18px;
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 13px 26px;
+    border-radius: 100px;
+    text-decoration: none;
+  }
+  .detail-placeholder-tag {
+    display: block;
+    margin-top: 14px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--mute);
+  }
+
+  @media (max-width: 860px) {
+    .deck-row { flex-direction: column; gap: 28px; }
+    .deck-link-prev, .deck-link-next { align-items: center; text-align: center; }
+  }
+
+  @media (max-width: 640px) {
+    .top-bar > *, .bottom-bar > * { font-size: 12.5px; }
+    .deck-cards { height: 460px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deck-blob { animation: none !important; }
+    .deck-card, .detail-sheet, .detail-view { transition: none !important; }
+    .ripple-ring { animation: none !important; }
+  }
+</style>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="top-bar">
+  <a class="nav-back" href="index.html#work">← 返回作品集 Portfolio</a>
+  <div class="nav-title display">OW2 · CARD DECK</div>
+  <button class="nav-share" type="button" id="shareBtn">分享 Share</button>
+</header>
+
+<main class="deck-view" id="deckView">
+  <div class="deck-blob b1" id="blob1" aria-hidden="true"></div>
+  <div class="deck-blob b2" id="blob2" aria-hidden="true"></div>
+  <div class="deck-veil" aria-hidden="true"></div>
+
+  <div class="deck-heading">
+    <h2 class="display">全部卡片</h2>
+    <p>ALL CARDS · 点击任意卡片查看详情</p>
+  </div>
+
+  <div class="deck-row">
+    <button class="deck-link deck-link-prev" id="nextCardBtn" type="button">下一张<span class="en">Next card</span></button>
+
+    <div class="deck-cards" id="deckCards"></div>
+
+    <button class="deck-link deck-link-next" id="showMeBtn" type="button">查看详情<span class="en">Show me!</span></button>
+  </div>
+</main>
+
+<footer class="bottom-bar">
+  <div class="bottom-mark">OOZE.</div>
+  <button class="grid-toggle" id="gridToggleBtn" type="button" aria-pressed="false" aria-label="查看全部卡片 View all cards">
+    <span class="grid-toggle-current" aria-hidden="true"></span>
+    <span class="grid-toggle-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+  </button>
+  <div class="bottom-note">Regina Wu</div>
+</footer>
+
+<div class="grid-ripple" id="gridRipple" aria-hidden="true">
+  <span class="ripple-ring r1"></span>
+  <span class="ripple-ring r2"></span>
+  <span class="ripple-ring r3"></span>
+  <span class="ripple-ring r4"></span>
+</div>
+
+<div class="detail-view" id="detailView" aria-hidden="true">
+  <button class="detail-close" id="closeDetailBtn" type="button" aria-label="关闭 Close">✕</button>
+  <div class="detail-hero" id="detailHero">
+    <div class="detail-tag"><span id="detailTag"></span></div>
+    <h2 class="detail-title display" id="detailTitle"></h2>
+  </div>
+  <div class="detail-sheet">
+    <div class="detail-sheet-inner wrap">
+
+      <div class="detail-section">
+        <span class="detail-eyebrow">机会 · The Opportunity</span>
+        <h3>为什么这个方向值得探索</h3>
+        <p id="detailOpportunity">占位文字：这里将说明这个模块/ 能力解决了什么问题，为什么值得放进作品集里。</p>
+        <span class="detail-placeholder-tag">占位内容 · Placeholder copy</span>
+      </div>
+
+      <div class="detail-image">占位图片 · Placeholder image</div>
+
+      <div class="detail-section">
+        <span class="detail-eyebrow">用例 · Use Cases</span>
+        <h3>可能的应用场景</h3>
+        <p id="detailUseCase">占位文字：这里将列举一到两个具体案例，说明这个能力在真实项目中是如何被使用的。</p>
+        <span class="detail-placeholder-tag">占位内容 · Placeholder copy</span>
+      </div>
+
+      <div class="detail-section">
+        <span class="detail-eyebrow">开始 · Getting Started</span>
+        <h3>如何上手</h3>
+        <p id="detailGetStarted">占位文字：这里将给出具体的实现路径、参考链接或使用建议。</p>
+        <a class="detail-cta" href="index.html#work">查看作品集 Get started</a>
+        <span class="detail-placeholder-tag">占位内容 · Placeholder copy</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var CARDS = [
+    { slug: 'intro', tag: '介绍 · Introduction', titleCn: '不止是一张作品集卡片', titleEn: 'More Than Just A Portfolio Card', accent: '--lime', accentInk: '--lime-ink' },
+    { slug: 'color', tag: 'OW 能 · OW can', titleCn: '呈现分层色彩', titleEn: 'Render layered color', accent: '--violet', accentInk: '--violet-ink' },
+    { slug: 'type', tag: 'OW 能 · OW can', titleCn: '承载响应式排版', titleEn: 'Carry responsive type', accent: '--magenta', accentInk: '--magenta-ink' },
+    { slug: 'motion', tag: 'OW 能 · OW can', titleCn: '驱动流畅动效', titleEn: 'Drive smooth motion', accent: '--cyan', accentInk: '--cyan-ink' },
+    { slug: 'a11y', tag: 'OW 能 · OW can', titleCn: '支持无障碍交互', titleEn: 'Support accessible interaction', accent: '--lime', accentInk: '--lime-ink' },
+    { slug: 'story', tag: 'OW 能 · OW can', titleCn: '讲述完整的故事', titleEn: 'Tell a complete story', accent: '--violet', accentInk: '--violet-ink' },
+    { slug: 'responsive', tag: 'OW 能 · OW can', titleCn: '适配任意屏幕尺寸', titleEn: 'Adapt to any screen size', accent: '--magenta', accentInk: '--magenta-ink' }
+  ];
+
+  var els = {
+    deckView: document.getElementById('deckView'),
+    deckCards: document.getElementById('deckCards'),
+    nextCardBtn: document.getElementById('nextCardBtn'),
+    showMeBtn: document.getElementById('showMeBtn'),
+    blob1: document.getElementById('blob1'),
+    blob2: document.getElementById('blob2'),
+    detailView: document.getElementById('detailView'),
+    detailHero: document.getElementById('detailHero'),
+    detailTag: document.getElementById('detailTag'),
+    detailTitle: document.getElementById('detailTitle'),
+    closeDetailBtn: document.getElementById('closeDetailBtn'),
+    shareBtn: document.getElementById('shareBtn'),
+    gridToggleBtn: document.getElementById('gridToggleBtn'),
+    gridRipple: document.getElementById('gridRipple')
+  };
+
+  var state = { index: 0, animating: false, expanded: false, homeRect: null };
+  var cardEls = [];
+
+  function accentVar(card) { return 'var(' + card.accent + ')'; }
+  function accentInkVar(card) { return 'var(' + card.accentInk + ')'; }
+
+  function buildCards() {
+    els.deckCards.innerHTML = '';
+    cardEls = CARDS.map(function (card, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'deck-card';
+      btn.style.setProperty('--accent', accentVar(card));
+      btn.style.setProperty('--accent-ink', accentInkVar(card));
+      btn.innerHTML =
+        '<span class="deck-tag">' + card.tag + '</span>' +
+        '<h2 class="deck-title">' + card.titleCn + '<span class="en">' + card.titleEn + '</span></h2>' +
+        '<div class="deck-illustration"><span class="shape blob"></span><span class="shape circle"></span><span class="shape triangle"></span></div>';
+      btn.addEventListener('click', function () {
+        if (!state.expanded) return;
+        render(i);
+        openDetail();
+      });
+      els.deckCards.appendChild(btn);
+      return btn;
+    });
+  }
+
+  function setBackgroundBlobs(card) {
+    els.blob1.style.background = accentVar(card);
+    els.blob2.style.background = accentVar(card);
+  }
+
+  function applyRoles() {
+    var n = CARDS.length;
+    cardEls.forEach(function (el, i) {
+      el.classList.remove('role-current', 'role-next', 'role-hidden');
+      if (i === state.index) el.classList.add('role-current');
+      else if (i === (state.index + 1) % n) el.classList.add('role-next');
+      else el.classList.add('role-hidden');
+      el.setAttribute('aria-hidden', state.expanded || i === state.index ? 'false' : 'true');
+      el.tabIndex = state.expanded ? 0 : -1;
+    });
+  }
+
+  function render(idx) {
+    state.index = idx;
+    setBackgroundBlobs(CARDS[idx]);
+    location.hash = 'card-' + CARDS[idx].slug;
+    applyRoles();
+  }
+
+  function nextCard() {
+    if (state.animating || state.expanded) return;
+    var n = CARDS.length;
+    var oldIdx = state.index;
+    var newIdx = (oldIdx + 1) % n;
+    var newNextIdx = (newIdx + 1) % n;
+
+    if (reduceMotion) { render(newIdx); return; }
+
+    state.animating = true;
+    var oldCurrentEl = cardEls[oldIdx];
+    var newCurrentEl = cardEls[newIdx];
+    var newNextEl = cardEls[newNextIdx];
+
+    oldCurrentEl.classList.remove('role-current');
+    oldCurrentEl.classList.add('leaving');
+    newCurrentEl.classList.remove('role-next');
+    newCurrentEl.classList.add('role-current');
+    newNextEl.classList.remove('role-hidden');
+    newNextEl.classList.add('role-next');
+
+    window.setTimeout(function () {
+      oldCurrentEl.classList.add('no-anim');
+      oldCurrentEl.classList.remove('leaving');
+      oldCurrentEl.classList.add('role-hidden');
+
+      // force reflow so the reset lands before transitions are re-enabled
+      void oldCurrentEl.offsetWidth;
+
+      state.index = newIdx;
+      setBackgroundBlobs(CARDS[newIdx]);
+      location.hash = 'card-' + CARDS[newIdx].slug;
+
+      requestAnimationFrame(function () {
+        oldCurrentEl.classList.remove('no-anim');
+        state.animating = false;
+      });
+    }, 560);
+  }
+
+  function openDetail() {
+    var card = CARDS[state.index];
+    els.detailHero.style.setProperty('--accent', accentVar(card));
+    els.detailHero.style.setProperty('--accent-ink', accentInkVar(card));
+    els.detailTag.textContent = card.tag;
+    els.detailTitle.innerHTML = card.titleCn + '<span class="en">' + card.titleEn + '</span>';
+    els.detailView.classList.add('is-open');
+    els.detailView.setAttribute('aria-hidden', 'false');
+    els.closeDetailBtn.focus();
+  }
+
+  function closeDetail() {
+    els.detailView.classList.remove('is-open');
+    els.detailView.setAttribute('aria-hidden', 'true');
+    if (state.expanded && cardEls[state.index]) {
+      cardEls[state.index].focus();
+    } else {
+      els.showMeBtn.focus();
+    }
+  }
+
+  function playRipple() {
+    if (reduceMotion) return;
+    els.gridRipple.classList.remove('is-animating');
+    void els.gridRipple.offsetWidth;
+    els.gridRipple.classList.add('is-animating');
+  }
+
+  // getBoundingClientRect() on a rotated card (role-current/role-next both
+  // carry a rotate()) returns the axis-aligned bounding box of the rotated
+  // shape, which is larger than the card's true box — that inflated size
+  // corrupted the FLIP scale math and showed up as the peek card visibly
+  // jumping. Measure with rotation held at 0 so the geometry is accurate.
+  function measureFlatRects() {
+    cardEls.forEach(function (el) { el.style.transform = 'none'; });
+    var rects = cardEls.map(function (el) { return el.getBoundingClientRect(); });
+    cardEls.forEach(function (el) { el.style.transform = ''; });
+    return rects;
+  }
+
+  // In the collapsed stack every card sits at the same flat box (inset:0
+  // within #deckCards), so instead of re-measuring live — which can drift a
+  // pixel or two if the scrollbar/viewport changed while the grid was open —
+  // reuse the exact rect captured right before the stack last expanded. That
+  // guarantees collapsing always lands back on its original spot.
+  function stackRectsFromHome() {
+    var rect = state.homeRect || els.deckCards.getBoundingClientRect();
+    return cardEls.map(function () { return rect; });
+  }
+
+  // FLIP: measure each card's rect before the layout change, then invert
+  // the jump into an inline transform and let it transition back to identity
+  // so the stack <-> grid morph plays out in place instead of a hard cut.
+  function playFlip(firstRects) {
+    var lastRects = state.expanded ? measureFlatRects() : stackRectsFromHome();
+
+    cardEls.forEach(function (el, i) {
+      var first = firstRects[i];
+      var last = lastRects[i];
+      // Anchor on each box's center rather than its top-left corner. The
+      // resting role classes (.role-current/.role-next) rotate the card
+      // around the default transform-origin (center) — matching that anchor
+      // here means we never have to touch transform-origin at all, so there's
+      // no late, un-transitioned origin snap once the rotation settles (that
+      // top-left-vs-center mismatch was the peek card's visible jump).
+      var dx = (first.left + first.width / 2) - (last.left + last.width / 2);
+      var dy = (first.top + first.height / 2) - (last.top + last.height / 2);
+      var sx = last.width ? first.width / last.width : 1;
+      var sy = last.height ? first.height / last.height : 1;
+      var startOpacity = window.getComputedStyle(el).opacity;
+
+      el.classList.add('no-anim');
+      el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+      el.style.opacity = startOpacity;
+    });
+
+    void els.deckCards.offsetHeight;
+
+    requestAnimationFrame(function () {
+      var n = CARDS.length;
+      // Collapsing: only the current + next cards stay visible in the stack,
+      // so the other 5 don't need to be seen traveling the full distance —
+      // fade them out quickly first so they aren't still visibly repositioning
+      // while invisible cards pile up behind the front card (that overlap of
+      // motion + late fade was the source of the stutter).
+      cardEls.forEach(function (el, i) {
+        var featured = state.expanded || i === state.index || i === (state.index + 1) % n;
+        var transformDuration = featured ? 0.6 : 0.32;
+        var opacityDuration = featured ? 0.5 : 0.22;
+
+        el.classList.remove('no-anim');
+        el.style.transition =
+          'transform ' + transformDuration + 's cubic-bezier(0.16,1,0.3,1) ' + (i * 0.02) + 's, ' +
+          'opacity ' + opacityDuration + 's ease ' + (i * 0.02) + 's';
+        el.style.transform = '';
+        el.style.opacity = '';
+      });
+
+      window.setTimeout(function () {
+        cardEls.forEach(function (el) {
+          el.style.transition = '';
+        });
+        state.animating = false;
+      }, 650 + cardEls.length * 20);
+    });
+  }
+
+  function toggleExpand() {
+    if (state.animating) return;
+
+    var firstRects;
+    if (state.expanded) {
+      // collapsing: snap scroll to top first so the page shrinking back to
+      // the stack's height doesn't trigger a scroll-position clamp mid-flight
+      // (that forced scroll jump was the source of the collapse stutter)
+      window.scrollTo(0, 0);
+      firstRects = measureFlatRects();
+    } else {
+      // expanding: remember exactly where the stack sits right now so a
+      // later collapse can return to this precise spot
+      state.homeRect = els.deckCards.getBoundingClientRect();
+      firstRects = stackRectsFromHome();
+    }
+
+    state.expanded = !state.expanded;
+    els.deckView.classList.toggle('is-expanded', state.expanded);
+    els.gridToggleBtn.setAttribute('aria-pressed', state.expanded ? 'true' : 'false');
+    applyRoles();
+    if (state.expanded) playRipple();
+
+    if (reduceMotion) return;
+    state.animating = true;
+    playFlip(firstRects);
+  }
+
+  els.nextCardBtn.addEventListener('click', nextCard);
+  els.showMeBtn.addEventListener('click', openDetail);
+  els.closeDetailBtn.addEventListener('click', closeDetail);
+  els.gridToggleBtn.addEventListener('click', toggleExpand);
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (els.detailView.classList.contains('is-open')) { closeDetail(); return; }
+    if (state.expanded) toggleExpand();
+  });
+
+  els.shareBtn.addEventListener('click', function () {
+    var url = location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function () {
+        els.shareBtn.textContent = '已复制链接 Link copied';
+        window.setTimeout(function () { els.shareBtn.innerHTML = '分享 Share'; }, 1800);
+      });
+    }
+  });
+
+  buildCards();
+
+  var startIndex = 0;
+  var hashSlug = location.hash.replace('#card-', '');
+  CARDS.forEach(function (card, i) { if (card.slug === hashSlug) startIndex = i; });
+  render(startIndex);
+})();
+</script>
