@@ -500,7 +500,7 @@
 
     <!-- 0. Selected Works -->
     <section id="selected" class="gallery-section active">
-      <div id="selected-grid" class="selected-grid" aria-label="Selected Works"></div>
+      <div id="selected-grid" class="selected-grid photo-grid" data-photo-grid="selected" aria-label="Selected Works"></div>
     </section>
 
     <!-- 1. 胶片摄影 Film Photography -->
@@ -568,18 +568,18 @@
       </div>
     </section>
 
-    <!-- 胶片摄影 子分类版面（待填充内容） -->
-    <section id="project1-yuyou" class="gallery-section"></section>
-    <section id="project1-taiwan" class="gallery-section"></section>
-    <section id="project1-chun" class="gallery-section"></section>
-    <section id="project1-watsonbay" class="gallery-section"></section>
-    <section id="project1-jie" class="gallery-section"></section>
-    <section id="project1-zhui" class="gallery-section"></section>
-    <section id="project1-bondi2022" class="gallery-section"></section>
+    <!-- 胶片摄影 子分类版面 -->
+    <section id="project1-yuyou" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-yuyou" aria-label="与友"></div></section>
+    <section id="project1-taiwan" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-taiwan" aria-label="台湾 TAIWAN"></div></section>
+    <section id="project1-chun" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-chun" aria-label="春"></div></section>
+    <section id="project1-watsonbay" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-watsonbay" aria-label="沃特森港 WATSON BAY"></div></section>
+    <section id="project1-jie" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-jie" aria-label="街"></div></section>
+    <section id="project1-zhui" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-zhui" aria-label="追"></div></section>
+    <section id="project1-bondi2022" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project1-bondi2022" aria-label="邦迪海滩2022 BONDI2022"></div></section>
 
-    <!-- 相机摄影 子分类版面（待填充内容） -->
-    <section id="project2-biye" class="gallery-section"></section>
-    <section id="project2-lansexini" class="gallery-section"></section>
+    <!-- 相机摄影 子分类版面 -->
+    <section id="project2-biye" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project2-biye" aria-label="毕业"></div></section>
+    <section id="project2-lansexini" class="gallery-section"><div class="selected-grid photo-grid" data-photo-grid="project2-lansexini" aria-label="蓝色悉尼"></div></section>
 
     <!-- 3. 关于 / 联系方式 -->
     <section id="about" class="gallery-section">
@@ -619,18 +619,64 @@
   var lightboxImg = document.getElementById('lightboxImg');
   var lightboxClose = document.getElementById('lightboxClose');
   var currentSectionId = 'selected';
-  var selectedWorks = [];
-  var selectedColumnCount = 0;
+  var photoGridState = {};
   var resizeTimer;
 
+  var PHOTO_GRIDS = {
+    "selected": {
+      base: "assets/selected works/",
+      files: ["000001 copy.JPG", "000001.JPG", "000002.JPG", "000003.JPG", "000004 copy.JPG", "000004.JPG", "000005 copy.JPG", "000005.JPG", "000006.JPG", "000007.JPG", "000008.JPG", "000009 copy 2.JPG", "000009 copy 3.JPG", "000009 copy.JPG", "000009.JPG", "000010.JPG", "000011 copy.JPG", "000012 copy.JPG", "000013 copy.JPG", "000014 copy.JPG", "000015 copy.JPG", "000016 copy.JPG", "000017 copy.JPG", "000019 copy.JPG", "000024 copy.JPG", "000027.JPG", "000032 copy 2.JPG", "000032 copy.JPG", "000034 copy.JPG", "000104480004_3 copy.jpg", "000104480018_17 copy.jpg", "000104480020_19 copy.jpg", "000104480023_22 copy.jpg", "000104500001_0 copy.jpg", "000104500011_10 copy.jpg", "000104500018_17 copy.jpg", "000104500023_22 copy.jpg", "000104500026_25 copy.jpg", "000104500027_26 copy.jpg", "000104500028_27 copy.jpg", "000104500029_28 copy.jpg", "000104500030_29 copy.jpg", "000104500031_30 copy.jpg", "000104500032_31 copy.jpg", "000104500033_32 copy.jpg", "000104500034_33 copy.jpg", "2005-10-01 040451 copy.jpg", "2005-10-01 040451(1) copy.jpg", "2005-10-01 040451(2) copy.jpg", "2005-10-01 040451(3) copy.jpg", "2005-10-01 040451(4) copy.jpg", "2005-10-01 040459 copy.jpg", "2005-10-01 040459(1) copy.jpg", "2005-10-01 040557(3) copy.jpg", "2005-10-01 040610(2) copy.jpg", "2005-10-01 040610(3) copy.jpg", "2023-06-25 174100(11) copy.jpg", "2023-06-25 174100(2) copy.jpg", "2023-06-25 174100(22) copy.jpg", "2023-06-25 174400(10) copy.jpg", "2023-06-25 174400(11) copy.jpg", "2023-06-25 174400(28) copy.jpg", "2023-06-25 174400(4) copy.jpg", "2023-06-25 174400(8) copy.jpg", "2023-06-25 174400(9) copy.jpg", "2024-04-21 122455 copy.jpg", "2024-04-21 122501 copy.jpg", "2024-04-21 122532 copy.jpg", "2024-04-21 122534 copy.jpg", "2024-04-21 122538 copy.jpg"]
+    },
+    "project1-yuyou": {
+      base: "assets/FOTO/胶片摄影/与友/",
+      files: ["000003.JPG", "000004.JPG", "000010.JPG", "000024.JPG", "000025.JPG", "000026.JPG", "000027 copy.JPG", "000028.JPG", "2023-06-25 174400(6).jpg"]
+    },
+    "project1-taiwan": {
+      base: "assets/FOTO/胶片摄影/台湾 TAIWAN/",
+      files: ["2024-04-21 122435.jpg", "2024-04-21 122453.jpg", "2024-04-21 122455.jpg", "2024-04-21 122457.jpg", "2024-04-21 122501.jpg", "2024-04-21 122504.jpg", "2024-04-21 122509.jpg", "2024-04-21 122512.jpg", "2024-04-21 122514.jpg", "2024-04-21 122516.jpg", "2024-04-21 122518.jpg", "2024-04-21 122521.jpg", "2024-04-21 122523.jpg", "2024-04-21 122525.jpg", "2024-04-21 122527.jpg", "2024-04-21 122529.jpg", "2024-04-21 122531.jpg", "2024-04-21 122532.jpg", "2024-04-21 122534.jpg", "2024-04-21 122536.jpg", "2024-04-21 122538.jpg", "2024-04-21 122540.jpg", "2024-04-21 122544.jpg"]
+    },
+    "project1-chun": {
+      base: "assets/FOTO/胶片摄影/春/",
+      files: ["000002.JPG", "000009.JPG", "000010.JPG", "000011.JPG", "000013.JPG", "000018.JPG"]
+    },
+    "project1-watsonbay": {
+      base: "assets/FOTO/胶片摄影/沃特森港 WATSON BAY/",
+      files: ["000001 copy.JPG", "000002 copy.JPG", "000003 copy.JPG", "000004 copy.JPG", "000005 copy.JPG", "000005.JPG", "000006 copy.JPG", "000007 copy.JPG", "000008 copy.JPG", "000008.JPG", "000009 copy.JPG", "000009.JPG", "000010 copy.JPG", "000012.JPG"]
+    },
+    "project1-jie": {
+      base: "assets/FOTO/胶片摄影/街/",
+      files: ["000001.JPG", "000005.JPG", "000009.JPG", "000010.JPG", "000013.JPG", "000022.JPG", "000032 copy.JPG", "000032.JPG", "000034.JPG", "000104480002_1.jpg", "000104480004_3.jpg", "000104480006_5.jpg", "000104480018_17.jpg", "000104480020_19.jpg", "000104480022_21.jpg", "000104480023_22.jpg", "000104480026_25.jpg", "000104480031_30.jpg", "000104480034_33.jpg", "000104500001_0.jpg", "000104500002_1.jpg", "000104500003_2.jpg", "000104500010_9.jpg", "000104500011_10.jpg", "000104500018_17.jpg", "000104500021_20.jpg", "2005-10-01 040451(1).jpg", "2005-10-01 040451(2).jpg", "2005-10-01 040451(4).jpg", "2005-10-01 040451.jpg", "2005-10-01 040459(1).jpg", "2005-10-01 040557(3).jpg", "2005-10-01 040610(2).jpg", "2005-10-01 040610(3).jpg", "2005-10-01 040614(2).jpg", "2023-06-25 173900 copy.jpg", "2023-06-25 173900(16).jpg", "2023-06-25 173900(23).jpg", "2023-06-25 173900.jpg", "2023-06-25 174100(11).jpg", "2023-06-25 174100(2).jpg", "2023-06-25 174100(21).jpg", "2023-06-25 174400(19).jpg", "2023-06-25 174400(2).jpg", "2023-06-25 174400(26).jpg", "2023-06-25 174400(28).jpg", "2023-06-25 174400(29).jpg", "2023-06-25 174400(4).jpg", "2023-06-25 174400(8).jpg"]
+    },
+    "project1-zhui": {
+      base: "assets/FOTO/胶片摄影/追/",
+      files: ["000008.JPG", "000009.JPG", "000013.JPG", "000014.JPG", "000015.JPG", "000016.JPG", "000017.JPG", "000021.JPG", "000024.JPG", "000025.JPG"]
+    },
+    "project1-bondi2022": {
+      base: "assets/FOTO/胶片摄影/邦迪海滩2022 BONDI2022/",
+      files: ["000104500023_22.jpg", "000104500025_24.jpg", "000104500026_25.jpg", "000104500027_26.jpg", "000104500028_27.jpg", "000104500029_28.jpg", "000104500030_29.jpg", "000104500031_30.jpg", "000104500032_31.jpg", "000104500033_32.jpg", "000104500034_33.jpg", "000104500036_35.jpg"]
+    },
+    "project2-biye": {
+      base: "assets/FOTO/相机摄影/毕业/",
+      files: ["5ac61931ef22c82786a6f45a6f474f.jpg", "8bcbf0ebf2a4c8021ed2079ba15ce8.jpg", "DSCF1678.jpg", "DSCF1749.jpg", "IMG_7347.jpg", "IMG_7355.JPG", "a3ee03d5e360be43240afef1f2e1db.jpg", "b2a7c3b5e85ba6f5e0e25b02b1416c14.jpg"]
+    },
+    "project2-lansexini": {
+      base: "assets/FOTO/相机摄影/蓝色悉尼/",
+      files: ["IMG_5339.JPG", "IMG_5342.JPG", "IMG_5347.JPG", "IMG_5365.JPG", "IMG_5367.JPG"]
+    }
+  };
+
   document.body.dataset.section = currentSectionId;
-  buildSelectedGrid();
+  document.querySelectorAll('.photo-grid').forEach(function (grid) {
+    buildPhotoGrid(grid.getAttribute('data-photo-grid'));
+  });
   syncMobileMenu();
 
   window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-      renderSelectedGrid();
+      document.querySelectorAll('.photo-grid').forEach(function (grid) {
+        renderPhotoGrid(grid.getAttribute('data-photo-grid'));
+      });
       syncMobileMenu();
     }, 120);
   });
@@ -725,17 +771,26 @@
     menuToggle.textContent = isExpanded ? '收起菜单' : '展开菜单';
   }
 
-  function buildSelectedGrid() {
-    selectedWorks = getRandomSelectedWorks();
-    renderSelectedGrid();
+  function buildPhotoGrid(key) {
+    var config = PHOTO_GRIDS[key];
+    if (!config) return;
+    photoGridState[key] = {
+      columnCount: 0,
+      files: shuffleArray(config.files.map(function (name) { return config.base + name; }))
+    };
+    renderPhotoGrid(key);
   }
 
-  function renderSelectedGrid() {
-    var grid = document.getElementById('selected-grid');
-    var columnCount = getSelectedColumnCount(grid.clientWidth);
-    if (columnCount === selectedColumnCount && grid.children.length > 0) return;
+  function renderPhotoGrid(key) {
+    var grid = document.querySelector('.photo-grid[data-photo-grid="' + key + '"]');
+    var state = photoGridState[key];
+    if (!grid || !state) return;
 
-    selectedColumnCount = columnCount;
+    var contentWidth = document.querySelector('.content').clientWidth;
+    var columnCount = getColumnCount(contentWidth);
+    if (columnCount === state.columnCount && grid.children.length > 0) return;
+
+    state.columnCount = columnCount;
     grid.innerHTML = '';
     var columns = Array.from({ length: columnCount }, function () {
       var column = document.createElement('div');
@@ -744,7 +799,7 @@
       return column;
     });
 
-    selectedWorks.forEach(function (src, index) {
+    state.files.forEach(function (src, index) {
       var thumb = document.createElement('div');
       thumb.className = 'selected-thumb';
       thumb.addEventListener('click', function () { openLightbox(src); });
@@ -759,36 +814,10 @@
     });
   }
 
-  function getSelectedColumnCount(width) {
+  function getColumnCount(width) {
     if (width >= 1000) return 4;
     if (width >= 700) return 3;
     return 2;
-  }
-
-  function getRandomSelectedWorks() {
-    var files = [
-      "000001 copy.JPG", "000001.JPG", "000002.JPG", "000003.JPG", "000004 copy.JPG", "000004.JPG",
-      "000005 copy.JPG", "000005.JPG", "000006.JPG", "000007.JPG", "000008.JPG", "000009 copy 2.JPG",
-      "000009 copy 3.JPG", "000009 copy.JPG", "000009.JPG", "000010.JPG", "000011 copy.JPG",
-      "000012 copy.JPG", "000013 copy.JPG", "000014 copy.JPG", "000015 copy.JPG", "000016 copy.JPG",
-      "000017 copy.JPG", "000019 copy.JPG", "000024 copy.JPG", "000027.JPG", "000032 copy 2.JPG",
-      "000032 copy.JPG", "000034 copy.JPG", "000104480004_3 copy.jpg", "000104480018_17 copy.jpg",
-      "000104480020_19 copy.jpg", "000104480023_22 copy.jpg", "000104500001_0 copy.jpg",
-      "000104500011_10 copy.jpg", "000104500018_17 copy.jpg", "000104500023_22 copy.jpg",
-      "000104500026_25 copy.jpg", "000104500027_26 copy.jpg", "000104500028_27 copy.jpg",
-      "000104500029_28 copy.jpg", "000104500030_29 copy.jpg", "000104500031_30 copy.jpg",
-      "000104500032_31 copy.jpg", "000104500033_32 copy.jpg", "000104500034_33 copy.jpg",
-      "2005-10-01 040451 copy.jpg", "2005-10-01 040451(1) copy.jpg", "2005-10-01 040451(2) copy.jpg",
-      "2005-10-01 040451(3) copy.jpg", "2005-10-01 040451(4) copy.jpg", "2005-10-01 040459 copy.jpg",
-      "2005-10-01 040459(1) copy.jpg", "2005-10-01 040557(3) copy.jpg", "2005-10-01 040610(2) copy.jpg",
-      "2005-10-01 040610(3) copy.jpg", "2023-06-25 174100(11) copy.jpg", "2023-06-25 174100(2) copy.jpg",
-      "2023-06-25 174100(22) copy.jpg", "2023-06-25 174400(10) copy.jpg", "2023-06-25 174400(11) copy.jpg",
-      "2023-06-25 174400(28) copy.jpg", "2023-06-25 174400(4) copy.jpg", "2023-06-25 174400(8) copy.jpg",
-      "2023-06-25 174400(9) copy.jpg", "2024-04-21 122455 copy.jpg", "2024-04-21 122501 copy.jpg",
-      "2024-04-21 122532 copy.jpg", "2024-04-21 122534 copy.jpg", "2024-04-21 122538 copy.jpg"
-    ];
-    var base = 'assets/selected works/';
-    return shuffleArray(files.map(function (name) { return base + name; }));
   }
 
   function shuffleArray(items) {
