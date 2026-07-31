@@ -105,7 +105,6 @@
     letter-spacing: 0.08em;
     margin: 26px 0 10px;
   }
-  .nav-category:first-of-type { margin-top: 0; }
   .nav-menu li { margin-bottom: 10px; }
   .nav-menu li a {
     color: var(--mute);
@@ -114,6 +113,48 @@
   }
   .nav-menu li a:hover { color: var(--paper); }
   .nav-menu li a.active { color: var(--lime); }
+
+  .nav-parent-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .nav-parent-row .nav-link { flex: 1 1 auto; }
+  .nav-caret {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .nav-caret svg { width: 12px; height: 12px; }
+  .nav-caret:hover, .nav-caret:focus-visible { color: var(--paper); }
+  .nav-caret[aria-expanded="true"] { transform: rotate(90deg); }
+  .nav-submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .nav-submenu.is-open { max-height: 320px; }
+  .nav-submenu li { margin: 10px 0 0; }
+  .nav-sublink {
+    display: block;
+    padding-left: 12px;
+    border-left: 1px solid var(--hair);
+    font-size: 11px;
+    color: var(--mute);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .nav-sublink:hover { color: var(--paper); }
+  .nav-sublink.active { color: var(--lime); border-color: var(--lime); }
 
   /* 右侧：作品展示区（幻灯片容器） */
   .content {
@@ -165,9 +206,28 @@
     pointer-events: none;
     transition: opacity 0.3s ease;
   }
-  .artwork.active { opacity: 1; z-index: 1; }
+  .artwork.active { opacity: 1; z-index: 55; }
 
   .text-content { position: relative; z-index: 100; pointer-events: auto; }
+
+  .artwork-link {
+    position: relative;
+    z-index: 100;
+    pointer-events: auto;
+    display: block;
+    cursor: pointer;
+  }
+  .artwork-photo {
+    display: block;
+    max-width: min(760px, 82vw);
+    max-height: 85vh;
+    max-height: 85dvh;
+    width: auto;
+    height: auto;
+    border: 0;
+    object-fit: contain;
+    user-select: none;
+  }
 
   .project-statement {
     max-width: 520px;
@@ -398,9 +458,35 @@
     <ul class="nav-menu" id="main-menu">
       <li><a href="#" class="nav-link active" data-target="selected">Selected Works</a></li>
 
-      <div class="nav-category">Projects 项目</div>
-      <li><a href="#" class="nav-link" data-target="project1">胶片摄影 Film Photography</a></li>
-      <li><a href="#" class="nav-link" data-target="project2">相机摄影 Digital Photography</a></li>
+      <li class="nav-parent">
+        <div class="nav-parent-row">
+          <a href="#" class="nav-link" data-target="project1">Film Photography<br>胶片摄影</a>
+          <button type="button" class="nav-caret" aria-expanded="false" aria-controls="sub-project1" aria-label="展开胶片摄影分类">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <ul class="nav-submenu" id="sub-project1">
+          <li><a href="#" class="nav-sublink" data-target="project1-yuyou">与友</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project1-taiwan">台湾 TAIWAN</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project1-chun">春</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project1-watsonbay">沃特森港 WATSON BAY</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project1-jie">街</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project1-zhui">追</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project1-bondi2022">邦迪海滩2022 BONDI2022</a></li>
+        </ul>
+      </li>
+      <li class="nav-parent">
+        <div class="nav-parent-row">
+          <a href="#" class="nav-link" data-target="project2">Digital Photography<br>相机摄影</a>
+          <button type="button" class="nav-caret" aria-expanded="false" aria-controls="sub-project2" aria-label="展开相机摄影分类">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <ul class="nav-submenu" id="sub-project2">
+          <li><a href="#" class="nav-sublink" data-target="project2-biye">毕业</a></li>
+          <li><a href="#" class="nav-sublink" data-target="project2-lansexini">蓝色悉尼</a></li>
+        </ul>
+      </li>
 
       <div class="nav-category">Info</div>
       <li><a href="#" class="nav-link" data-target="about">关于 About</a></li>
@@ -425,12 +511,41 @@
           <p class="statement-body">占位文字：这里将介绍这组胶片作品的拍摄背景、使用器材（相机/胶卷型号）与创作意图，稍后替换为正式文案。</p>
         </div>
       </div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Film 01<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Film 02<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Film 03<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Film 04<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Film 05<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Film 06<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-yuyou">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/与友/2023-06-25 174400(6).jpg" alt="与友">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-taiwan">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/台湾 TAIWAN/2024-04-21 122512.jpg" alt="台湾 TAIWAN">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-chun">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/春/000011.JPG" alt="春">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-watsonbay">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/沃特森港 WATSON BAY/000005 copy.JPG" alt="沃特森港 WATSON BAY">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-jie">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/街/2023-06-25 174100(11).jpg" alt="街">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-zhui">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/追/000016.JPG" alt="追">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project1-bondi2022">
+          <img class="artwork-photo" src="assets/FOTO/胶片摄影/邦迪海滩2022 BONDI2022/000104500036_35.jpg" alt="邦迪海滩2022 BONDI2022">
+        </a>
+      </div>
     </section>
 
     <!-- 2. 相机摄影 Digital Photography -->
@@ -441,13 +556,30 @@
           <p class="statement-body">占位文字：这里将介绍这组数码作品的主题、拍摄场景与创作意图，稍后替换为正式文案。</p>
         </div>
       </div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 01<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 02<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 03<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 04<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 05<span class="ph-ratio">建议比例 3:2</span></div></div>
-      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 06<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project2-biye">
+          <img class="artwork-photo" src="assets/FOTO/相机摄影/毕业/IMG_7347.jpg" alt="毕业">
+        </a>
+      </div>
+      <div class="artwork">
+        <a class="artwork-link" href="#" data-target="project2-lansexini">
+          <img class="artwork-photo" src="assets/FOTO/相机摄影/蓝色悉尼/IMG_5339.JPG" alt="蓝色悉尼">
+        </a>
+      </div>
     </section>
+
+    <!-- 胶片摄影 子分类版面（待填充内容） -->
+    <section id="project1-yuyou" class="gallery-section"></section>
+    <section id="project1-taiwan" class="gallery-section"></section>
+    <section id="project1-chun" class="gallery-section"></section>
+    <section id="project1-watsonbay" class="gallery-section"></section>
+    <section id="project1-jie" class="gallery-section"></section>
+    <section id="project1-zhui" class="gallery-section"></section>
+    <section id="project1-bondi2022" class="gallery-section"></section>
+
+    <!-- 相机摄影 子分类版面（待填充内容） -->
+    <section id="project2-biye" class="gallery-section"></section>
+    <section id="project2-lansexini" class="gallery-section"></section>
 
     <!-- 3. 关于 / 联系方式 -->
     <section id="about" class="gallery-section">
@@ -533,6 +665,47 @@
       if (window.matchMedia('(max-width: 800px)').matches) {
         setMenuExpanded(false);
       }
+    });
+  });
+
+  document.querySelectorAll('.nav-caret').forEach(function (caret) {
+    caret.addEventListener('click', function () {
+      var submenu = document.getElementById(this.getAttribute('aria-controls'));
+      var expanded = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', String(!expanded));
+      submenu.classList.toggle('is-open', !expanded);
+    });
+  });
+
+  function activateSubsection(targetId) {
+    showSection(targetId);
+    document.querySelectorAll('.nav-sublink').forEach(function (s) { s.classList.remove('active'); });
+    var matchingSub = document.querySelector('.nav-sublink[data-target="' + targetId + '"]');
+    if (matchingSub) {
+      matchingSub.classList.add('active');
+      var submenu = matchingSub.closest('.nav-submenu');
+      if (submenu) {
+        submenu.classList.add('is-open');
+        var caret = document.querySelector('.nav-caret[aria-controls="' + submenu.id + '"]');
+        if (caret) caret.setAttribute('aria-expanded', 'true');
+      }
+    }
+  }
+
+  document.querySelectorAll('.nav-sublink').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      activateSubsection(this.getAttribute('data-target'));
+      if (window.matchMedia('(max-width: 800px)').matches) {
+        setMenuExpanded(false);
+      }
+    });
+  });
+
+  document.querySelectorAll('.artwork-link').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      activateSubsection(this.getAttribute('data-target'));
     });
   });
 
