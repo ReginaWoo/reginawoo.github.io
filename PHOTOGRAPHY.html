@@ -1,0 +1,694 @@
+<meta charset="UTF-8">
+<title>PHOTOGRAPHY — Regina Wu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0612;
+    --ink-2: #150c24;
+    --ink-3: #1d1130;
+    --paper: #f3ecfb;
+    --mute: #9186ac;
+    --hair: rgba(243, 236, 251, 0.12);
+    --lime: #d4ff3d;
+    --lime-ink: #17210a;
+    --magenta: #ff3ec4;
+    --cyan: #48f0e0;
+    --violet: #7b5cff;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  ::selection { background: var(--lime); color: var(--lime-ink); }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 80;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ================= 页面布局结构 ================= */
+  .container {
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* 左侧：项目导航栏 */
+  .sidebar {
+    width: 260px;
+    flex: 0 0 260px;
+    height: 100vh;
+    height: 100dvh;
+    padding: 40px 36px;
+    background: var(--ink-2);
+    z-index: 100;
+    border-right: 1px solid var(--hair);
+    overflow-y: auto;
+  }
+  .back-link {
+    display: block;
+    font-size: 12px;
+    color: var(--mute);
+    margin-bottom: 34px;
+    transition: color 0.2s ease;
+  }
+  .back-link:hover, .back-link:focus-visible { color: var(--paper); }
+  .site-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    letter-spacing: 0.02em;
+  }
+  .site-title a { color: var(--paper); }
+  .site-subtitle {
+    font-size: 12px;
+    color: var(--mute);
+    margin: 0 0 44px;
+    letter-spacing: 0.03em;
+  }
+  .menu-toggle {
+    display: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--mute);
+    font: inherit;
+    cursor: pointer;
+  }
+  .nav-category {
+    font-size: 11px;
+    color: var(--mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 26px 0 10px;
+  }
+  .nav-category:first-of-type { margin-top: 0; }
+  .nav-menu li { margin-bottom: 10px; }
+  .nav-menu li a {
+    color: var(--mute);
+    transition: color 0.2s ease;
+    display: block;
+  }
+  .nav-menu li a:hover { color: var(--paper); }
+  .nav-menu li a.active { color: var(--lime); }
+
+  /* 右侧：作品展示区（幻灯片容器） */
+  .content {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    height: 100vh;
+    height: 100dvh;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .nav-zone {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    z-index: 50;
+  }
+  .nav-left { left: 0; cursor: w-resize; }
+  .nav-right { right: 0; cursor: e-resize; }
+
+  .gallery-section {
+    display: none;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .gallery-section.active { display: block; }
+
+  .artwork {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .artwork.active { opacity: 1; z-index: 1; }
+
+  .text-content { position: relative; z-index: 100; pointer-events: auto; }
+
+  .project-statement {
+    max-width: 520px;
+    max-height: 80vh;
+    max-height: 80dvh;
+    overflow-y: auto;
+    text-align: left;
+  }
+  .statement-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    margin: 0 0 16px;
+  }
+  .statement-body { color: var(--mute); line-height: 1.8; margin: 0; }
+
+  .about-layout {
+    width: min(900px, 100%);
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(30px, 5vw, 70px);
+    position: relative;
+    z-index: 100;
+    pointer-events: auto;
+  }
+  .about-layout .project-statement { flex: 1 1 0; max-width: 560px; }
+  .about-lead { font-size: 16px; margin: 0 0 26px; }
+  .contact-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mute);
+    margin: 0 0 10px;
+  }
+  .contact-info { font-size: 13px; line-height: 1.9; margin: 0; }
+  .contact-info a { color: var(--paper); border-bottom: 1px solid var(--hair); }
+  .contact-info a:hover { color: var(--lime); border-color: var(--lime); }
+
+  .about-photo-placeholder {
+    flex: 0 1 280px;
+    width: min(280px, 34vw);
+    aspect-ratio: 3 / 4;
+  }
+
+  /* 图片占位块（图片上传前的通用视觉） */
+  .media-placeholder {
+    max-width: min(760px, 100%);
+    max-height: 78vh;
+    max-height: 78dvh;
+    width: min(760px, 82vw);
+    aspect-ratio: 3 / 2;
+    border-radius: 18px;
+    background: linear-gradient(155deg, var(--ink-3), var(--ink) 70%);
+    border: 1px dashed var(--hair);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--mute);
+    font-size: 13px;
+    text-align: center;
+    user-select: none;
+  }
+  .about-photo-placeholder.media-placeholder { aspect-ratio: 3 / 4; width: 100%; max-width: 100%; }
+  .ph-ratio { font-size: 11px; opacity: 0.7; }
+
+  .caption { margin-top: 15px; font-size: 12px; color: var(--mute); text-align: center; }
+
+  /* Selected Works 网格视图 */
+  #selected { position: relative; }
+  .selected-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(12px, 1.6vw, 20px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: clamp(10px, 3vw, 20px) clamp(12px, 4vw, 50px);
+    pointer-events: auto;
+    min-width: 0;
+    min-height: 0;
+    animation: gridFadeIn 0.7s ease both;
+    -webkit-overflow-scrolling: touch;
+  }
+  .selected-column {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.6vw, 20px);
+  }
+  .selected-thumb {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+    cursor: pointer;
+    display: block;
+    line-height: 0;
+  }
+  .selected-thumb img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    transition: transform 0.28s ease;
+  }
+  .selected-thumb:hover img { transform: scale(1.04); }
+  @keyframes gridFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-counter {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 11px;
+    color: var(--mute);
+    z-index: 60;
+    letter-spacing: 0.05em;
+  }
+
+  /* Selected Works 图片放大层 */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    background: rgba(10, 6, 18, 0.96);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .lightbox.is-open { opacity: 1; pointer-events: auto; }
+  .lightbox-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--paper);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .lightbox-close svg { width: 18px; height: 18px; }
+  .lightbox-close:hover, .lightbox-close:focus-visible {
+    background: rgba(243, 236, 251, 0.12);
+    color: var(--lime);
+  }
+
+  /* ================= 移动端响应式 ================= */
+  @media (max-width: 1100px) and (min-width: 801px) {
+    .sidebar { width: 220px; flex-basis: 220px; padding: 32px 24px; }
+    .content { padding: 28px; }
+  }
+
+  @media (max-width: 800px) {
+    body { overflow-x: hidden; }
+    .container { flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+    .sidebar {
+      width: 100%;
+      flex: 0 0 auto;
+      height: auto;
+      max-height: 46vh;
+      max-height: 46dvh;
+      padding: 18px 20px;
+      border-right: none;
+      border-bottom: 1px solid var(--hair);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .back-link { margin-bottom: 14px; }
+    .site-subtitle { margin-bottom: 10px; }
+    .menu-toggle { display: inline-block; margin-bottom: 10px; font-size: 13px; }
+    .menu-toggle:hover { text-decoration: underline; }
+    .sidebar.menu-collapsed .nav-menu { display: none; }
+    .content { padding: 15px; flex: 1; min-height: 0; overflow: hidden; }
+    body[data-section="about"] .content { align-items: stretch; justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .artwork { padding: 10px; }
+    .media-placeholder { width: 100%; max-width: 100%; }
+    .project-statement { max-width: 100%; font-size: 13px; }
+    #about, #about .artwork.active { overflow-y: auto; -webkit-overflow-scrolling: touch; pointer-events: auto; }
+    body[data-section="about"] #about { height: auto; min-height: 100%; overflow: visible; }
+    body[data-section="about"] #about .artwork.active { position: relative; height: auto; min-height: 100%; overflow: visible; }
+    #about .artwork { align-items: flex-start; justify-content: flex-start; z-index: 80; }
+    .about-layout { width: 100%; min-height: max-content; flex-direction: row; gap: 14px; align-items: flex-start; padding-bottom: 24px; }
+    .about-photo-placeholder { flex: 0 0 clamp(110px, 34vw, 150px); width: clamp(110px, 34vw, 150px); }
+    .selected-grid { position: relative; inset: auto; gap: 10px; padding: 10px; height: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+    .selected-column { gap: 10px; }
+    .slide-counter { bottom: 10px; right: 15px; font-size: 10px; }
+    .nav-zone { display: block; }
+    body[data-section="about"] .nav-zone, body[data-section="selected"] .nav-zone { display: none; }
+  }
+</style>
+
+<div class="grain" aria-hidden="true"></div>
+
+<div class="container">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html#work">← 返回作品集 Portfolio</a>
+    <h1 class="site-title"><a href="#" class="nav-link" data-target="selected">吴思燃</a></h1>
+    <p class="site-subtitle">Regina Wu · Photography</p>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu">展开菜单</button>
+
+    <ul class="nav-menu" id="main-menu">
+      <li><a href="#" class="nav-link active" data-target="selected">Selected Works</a></li>
+
+      <div class="nav-category">Projects 项目</div>
+      <li><a href="#" class="nav-link" data-target="project1">胶片摄影 Film Photography</a></li>
+      <li><a href="#" class="nav-link" data-target="project2">相机摄影 Digital Photography</a></li>
+
+      <div class="nav-category">Info</div>
+      <li><a href="#" class="nav-link" data-target="about">关于 About</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <div class="nav-zone nav-left" onclick="changeSlide(-1)"></div>
+    <div class="nav-zone nav-right" onclick="changeSlide(1)"></div>
+    <div id="global-counter" class="slide-counter"></div>
+
+    <!-- 0. Selected Works -->
+    <section id="selected" class="gallery-section active">
+      <div id="selected-grid" class="selected-grid" aria-label="Selected Works"></div>
+    </section>
+
+    <!-- 1. 胶片摄影 Film Photography -->
+    <section id="project1" class="gallery-section">
+      <div class="artwork">
+        <div class="text-content project-statement">
+          <p class="statement-title">胶片摄影 Film Photography</p>
+          <p class="statement-body">占位文字：这里将介绍这组胶片作品的拍摄背景、使用器材（相机/胶卷型号）与创作意图，稍后替换为正式文案。</p>
+        </div>
+      </div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Film 01<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Film 02<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Film 03<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Film 04<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Film 05<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Film 06<span class="ph-ratio">建议比例 3:2</span></div></div>
+    </section>
+
+    <!-- 2. 相机摄影 Digital Photography -->
+    <section id="project2" class="gallery-section">
+      <div class="artwork">
+        <div class="text-content project-statement">
+          <p class="statement-title">相机摄影 Digital Photography</p>
+          <p class="statement-body">占位文字：这里将介绍这组数码作品的主题、拍摄场景与创作意图，稍后替换为正式文案。</p>
+        </div>
+      </div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 01<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 02<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 03<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 04<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 05<span class="ph-ratio">建议比例 3:2</span></div></div>
+      <div class="artwork"><div class="media-placeholder">占位图片 · Digital 06<span class="ph-ratio">建议比例 3:2</span></div></div>
+    </section>
+
+    <!-- 3. 关于 / 联系方式 -->
+    <section id="about" class="gallery-section">
+      <div class="artwork">
+        <div class="about-layout">
+          <div class="text-content project-statement">
+            <p class="about-lead">占位文字：一段关于你摄影创作理念与拍摄习惯的简介，稍后替换为正式文案。</p>
+            <h3 class="contact-label">Contact</h3>
+            <p class="contact-info">
+              邮箱：<a href="mailto:reginaw020109@gmail.com">reginaw020109@gmail.com</a><br>
+              Instagram：<a href="https://www.instagram.com/regi.nawoo?igsh=MW4wZ296bHFjczM3dQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">@regi.nawoo</a>
+            </p>
+          </div>
+          <div class="about-photo-placeholder media-placeholder">占位照片 · Portrait</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="关闭">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18"/>
+    </svg>
+  </button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+(function () {
+  var navLinks = document.querySelectorAll('.nav-link');
+  var sections = document.querySelectorAll('.gallery-section');
+  var sidebar = document.querySelector('.sidebar');
+  var menuToggle = document.querySelector('.menu-toggle');
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxClose = document.getElementById('lightboxClose');
+  var currentSectionId = 'selected';
+  var selectedWorks = [];
+  var selectedColumnCount = 0;
+  var resizeTimer;
+
+  document.body.dataset.section = currentSectionId;
+  buildSelectedGrid();
+  syncMobileMenu();
+
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      renderSelectedGrid();
+      syncMobileMenu();
+    }, 120);
+  });
+
+  menuToggle.addEventListener('click', function () {
+    var shouldExpand = sidebar.classList.contains('menu-collapsed');
+    setMenuExpanded(shouldExpand);
+  });
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  function openLightbox(src) {
+    lightboxImg.src = src;
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImg.src = '';
+  }
+
+  navLinks.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var targetId = this.getAttribute('data-target');
+      showSection(targetId);
+      if (window.matchMedia('(max-width: 800px)').matches) {
+        setMenuExpanded(false);
+      }
+    });
+  });
+
+  function syncMobileMenu() {
+    if (window.matchMedia('(max-width: 800px)').matches) {
+      setMenuExpanded(menuToggle.getAttribute('aria-expanded') === 'true');
+    } else {
+      sidebar.classList.remove('menu-collapsed');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      menuToggle.textContent = '收起菜单';
+    }
+  }
+
+  function setMenuExpanded(isExpanded) {
+    sidebar.classList.toggle('menu-collapsed', !isExpanded);
+    menuToggle.setAttribute('aria-expanded', String(isExpanded));
+    menuToggle.textContent = isExpanded ? '收起菜单' : '展开菜单';
+  }
+
+  function buildSelectedGrid() {
+    selectedWorks = getRandomSelectedWorks();
+    renderSelectedGrid();
+  }
+
+  function renderSelectedGrid() {
+    var grid = document.getElementById('selected-grid');
+    var columnCount = getSelectedColumnCount(grid.clientWidth);
+    if (columnCount === selectedColumnCount && grid.children.length > 0) return;
+
+    selectedColumnCount = columnCount;
+    grid.innerHTML = '';
+    var columns = Array.from({ length: columnCount }, function () {
+      var column = document.createElement('div');
+      column.className = 'selected-column';
+      grid.appendChild(column);
+      return column;
+    });
+
+    selectedWorks.forEach(function (src, index) {
+      var thumb = document.createElement('div');
+      thumb.className = 'selected-thumb';
+      thumb.addEventListener('click', function () { openLightbox(src); });
+
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.loading = 'lazy';
+      thumb.appendChild(img);
+
+      columns[index % columnCount].appendChild(thumb);
+    });
+  }
+
+  function getSelectedColumnCount(width) {
+    if (width >= 1000) return 4;
+    if (width >= 700) return 3;
+    return 2;
+  }
+
+  function getRandomSelectedWorks() {
+    var files = [
+      "000001 copy.JPG", "000001.JPG", "000002.JPG", "000003.JPG", "000004 copy.JPG", "000004.JPG",
+      "000005 copy.JPG", "000005.JPG", "000006.JPG", "000007.JPG", "000008.JPG", "000009 copy 2.JPG",
+      "000009 copy 3.JPG", "000009 copy.JPG", "000009.JPG", "000010.JPG", "000011 copy.JPG",
+      "000012 copy.JPG", "000013 copy.JPG", "000014 copy.JPG", "000015 copy.JPG", "000016 copy.JPG",
+      "000017 copy.JPG", "000019 copy.JPG", "000024 copy.JPG", "000027.JPG", "000032 copy 2.JPG",
+      "000032 copy.JPG", "000034 copy.JPG", "000104480004_3 copy.jpg", "000104480018_17 copy.jpg",
+      "000104480020_19 copy.jpg", "000104480023_22 copy.jpg", "000104500001_0 copy.jpg",
+      "000104500011_10 copy.jpg", "000104500018_17 copy.jpg", "000104500023_22 copy.jpg",
+      "000104500026_25 copy.jpg", "000104500027_26 copy.jpg", "000104500028_27 copy.jpg",
+      "000104500029_28 copy.jpg", "000104500030_29 copy.jpg", "000104500031_30 copy.jpg",
+      "000104500032_31 copy.jpg", "000104500033_32 copy.jpg", "000104500034_33 copy.jpg",
+      "2005-10-01 040451 copy.jpg", "2005-10-01 040451(1) copy.jpg", "2005-10-01 040451(2) copy.jpg",
+      "2005-10-01 040451(3) copy.jpg", "2005-10-01 040451(4) copy.jpg", "2005-10-01 040459 copy.jpg",
+      "2005-10-01 040459(1) copy.jpg", "2005-10-01 040557(3) copy.jpg", "2005-10-01 040610(2) copy.jpg",
+      "2005-10-01 040610(3) copy.jpg", "2023-06-25 174100(11) copy.jpg", "2023-06-25 174100(2) copy.jpg",
+      "2023-06-25 174100(22) copy.jpg", "2023-06-25 174400(10) copy.jpg", "2023-06-25 174400(11) copy.jpg",
+      "2023-06-25 174400(28) copy.jpg", "2023-06-25 174400(4) copy.jpg", "2023-06-25 174400(8) copy.jpg",
+      "2023-06-25 174400(9) copy.jpg", "2024-04-21 122455 copy.jpg", "2024-04-21 122501 copy.jpg",
+      "2024-04-21 122532 copy.jpg", "2024-04-21 122534 copy.jpg", "2024-04-21 122538 copy.jpg"
+    ];
+    var base = 'assets/selected works/';
+    return shuffleArray(files.map(function (name) { return base + name; }));
+  }
+
+  function shuffleArray(items) {
+    var shuffled = items.slice();
+    for (var i = shuffled.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = tmp;
+    }
+    return shuffled;
+  }
+
+  function showSection(id) {
+    navLinks.forEach(function (link) { link.classList.remove('active'); });
+    document.querySelectorAll('.nav-link[data-target="' + id + '"]').forEach(function (link) {
+      link.classList.add('active');
+    });
+
+    sections.forEach(function (section) { section.classList.remove('active'); });
+    var targetSection = document.getElementById(id);
+    targetSection.classList.add('active');
+    currentSectionId = id;
+    document.body.dataset.section = id;
+
+    var artworks = targetSection.querySelectorAll('.artwork');
+    artworks.forEach(function (a) { a.classList.remove('active'); });
+    if (artworks.length > 0) artworks[0].classList.add('active');
+
+    updateCounter();
+  }
+
+  window.changeSlide = function (direction) {
+    var section = document.getElementById(currentSectionId);
+    if (section.id === 'selected') return;
+
+    var artworks = Array.from(section.querySelectorAll('.artwork'));
+    if (artworks.length <= 1) return;
+
+    var currentIndex = artworks.findIndex(function (a) { return a.classList.contains('active'); });
+    artworks[currentIndex].classList.remove('active');
+
+    var nextIndex = currentIndex + direction;
+    if (nextIndex >= artworks.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = artworks.length - 1;
+
+    artworks[nextIndex].classList.add('active');
+    updateCounter();
+  };
+
+  function updateCounter() {
+    var counter = document.getElementById('global-counter');
+    var section = document.getElementById(currentSectionId);
+    var artworks = Array.from(section.querySelectorAll('.artwork'));
+
+    if (section.id === 'selected' || artworks.length <= 1) {
+      counter.style.display = 'none';
+    } else {
+      counter.style.display = 'block';
+      var currentIndex = artworks.findIndex(function (a) { return a.classList.contains('active'); });
+      counter.innerText = (currentIndex + 1) + ' / ' + artworks.length;
+    }
+  }
+
+  updateCounter();
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
+      closeLightbox();
+      return;
+    }
+    if (e.key === 'ArrowRight') window.changeSlide(1);
+    else if (e.key === 'ArrowLeft') window.changeSlide(-1);
+  });
+})();
+</script>
