@@ -343,6 +343,61 @@
     transition: transform 0.28s ease;
   }
   .selected-thumb:hover img { transform: scale(1.04); }
+
+  /* Selected Works 3D 球体视图 */
+  .sphere-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 90;
+    overflow: hidden;
+    perspective: 2400px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .sphere-scene.dragging { cursor: grabbing; }
+  .sphere-group {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .sphere-zoom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    transition: transform 1s ease-out;
+    will-change: transform;
+  }
+  .sphere-photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 130px;
+    height: 130px;
+    margin: -65px 0 0 -65px;
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 1;
+    cursor: pointer;
+    transition: transform 1.6s cubic-bezier(0.16, 0.84, 0.44, 1);
+    will-change: transform;
+  }
+  .sphere-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
   @keyframes gridFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -500,7 +555,11 @@
 
     <!-- 0. Selected Works -->
     <section id="selected" class="gallery-section active">
-      <div id="selected-grid" class="selected-grid photo-grid" data-photo-grid="selected" aria-label="Selected Works"></div>
+      <div class="sphere-scene" id="sphereScene" aria-label="Selected Works">
+        <div class="sphere-group" id="sphereGroup">
+          <div class="sphere-zoom" id="sphereZoom"></div>
+        </div>
+      </div>
     </section>
 
     <!-- 1. 胶片摄影 Film Photography -->
@@ -621,6 +680,9 @@
   var currentSectionId = 'selected';
   var photoGridState = {};
   var resizeTimer;
+  var sphereDragMoved = false;
+  var SPHERE_PERSPECTIVE = 2400;
+  var sphereEaseToFit = function () {};
 
   var PHOTO_GRIDS = {
     "selected": {
@@ -669,6 +731,7 @@
   document.querySelectorAll('.photo-grid').forEach(function (grid) {
     buildPhotoGrid(grid.getAttribute('data-photo-grid'));
   });
+  buildSphere();
   syncMobileMenu();
 
   window.addEventListener('resize', function () {
@@ -701,6 +764,194 @@
     lightbox.classList.remove('is-open');
     lightbox.setAttribute('aria-hidden', 'true');
     lightboxImg.src = '';
+  }
+
+  function fibonacciSphere(count, radius) {
+    var points = [];
+    var offset = 2 / count;
+    var goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    for (var i = 0; i < count; i++) {
+      var y = ((i * offset) - 1) + (offset / 2);
+      var r = Math.sqrt(Math.max(0, 1 - y * y));
+      var phi = i * goldenAngle;
+      points.push({
+        x: Math.cos(phi) * r * radius,
+        y: y * radius,
+        z: Math.sin(phi) * r * radius
+      });
+    }
+    return points;
+  }
+
+  function inwardOrientation(x, y, z, radius) {
+    var theta = Math.atan2(x, z) * 180 / Math.PI;
+    var phi = Math.asin(Math.max(-1, Math.min(1, y / radius))) * 180 / Math.PI;
+    return 'rotateY(' + theta + 'deg) rotateX(' + (-phi) + 'deg) rotateY(180deg)';
+  }
+
+  function buildSphere() {
+    var config = PHOTO_GRIDS['selected'];
+    if (!config) return;
+    var group = document.getElementById('sphereZoom');
+    var files = shuffleArray(config.files.map(function (name) { return config.base + name; }));
+    var radius = Math.max(260, Math.round(Math.sqrt(files.length) * 62));
+
+    group.innerHTML = '';
+    var points = fibonacciSphere(files.length, radius);
+    var seedIndex = Math.floor(Math.random() * files.length);
+
+    var nodes = files.map(function (src) {
+      var node = document.createElement('div');
+      node.className = 'sphere-photo';
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.loading = 'lazy';
+      node.appendChild(img);
+      node.addEventListener('click', function () {
+        if (sphereDragMoved) return;
+        openLightbox(src);
+      });
+      group.appendChild(node);
+      return node;
+    });
+
+    nodes.forEach(function (node, i) {
+      if (i === seedIndex) {
+        node.style.transition = 'none';
+        node.style.transform = 'translate3d(0px, 0px, 260px) scale(2.2)';
+        node.style.zIndex = '10';
+      } else {
+        node.style.transition = 'none';
+        node.style.transform = 'translate3d(0px, 0px, 0px) scale(0.001)';
+      }
+    });
+
+    // 强制回流，确保上面的初始状态先被浏览器渲染出来，再触发扩散动画
+    // eslint-disable-next-line no-unused-expressions
+    group.offsetHeight;
+
+    setTimeout(function () {
+      nodes.forEach(function (node, i) {
+        var p = points[i];
+        node.style.transition = 'transform 1.6s cubic-bezier(0.16, 0.84, 0.44, 1)';
+        node.style.transform = 'translate3d(' + p.x + 'px, ' + p.y + 'px, ' + p.z + 'px) ' + inwardOrientation(p.x, p.y, p.z, radius) + ' scale(1)';
+        node.style.zIndex = '';
+      });
+    }, 650);
+
+    setupSphereControls(radius);
+
+    // 球体扩散定型后，如果整体超出了屏幕范围，自动缓缓回缩到刚好完整显示的大小
+    setTimeout(function () {
+      sphereEaseToFit();
+    }, 650 + 1600 + 150);
+  }
+
+  function computeSphereFitZoom(radius) {
+    var scene = document.getElementById('sphereScene');
+    var w = scene.clientWidth || 900;
+    var h = scene.clientHeight || 600;
+    var fitRadius = Math.min(w, h) / 2 - 90;
+    return Math.max(0.25, fitRadius / radius);
+  }
+
+  var sphereControlsReady = false;
+  function setupSphereControls(radius) {
+    var scene = document.getElementById('sphereScene');
+    var rotator = document.getElementById('sphereGroup');
+    var zoomer = document.getElementById('sphereZoom');
+
+    // 缩放范围只保证近端照片不会穿过摄像机焦点而消失，不限制"是否超出屏幕"——
+    // 超出屏幕是被允许的，缩小回来后应完整恢复显示
+    var minZoom = 0.25;
+    var maxZoom = (SPHERE_PERSPECTIVE * 0.85) / radius;
+
+    sphereEaseToFit = function () {
+      zoom = Math.max(minZoom, Math.min(maxZoom, computeSphereFitZoom(radius)));
+      applyZoom();
+    };
+
+    if (sphereControlsReady) {
+      applyZoom();
+      return;
+    }
+    sphereControlsReady = true;
+
+    var rotX = -8;
+    var rotY = 0;
+    var zoom = 1;
+    var dragging = false;
+    var lastX = 0;
+    var lastY = 0;
+    var lastDx = 0;
+    var lastDy = 0;
+    var coastResetTimer = null;
+
+    function applyRotation() {
+      rotator.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+    }
+    function applyZoom() {
+      zoomer.style.transform = 'scale3d(' + zoom + ', ' + zoom + ', ' + zoom + ')';
+    }
+    applyRotation();
+    applyZoom();
+
+    window.addEventListener('resize', function () {
+      maxZoom = (SPHERE_PERSPECTIVE * 0.85) / radius;
+      zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+      applyZoom();
+    });
+
+    scene.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      lastDx = 0;
+      lastDy = 0;
+      sphereDragMoved = false;
+      scene.classList.add('dragging');
+      clearTimeout(coastResetTimer);
+      rotator.style.transition = 'none';
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - lastX;
+      var dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      lastDx = dx;
+      lastDy = dy;
+      if (Math.abs(dx) + Math.abs(dy) > 3) sphereDragMoved = true;
+      rotY += dx * 0.3;
+      rotX -= dy * 0.3;
+      rotX = Math.max(-90, Math.min(90, rotX));
+      applyRotation();
+    });
+    window.addEventListener('mouseup', function () {
+      if (!dragging) return;
+      dragging = false;
+      scene.classList.remove('dragging');
+
+      // 松开鼠标后球体带着最后的转动速度再滑行、缓动 1s 后停止
+      rotY += lastDx * 6;
+      rotX = Math.max(-90, Math.min(90, rotX - lastDy * 6));
+      rotator.style.transition = 'transform 1s ease-out';
+      applyRotation();
+      coastResetTimer = setTimeout(function () {
+        rotator.style.transition = 'none';
+      }, 1000);
+      lastDx = 0;
+      lastDy = 0;
+    });
+
+    scene.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      zoom += (e.deltaY < 0 ? 1 : -1) * 0.08;
+      zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+      applyZoom();
+    }, { passive: false });
   }
 
   navLinks.forEach(function (link) {
