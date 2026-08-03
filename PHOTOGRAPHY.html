@@ -171,16 +171,6 @@
     overflow: hidden;
   }
 
-  .nav-zone {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 50%;
-    z-index: 50;
-  }
-  .nav-left { left: 0; cursor: w-resize; }
-  .nav-right { right: 0; cursor: e-resize; }
-
   .gallery-section {
     display: none;
     position: relative;
@@ -582,8 +572,6 @@
     .selected-grid { position: relative; inset: auto; gap: 10px; padding: 10px; height: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
     .selected-column { gap: 10px; }
     .slide-counter { bottom: 10px; right: 15px; font-size: 10px; }
-    .nav-zone { display: block; }
-    body[data-section="about"] .nav-zone, body[data-section="selected"] .nav-zone { display: none; }
     .nav-arrow { width: 36px; height: 36px; }
     .nav-arrow svg { width: 16px; height: 16px; }
     .nav-arrow-left { left: 10px; }
@@ -639,8 +627,6 @@
   </aside>
 
   <main class="content">
-    <div class="nav-zone nav-left" onclick="changeSlide(-1)"></div>
-    <div class="nav-zone nav-right" onclick="changeSlide(1)"></div>
     <div id="global-counter" class="slide-counter"></div>
     <button type="button" class="nav-arrow nav-arrow-left" id="navArrowLeft" onclick="changeSlide(-1)" aria-label="上一张 Previous">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
