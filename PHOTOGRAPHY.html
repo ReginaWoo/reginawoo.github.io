@@ -862,28 +862,40 @@
     return 'rotateY(' + theta + 'deg) rotateX(' + (-phi) + 'deg) rotateY(180deg)';
   }
 
+  function getSphereImageTier() {
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return 'lg';
+    if (conn.saveData) return 'sm';
+    var slowTypes = ['slow-2g', '2g', '3g'];
+    if (conn.effectiveType && slowTypes.indexOf(conn.effectiveType) !== -1) return 'sm';
+    if (typeof conn.downlink === 'number' && conn.downlink > 0 && conn.downlink < 1.5) return 'sm';
+    return 'lg';
+  }
+
   function buildSphere() {
     var config = PHOTO_GRIDS['selected'];
     if (!config) return;
     var group = document.getElementById('sphereZoom');
-    var files = shuffleArray(config.files.map(function (name) { return config.base + name; }));
-    var radius = Math.max(260, Math.round(Math.sqrt(files.length) * 62));
+    var thumbDir = getSphereImageTier() === 'sm' ? 'thumbs-sm/' : 'thumbs-lg/';
+    var names = shuffleArray(config.files.slice());
+    var radius = Math.max(260, Math.round(Math.sqrt(names.length) * 62));
 
     group.innerHTML = '';
-    var points = fibonacciSphere(files.length, radius);
-    var seedIndex = Math.floor(Math.random() * files.length);
+    var points = fibonacciSphere(names.length, radius);
+    var seedIndex = Math.floor(Math.random() * names.length);
 
-    var nodes = files.map(function (src) {
+    var nodes = names.map(function (name) {
+      var fullSrc = config.base + name;
       var node = document.createElement('div');
       node.className = 'sphere-photo';
       var img = document.createElement('img');
-      img.src = src;
+      img.src = config.base + thumbDir + name;
       img.alt = '';
       img.loading = 'lazy';
       node.appendChild(img);
       node.addEventListener('click', function () {
         if (sphereDragMoved) return;
-        openLightbox(src);
+        openLightbox(fullSrc);
       });
       group.appendChild(node);
       return node;
