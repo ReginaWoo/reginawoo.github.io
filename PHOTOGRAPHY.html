@@ -456,6 +456,61 @@
     color: var(--lime);
   }
 
+  /* ================= 引导提示弹窗 ================= */
+  .hint-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(10, 6, 18, 0.82);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .hint-modal.is-open { opacity: 1; pointer-events: auto; }
+  .hint-modal-box {
+    width: min(420px, 100%);
+    background: var(--ink-2);
+    border: 1px solid var(--hair);
+    border-radius: 18px;
+    padding: 32px 28px 28px;
+    text-align: center;
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.3s ease;
+  }
+  .hint-modal.is-open .hint-modal-box { transform: translateY(0) scale(1); }
+  .hint-modal-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--paper);
+    margin: 0 0 24px;
+  }
+  .hint-modal-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 32px;
+    border-radius: 999px;
+    border: 1px solid var(--lime);
+    background: var(--lime);
+    color: var(--lime-ink);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hint-modal-btn:hover, .hint-modal-btn:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(212, 255, 61, 0.25);
+  }
+
   /* ================= 移动端响应式 ================= */
   @media (max-width: 1100px) and (min-width: 801px) {
     .sidebar { width: 220px; flex-basis: 220px; padding: 32px 24px; }
@@ -668,6 +723,13 @@
   <img class="lightbox-img" id="lightboxImg" src="" alt="">
 </div>
 
+<div class="hint-modal" id="hintModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="hintModalText">
+  <div class="hint-modal-box">
+    <p class="hint-modal-text" id="hintModalText">使用鼠标滚轮可以进行球体放大/缩小，保持左键点击状态并移动可旋转球体。</p>
+    <button type="button" class="hint-modal-btn" id="hintModalClose">Continue 了解</button>
+  </div>
+</div>
+
 <script>
 (function () {
   var navLinks = document.querySelectorAll('.nav-link');
@@ -748,6 +810,17 @@
     var shouldExpand = sidebar.classList.contains('menu-collapsed');
     setMenuExpanded(shouldExpand);
   });
+
+  var hintModal = document.getElementById('hintModal');
+  var hintModalClose = document.getElementById('hintModalClose');
+  if (hintModal && hintModalClose) {
+    hintModal.classList.add('is-open');
+    hintModal.setAttribute('aria-hidden', 'false');
+    hintModalClose.addEventListener('click', function () {
+      hintModal.classList.remove('is-open');
+      hintModal.setAttribute('aria-hidden', 'true');
+    });
+  }
 
   lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', function (e) {

@@ -396,18 +396,14 @@
   .screen-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 1px;
+    gap: 24px;
     margin-bottom: 60px;
   }
   .screen-card {
-    border: 1px solid var(--hair);
-    background: var(--ink-2);
-    border-radius: 18px;
-    padding: 6px 6px 6px;
     cursor: zoom-in;
-    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
   }
-  .screen-card:hover, .screen-card:focus-within { transform: translateY(-4px); border-color: rgba(0,196,124,0.4); }
+  .screen-card:hover, .screen-card:focus-within { transform: translateY(-4px); }
   .screen-card img { width: 100%; aspect-ratio: 402 / 874; object-fit: contain; object-position: top center; display: block; border-radius: 10px; background: #fdf3e6; }
   .screen-card figcaption {
     margin-top: 10px;
