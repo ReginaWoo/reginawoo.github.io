@@ -916,7 +916,12 @@
       var node = document.createElement('div');
       node.className = 'sphere-photo';
       var img = document.createElement('img');
-      img.src = config.base + thumbDir + name;
+      var thumbSrc = config.base + thumbDir + name;
+      img.onerror = function () {
+        img.onerror = null;
+        img.src = thumbSrc;
+      };
+      img.src = thumbSrc.replace(/\.(jpe?g|png)$/i, '.webp');
       img.alt = '';
       img.loading = 'lazy';
       node.appendChild(img);

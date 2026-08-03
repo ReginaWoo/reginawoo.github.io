@@ -1051,5 +1051,31 @@
   overlay.addEventListener('click', function (e) {
     if (e.target === overlay) closeModal();
   });
+
+  // 预加载关联的子页面，减少用户点开作品时的等待
+  var PRELOAD_PAGES = ['NEXUS.html', 'CHAOSSTAR.html', 'FLIGHTBUDDY.html', 'DANCERS.html', 'PHOTOGRAPHY.html'];
+  function preloadOtherPages() {
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && (conn.saveData || /^(slow-2g|2g)$/.test(conn.effectiveType || ''))) return;
+    PRELOAD_PAGES.forEach(function (href) {
+      var link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = href;
+      link.as = 'document';
+      document.head.appendChild(link);
+    });
+  }
+  function schedulePreload() {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(preloadOtherPages, { timeout: 2000 });
+    } else {
+      setTimeout(preloadOtherPages, 1000);
+    }
+  }
+  if (document.readyState === 'complete') {
+    schedulePreload();
+  } else {
+    window.addEventListener('load', schedulePreload);
+  }
 })();
 </script>
