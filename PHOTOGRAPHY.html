@@ -413,6 +413,37 @@
     letter-spacing: 0.05em;
   }
 
+  /* 左右翻页提示按钮（胶片摄影 / 相机摄影 等多图模块） */
+  .nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 120;
+    width: 44px;
+    height: 44px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: rgba(21, 12, 36, 0.55);
+    color: var(--paper);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .nav-arrow.is-visible { display: flex; }
+  .nav-arrow svg { width: 20px; height: 20px; }
+  .nav-arrow-left { left: 24px; }
+  .nav-arrow-right { right: 24px; }
+  .nav-arrow:hover, .nav-arrow:focus-visible {
+    background: rgba(212, 255, 61, 0.14);
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+  .nav-arrow-left:hover, .nav-arrow-left:focus-visible { transform: translateY(-50%) translateX(-3px); }
+  .nav-arrow-right:hover, .nav-arrow-right:focus-visible { transform: translateY(-50%) translateX(3px); }
+
   /* Selected Works 图片放大层 */
   .lightbox {
     position: fixed;
@@ -553,6 +584,10 @@
     .slide-counter { bottom: 10px; right: 15px; font-size: 10px; }
     .nav-zone { display: block; }
     body[data-section="about"] .nav-zone, body[data-section="selected"] .nav-zone { display: none; }
+    .nav-arrow { width: 36px; height: 36px; }
+    .nav-arrow svg { width: 16px; height: 16px; }
+    .nav-arrow-left { left: 10px; }
+    .nav-arrow-right { right: 10px; }
   }
 </style>
 
@@ -607,6 +642,12 @@
     <div class="nav-zone nav-left" onclick="changeSlide(-1)"></div>
     <div class="nav-zone nav-right" onclick="changeSlide(1)"></div>
     <div id="global-counter" class="slide-counter"></div>
+    <button type="button" class="nav-arrow nav-arrow-left" id="navArrowLeft" onclick="changeSlide(-1)" aria-label="上一张 Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <button type="button" class="nav-arrow nav-arrow-right" id="navArrowRight" onclick="changeSlide(1)" aria-label="下一张 Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
 
     <!-- 0. Selected Works -->
     <section id="selected" class="gallery-section active">
@@ -1206,13 +1247,20 @@
 
   function updateCounter() {
     var counter = document.getElementById('global-counter');
+    var navArrowLeft = document.getElementById('navArrowLeft');
+    var navArrowRight = document.getElementById('navArrowRight');
     var section = document.getElementById(currentSectionId);
     var artworks = Array.from(section.querySelectorAll('.artwork'));
+    var hasMultiple = section.id !== 'selected' && artworks.length > 1;
 
-    if (section.id === 'selected' || artworks.length <= 1) {
+    if (!hasMultiple) {
       counter.style.display = 'none';
+      navArrowLeft.classList.remove('is-visible');
+      navArrowRight.classList.remove('is-visible');
     } else {
       counter.style.display = 'block';
+      navArrowLeft.classList.add('is-visible');
+      navArrowRight.classList.add('is-visible');
       var currentIndex = artworks.findIndex(function (a) { return a.classList.contains('active'); });
       counter.innerText = (currentIndex + 1) + ' / ' + artworks.length;
     }
