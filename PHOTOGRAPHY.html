@@ -654,37 +654,37 @@
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-yuyou">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/与友/2023-06-25 174400(6).jpg" alt="与友">
+          <picture><source srcset="assets/FOTO/胶片摄影/与友/2023-06-25 174400(6).webp" type="image/webp"><img class="artwork-photo" alt="与友" src="assets/FOTO/胶片摄影/与友/2023-06-25 174400(6).jpg" width="3318" height="2279"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-taiwan">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/台湾 TAIWAN/2024-04-21 122512.jpg" alt="台湾 TAIWAN">
+          <picture><source srcset="assets/FOTO/胶片摄影/台湾 TAIWAN/2024-04-21 122512.webp" type="image/webp"><img class="artwork-photo" alt="台湾 TAIWAN" src="assets/FOTO/胶片摄影/台湾 TAIWAN/2024-04-21 122512.jpg" width="3600" height="2400"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-chun">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/春/000011.JPG" alt="春">
+          <picture><source srcset="assets/FOTO/胶片摄影/春/000011.webp" type="image/webp"><img class="artwork-photo" alt="春" src="assets/FOTO/胶片摄影/春/000011.JPG" width="3578" height="2397"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-watsonbay">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/沃特森港 WATSON BAY/000005 copy.JPG" alt="沃特森港 WATSON BAY">
+          <picture><source srcset="assets/FOTO/胶片摄影/沃特森港 WATSON BAY/000005 copy.webp" type="image/webp"><img class="artwork-photo" alt="沃特森港 WATSON BAY" src="assets/FOTO/胶片摄影/沃特森港 WATSON BAY/000005 copy.JPG" width="3035" height="3035"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-jie">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/街/2023-06-25 174100(11).jpg" alt="街">
+          <picture><source srcset="assets/FOTO/胶片摄影/街/2023-06-25 174100(11).webp" type="image/webp"><img class="artwork-photo" alt="街" src="assets/FOTO/胶片摄影/街/2023-06-25 174100(11).jpg" width="3318" height="2279"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-zhui">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/追/000016.JPG" alt="追">
+          <picture><source srcset="assets/FOTO/胶片摄影/追/000016.webp" type="image/webp"><img class="artwork-photo" alt="追" src="assets/FOTO/胶片摄影/追/000016.JPG" width="3318" height="2279"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project1-bondi2022">
-          <img class="artwork-photo" src="assets/FOTO/胶片摄影/邦迪海滩2022 BONDI2022/000104500036_35.jpg" alt="邦迪海滩2022 BONDI2022">
+          <picture><source srcset="assets/FOTO/胶片摄影/邦迪海滩2022 BONDI2022/000104500036_35.webp" type="image/webp"><img class="artwork-photo" alt="邦迪海滩2022 BONDI2022" src="assets/FOTO/胶片摄影/邦迪海滩2022 BONDI2022/000104500036_35.jpg" width="3620" height="2400"></picture>
         </a>
       </div>
     </section>
@@ -699,12 +699,12 @@
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project2-biye">
-          <img class="artwork-photo" src="assets/FOTO/相机摄影/毕业/IMG_7347.jpg" alt="毕业">
+          <picture><source srcset="assets/FOTO/相机摄影/毕业/IMG_7347.webp" type="image/webp"><img class="artwork-photo" alt="毕业" src="assets/FOTO/相机摄影/毕业/IMG_7347.jpg" width="3137" height="4705"></picture>
         </a>
       </div>
       <div class="artwork">
         <a class="artwork-link" href="#" data-target="project2-lansexini">
-          <img class="artwork-photo" src="assets/FOTO/相机摄影/蓝色悉尼/IMG_5339.JPG" alt="蓝色悉尼">
+          <picture><source srcset="assets/FOTO/相机摄影/蓝色悉尼/IMG_5339.webp" type="image/webp"><img class="artwork-photo" alt="蓝色悉尼" src="assets/FOTO/相机摄影/蓝色悉尼/IMG_5339.JPG" width="1536" height="2048"></picture>
         </a>
       </div>
     </section>
@@ -854,8 +854,20 @@
     if (e.target === lightbox) closeLightbox();
   });
 
+  function webpSrc(src) {
+    return src.replace(/\.(jpe?g|png)$/i, '.webp');
+  }
+
+  function setImgWithFallback(img, originalSrc) {
+    img.onerror = function () {
+      img.onerror = null;
+      img.src = originalSrc;
+    };
+    img.src = webpSrc(originalSrc);
+  }
+
   function openLightbox(src) {
-    lightboxImg.src = src;
+    setImgWithFallback(lightboxImg, src);
     lightbox.classList.add('is-open');
     lightbox.setAttribute('aria-hidden', 'false');
   }
@@ -916,7 +928,7 @@
       var node = document.createElement('div');
       node.className = 'sphere-photo';
       var img = document.createElement('img');
-      img.src = config.base + thumbDir + name;
+      setImgWithFallback(img, config.base + thumbDir + name);
       img.alt = '';
       img.loading = 'lazy';
       node.appendChild(img);
@@ -1168,7 +1180,7 @@
       thumb.addEventListener('click', function () { openLightbox(src); });
 
       var img = document.createElement('img');
-      img.src = src;
+      setImgWithFallback(img, src);
       img.alt = '';
       img.loading = 'lazy';
       thumb.appendChild(img);
