@@ -330,7 +330,7 @@
     background: var(--ink-2);
     cursor: zoom-in;
   }
-  .inspo-figs img { width: 100%; height: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .inspo-figs img { width: 100%; height: auto; display: block; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
   .inspo-figs figure:hover img, .inspo-figs figure:focus-within img { transform: scale(1.05); }
   .inspo-figs figcaption { padding: 14px 18px 18px; font-size: 12.5px; color: var(--mute); }
 
@@ -351,6 +351,7 @@
   .still-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    align-items: start;
     gap: 20px;
   }
   .still-card {
@@ -362,7 +363,7 @@
     transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
   }
   .still-card:hover, .still-card:focus-within { transform: translateY(-4px); border-color: rgba(255,182,46,0.4); }
-  .still-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; border-radius: 14px; }
+  .still-card img { width: 100%; height: auto; display: block; border-radius: 14px; }
   .still-card figcaption {
     margin: 12px 4px 10px;
     font-size: 12.5px;
