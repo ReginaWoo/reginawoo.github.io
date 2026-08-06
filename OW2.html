@@ -86,7 +86,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0 0 60px;
+    padding: 0 0 100px;
     overflow: visible;
   }
   #deckView.is-expanded {
@@ -141,6 +141,15 @@
   }
   #deckView.is-expanded .deck-row { align-items: flex-start; }
   #deckView.is-expanded .deck-link { display: none; }
+  #deckView.is-expanded .deck-nav-slot { display: none; }
+
+  .deck-nav-slot {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+  }
+  .deck-nav-slot-prev { justify-content: flex-end; }
+  .deck-nav-slot-next { justify-content: flex-start; }
 
   .deck-cards {
     position: relative;
@@ -282,6 +291,16 @@
   .deck-link:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
   .deck-link .en { font-size: 0.5em; font-weight: 600; opacity: 0.6; margin-top: 4px; }
 
+  .deck-detail-row {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    margin: 32px auto 0;
+    width: min(1080px, 94vw);
+  }
+  .deck-link-detail { align-items: center; text-align: center; }
+
   /* ---------- bottom bar ---------- */
   .bottom-bar {
     position: fixed;
@@ -336,35 +355,6 @@
     padding-right: 10px;
   }
   .grid-toggle-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--paper); }
-
-  /* ---------- grid open ripple burst ---------- */
-  .grid-ripple {
-    position: fixed;
-    left: 50%;
-    bottom: 42px;
-    width: 0; height: 0;
-    z-index: 1;
-    pointer-events: none;
-  }
-  .ripple-ring {
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 10vmax; height: 10vmax;
-    margin-left: -5vmax; margin-top: -5vmax;
-    border-radius: 50%;
-    opacity: 0;
-    transform: scale(0);
-  }
-  .grid-ripple.is-animating .ripple-ring { animation: rippleExpand 0.85s cubic-bezier(0.16,1,0.3,1) forwards; }
-  .ripple-ring.r1 { background: var(--lime); animation-delay: 0s; }
-  .ripple-ring.r2 { background: var(--violet); animation-delay: 0.05s; }
-  .ripple-ring.r3 { background: var(--magenta); animation-delay: 0.1s; }
-  .ripple-ring.r4 { background: var(--cyan); animation-delay: 0.15s; }
-  @keyframes rippleExpand {
-    0% { opacity: 0.95; transform: scale(0); }
-    65% { opacity: 0.7; }
-    100% { opacity: 0; transform: scale(24); }
-  }
 
   @media (max-width: 900px) {
     #deckView.is-expanded .deck-cards { grid-template-columns: repeat(2, 1fr); }
@@ -498,6 +488,7 @@
 
   @media (max-width: 860px) {
     .deck-row { flex-direction: column; gap: 28px; }
+    .deck-nav-slot { flex: 0 0 auto; width: 100%; justify-content: center; }
     .deck-link-prev, .deck-link-next { align-items: center; text-align: center; }
   }
 
@@ -509,7 +500,6 @@
   @media (prefers-reduced-motion: reduce) {
     .deck-blob { animation: none !important; }
     .deck-card, .detail-sheet, .detail-view { transition: none !important; }
-    .ripple-ring { animation: none !important; }
   }
 </style>
 
@@ -532,11 +522,19 @@
   </div>
 
   <div class="deck-row">
-    <button class="deck-link deck-link-prev" id="nextCardBtn" type="button">下一张<span class="en">Next card</span></button>
+    <div class="deck-nav-slot deck-nav-slot-prev">
+      <button class="deck-link deck-link-prev" id="prevCardBtn" type="button">上一张<span class="en">Previous card</span></button>
+    </div>
 
     <div class="deck-cards" id="deckCards"></div>
 
-    <button class="deck-link deck-link-next" id="showMeBtn" type="button">查看详情<span class="en">Show me!</span></button>
+    <div class="deck-nav-slot deck-nav-slot-next">
+      <button class="deck-link deck-link-next" id="nextCardBtn" type="button">下一张<span class="en">Next card</span></button>
+    </div>
+  </div>
+
+  <div class="deck-detail-row">
+    <button class="deck-link deck-link-detail" id="showMeBtn" type="button">查看详情<span class="en">Show me!</span></button>
   </div>
 </main>
 
@@ -548,13 +546,6 @@
   </button>
   <div class="bottom-note">Regina Wu</div>
 </footer>
-
-<div class="grid-ripple" id="gridRipple" aria-hidden="true">
-  <span class="ripple-ring r1"></span>
-  <span class="ripple-ring r2"></span>
-  <span class="ripple-ring r3"></span>
-  <span class="ripple-ring r4"></span>
-</div>
 
 <div class="detail-view" id="detailView" aria-hidden="true">
   <button class="detail-close" id="closeDetailBtn" type="button" aria-label="关闭 Close">✕</button>
@@ -603,13 +594,13 @@
     { slug: 'type', tag: 'OW 能 · OW can', titleCn: '承载响应式排版', titleEn: 'Carry responsive type', accent: '--magenta', accentInk: '--magenta-ink' },
     { slug: 'motion', tag: 'OW 能 · OW can', titleCn: '驱动流畅动效', titleEn: 'Drive smooth motion', accent: '--cyan', accentInk: '--cyan-ink' },
     { slug: 'a11y', tag: 'OW 能 · OW can', titleCn: '支持无障碍交互', titleEn: 'Support accessible interaction', accent: '--lime', accentInk: '--lime-ink' },
-    { slug: 'story', tag: 'OW 能 · OW can', titleCn: '讲述完整的故事', titleEn: 'Tell a complete story', accent: '--violet', accentInk: '--violet-ink' },
-    { slug: 'responsive', tag: 'OW 能 · OW can', titleCn: '适配任意屏幕尺寸', titleEn: 'Adapt to any screen size', accent: '--magenta', accentInk: '--magenta-ink' }
+    { slug: 'story', tag: 'OW 能 · OW can', titleCn: '讲述完整的故事', titleEn: 'Tell a complete story', accent: '--violet', accentInk: '--violet-ink' }
   ];
 
   var els = {
     deckView: document.getElementById('deckView'),
     deckCards: document.getElementById('deckCards'),
+    prevCardBtn: document.getElementById('prevCardBtn'),
     nextCardBtn: document.getElementById('nextCardBtn'),
     showMeBtn: document.getElementById('showMeBtn'),
     blob1: document.getElementById('blob1'),
@@ -620,8 +611,7 @@
     detailTitle: document.getElementById('detailTitle'),
     closeDetailBtn: document.getElementById('closeDetailBtn'),
     shareBtn: document.getElementById('shareBtn'),
-    gridToggleBtn: document.getElementById('gridToggleBtn'),
-    gridRipple: document.getElementById('gridRipple')
+    gridToggleBtn: document.getElementById('gridToggleBtn')
   };
 
   var state = { index: 0, animating: false, expanded: false, homeRect: null };
@@ -716,6 +706,45 @@
     }, 560);
   }
 
+  function prevCard() {
+    if (state.animating || state.expanded) return;
+    var n = CARDS.length;
+    var oldIdx = state.index;
+    var newIdx = (oldIdx - 1 + n) % n;
+    var oldNextIdx = (oldIdx + 1) % n;
+
+    if (reduceMotion) { render(newIdx); return; }
+
+    state.animating = true;
+    var oldCurrentEl = cardEls[oldIdx];
+    var newCurrentEl = cardEls[newIdx];
+    var oldNextEl = cardEls[oldNextIdx];
+
+    // snap the card being rewound to straight to the "just left" position
+    // with no transition, so it can fly back in along the same path a card
+    // leaves by — the visual reverse of nextCard's exit.
+    newCurrentEl.classList.remove('role-hidden');
+    newCurrentEl.classList.add('no-anim', 'leaving');
+    void newCurrentEl.offsetWidth;
+
+    oldCurrentEl.classList.remove('role-current');
+    oldCurrentEl.classList.add('role-next');
+    oldNextEl.classList.remove('role-next');
+    oldNextEl.classList.add('role-hidden');
+
+    requestAnimationFrame(function () {
+      newCurrentEl.classList.remove('no-anim', 'leaving');
+      newCurrentEl.classList.add('role-current');
+    });
+
+    window.setTimeout(function () {
+      state.index = newIdx;
+      setBackgroundBlobs(CARDS[newIdx]);
+      location.hash = 'card-' + CARDS[newIdx].slug;
+      state.animating = false;
+    }, 560);
+  }
+
   function openDetail() {
     var card = CARDS[state.index];
     els.detailHero.style.setProperty('--accent', accentVar(card));
@@ -735,13 +764,6 @@
     } else {
       els.showMeBtn.focus();
     }
-  }
-
-  function playRipple() {
-    if (reduceMotion) return;
-    els.gridRipple.classList.remove('is-animating');
-    void els.gridRipple.offsetWidth;
-    els.gridRipple.classList.add('is-animating');
   }
 
   // getBoundingClientRect() on a rotated card (role-current/role-next both
@@ -844,13 +866,13 @@
     els.deckView.classList.toggle('is-expanded', state.expanded);
     els.gridToggleBtn.setAttribute('aria-pressed', state.expanded ? 'true' : 'false');
     applyRoles();
-    if (state.expanded) playRipple();
 
     if (reduceMotion) return;
     state.animating = true;
     playFlip(firstRects);
   }
 
+  els.prevCardBtn.addEventListener('click', prevCard);
   els.nextCardBtn.addEventListener('click', nextCard);
   els.showMeBtn.addEventListener('click', openDetail);
   els.closeDetailBtn.addEventListener('click', closeDetail);
