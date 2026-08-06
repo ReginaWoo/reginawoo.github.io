@@ -270,7 +270,6 @@
   .case {
     position: relative;
     border-radius: var(--radius);
-    overflow: hidden;
     border: 1px solid var(--hair);
     background: var(--ink-2);
     grid-column: span 3;
@@ -281,15 +280,27 @@
     padding: 28px;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, box-shadow 0.3s ease;
   }
-  .case:nth-child(1) { grid-column: span 4; min-height: 420px; }
-  .case:nth-child(2) { grid-column: span 2; }
-  .case:nth-child(3) { grid-column: span 2; }
-  .case:nth-child(4) { grid-column: span 4; }
-  .case:nth-child(5) { grid-column: span 6; min-height: 300px; }
-  .case:hover, .case:focus-visible { transform: translateY(-6px); border-color: rgba(243,236,251,0.3); }
+  .case:nth-child(1) { grid-column: span 4; min-height: 420px; --accent: var(--lime); }
+  .case:nth-child(2) { grid-column: span 2; --accent: var(--magenta); }
+  .case:nth-child(3) { grid-column: span 2; --accent: var(--cyan); }
+  .case:nth-child(4) { grid-column: span 4; --accent: var(--violet); }
+  .case:nth-child(5) { grid-column: span 6; min-height: 300px; --accent: var(--lime); }
+  .case:hover, .case:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--accent, rgba(243,236,251,0.3));
+    box-shadow: 0 24px 60px -24px var(--accent, transparent);
+  }
   .case:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  .case-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    clip-path: inset(0 round var(--radius));
+    z-index: 0;
+  }
   .case canvas {
     position: absolute;
     inset: 0;
@@ -340,6 +351,12 @@
     background: var(--ink);
     padding: 40px 30px;
   }
+  /* .materials itself can't use overflow:hidden to clip these square corners
+     because .material-popup intentionally overflows its cell (see the
+     scroll-into-view script below) — so round each corner cell's own
+     background instead of clipping at the grid level. */
+  .material:first-child { border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+  .material:last-child { border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
   .material .glyph {
     width: 40px;
     height: 40px;
@@ -483,6 +500,11 @@
       grid-column: span 2;
     }
     .materials { grid-template-columns: repeat(2, 1fr); }
+    /* 2 columns × 2 rows on mobile — the corner cells are different from desktop */
+    .material:first-child { border-bottom-left-radius: 0; }
+    .material:last-child { border-top-right-radius: 0; }
+    .material:nth-child(2) { border-top-right-radius: var(--radius); }
+    .material:nth-child(3) { border-bottom-left-radius: var(--radius); }
     .nav-links { display: none; }
     .cta { padding: 60px 28px; }
   }
@@ -689,8 +711,10 @@
   <div class="cases">
 
     <a class="case" href="NEXUS.html" data-palette="0">
-      <canvas aria-hidden="true"></canvas>
-      <div class="case-scrim"></div>
+      <div class="case-bg">
+        <canvas aria-hidden="true"></canvas>
+        <div class="case-scrim"></div>
+      </div>
       <div class="case-body">
         <div class="case-tags"><span>平面设计 Graphic Design</span><span>AIGC</span><span>视觉设计 Visual Design</span><span>用户研究 User Analysis</span></div>
         <h3 class="display">AI思维可视化插件：NEXUS</h3>
@@ -699,8 +723,10 @@
     </a>
 
     <a class="case" href="CHAOSSTAR.html" data-palette="1">
-      <canvas aria-hidden="true"></canvas>
-      <div class="case-scrim"></div>
+      <div class="case-bg">
+        <canvas aria-hidden="true"></canvas>
+        <div class="case-scrim"></div>
+      </div>
       <div class="case-body">
         <div class="case-tags"><span>动画制作 Adobe AE</span><span>基础手绘 Basic Hand-Drawing</span></div>
         <h3 class="display">MV重制手书：乱世巨星</h3>
@@ -709,8 +735,10 @@
     </a>
 
     <a class="case" href="FLIGHTBUDDY.html" data-palette="2">
-      <canvas aria-hidden="true"></canvas>
-      <div class="case-scrim"></div>
+      <div class="case-bg">
+        <canvas aria-hidden="true"></canvas>
+        <div class="case-scrim"></div>
+      </div>
       <div class="case-body">
         <div class="case-tags"><span>界面设计 Interface Design</span><span>平面设计 Graphic Design</span><span>用户研究 User Design</span></div>
         <h3 class="display">飞行伴侣APP：FLIGHTBUDDY</h3>
@@ -719,8 +747,10 @@
     </a>
 
     <a class="case" href="DANCERS.html" data-palette="3">
-      <canvas aria-hidden="true"></canvas>
-      <div class="case-scrim"></div>
+      <div class="case-bg">
+        <canvas aria-hidden="true"></canvas>
+        <div class="case-scrim"></div>
+      </div>
       <div class="case-body">
         <div class="case-tags"><span>视觉设计 Visual Design</span><span>交互设计 Interaction Design</span><span>用户研究 User Design</span></div>
         <h3 class="display">交互设计组合作品：WHAT LIES ACROSS/SYDENY CYPHER MAP</h3>
@@ -729,8 +759,10 @@
     </a>
 
     <a class="case" href="#" id="otherWorksCard" data-palette="4">
-      <canvas aria-hidden="true"></canvas>
-      <div class="case-scrim"></div>
+      <div class="case-bg">
+        <canvas aria-hidden="true"></canvas>
+        <div class="case-scrim"></div>
+      </div>
       <div class="case-body">
         <div class="case-tags"><span>胶片摄影 Film Photography</span><span>相机摄影 Digital Photography</span><span>个人设计 Other Works</span></div>
         <h3 class="display">其他作品 OTHER WORKS</h3>
